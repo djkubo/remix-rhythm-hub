@@ -174,23 +174,6 @@ const PricingSection = () => {
             </motion.div>
           ))}
         </div>
-
-        {/* Guarantee Banner */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5, delay: 0.3 }}
-          className="mt-16 text-center"
-        >
-          <div className="inline-flex items-center gap-3 rounded-full border border-primary/20 bg-card/50 px-6 py-4 backdrop-blur-sm">
-            <Shield className="h-6 w-6 text-primary" />
-            <span className="font-sans text-foreground">
-              <strong className="text-primary">Prueba de Fuego:</strong> 7 Días Gratis (100GB).
-              Entra, mira y descarga. Si no te gusta, cancelas.
-            </span>
-          </div>
-        </motion.div>
       </div>
     </section>
   );
