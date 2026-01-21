@@ -1,20 +1,24 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-interface LeadData {
-  id: string;
-  name: string;
-  email: string;
-  phone: string;
-  country_code: string | null;
-  country_name: string | null;
-  source: string | null;
-  tags: string[] | null;
-}
+// Input validation schema
+const LeadSchema = z.object({
+  id: z.string().uuid(),
+  name: z.string().min(1).max(100),
+  email: z.string().email().max(255),
+  phone: z.string().min(5).max(30),
+  country_code: z.string().max(10).nullable(),
+  country_name: z.string().max(100).nullable(),
+  source: z.string().max(50).nullable(),
+  tags: z.array(z.string().max(50)).max(20).nullable(),
+});
+
+type LeadData = z.infer<typeof LeadSchema>;
 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -34,19 +38,59 @@ Deno.serve(async (req) => {
       );
     }
 
-    const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
-
-    const body = await req.json();
-    const lead: LeadData = body.lead;
-
-    if (!lead) {
+    // Validate request body
+    let body;
+    try {
+      body = await req.json();
+    } catch {
       return new Response(
-        JSON.stringify({ error: 'Lead data is required' }),
+        JSON.stringify({ error: 'Invalid JSON body' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
-    console.log('Processing lead for ManyChat:', { email: lead.email, phone: lead.phone });
+    // Validate lead data with Zod
+    const parseResult = LeadSchema.safeParse(body.lead);
+    if (!parseResult.success) {
+      console.error('Validation failed:', parseResult.error.issues);
+      return new Response(
+        JSON.stringify({ 
+          error: 'Invalid lead data', 
+          details: parseResult.error.issues 
+        }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    const lead: LeadData = parseResult.data;
+
+    // Verify lead exists in database (prevents arbitrary data injection)
+    const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+    
+    const { data: dbLead, error: leadError } = await supabase
+      .from('leads')
+      .select('id, email')
+      .eq('id', lead.id)
+      .single();
+
+    if (leadError || !dbLead) {
+      console.error('Lead not found in database:', lead.id);
+      return new Response(
+        JSON.stringify({ error: 'Lead not found' }),
+        { status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Verify email matches (extra security)
+    if (dbLead.email.toLowerCase() !== lead.email.toLowerCase()) {
+      console.error('Email mismatch for lead:', lead.id);
+      return new Response(
+        JSON.stringify({ error: 'Invalid lead data' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    console.log('Processing verified lead for ManyChat:', { id: lead.id, email: lead.email });
 
     // Parse name into first and last name
     const nameParts = lead.name.trim().split(' ');
@@ -59,7 +103,7 @@ Deno.serve(async (req) => {
       ? `${lead.country_code}${cleanPhone}` 
       : cleanPhone;
 
-    console.log('Creating subscriber with phone:', fullPhone, 'email:', lead.email);
+    console.log('Creating subscriber with phone:', fullPhone);
 
     // ============================================
     // 1. CREATE SUBSCRIBER IN MANYCHAT
@@ -74,7 +118,7 @@ Deno.serve(async (req) => {
         first_name: firstName,
         last_name: lastName,
         phone: fullPhone,
-        whatsapp_phone: fullPhone, // WhatsApp number
+        whatsapp_phone: fullPhone,
         email: lead.email,
         has_opt_in_sms: true,
         has_opt_in_email: true,
@@ -91,22 +135,18 @@ Deno.serve(async (req) => {
       subscriberId = String(createData.data.id);
       console.log('Subscriber created with ID:', subscriberId);
 
-      // ============================================
-      // 2. SET ALL CUSTOM FIELDS
-      // ============================================
+      // Set custom fields
       const customFields = [
         { field_name: 'country', field_value: lead.country_name || 'Unknown' },
         { field_name: 'lead_source', field_value: lead.source || 'exit_intent' },
         { field_name: 'phone_country_code', field_value: lead.country_code || '' },
         { field_name: 'full_name', field_value: lead.name },
-        { field_name: 'signup_date', field_value: new Date().toISOString().split('T')[0] }, // YYYY-MM-DD format
+        { field_name: 'signup_date', field_value: new Date().toISOString().split('T')[0] },
       ];
-
-      console.log('Setting custom fields for subscriber:', subscriberId);
 
       for (const field of customFields) {
         try {
-          const fieldResponse = await fetch('https://api.manychat.com/fb/subscriber/setCustomField', {
+          await fetch('https://api.manychat.com/fb/subscriber/setCustomField', {
             method: 'POST',
             headers: {
               'Authorization': `Bearer ${MANYCHAT_API_KEY}`,
@@ -118,67 +158,18 @@ Deno.serve(async (req) => {
               field_value: field.field_value,
             }),
           });
-          const fieldData = await fieldResponse.json();
-          console.log(`Field "${field.field_name}" set:`, fieldData.status);
         } catch (fieldError) {
           console.error(`Failed to set field "${field.field_name}":`, fieldError);
         }
       }
 
-      // ============================================
-      // 3. SET SYSTEM FIELDS (Email & Phone directly)
-      // ============================================
-      // Set email system field
-      try {
-        const emailResponse = await fetch('https://api.manychat.com/fb/subscriber/setCustomField', {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${MANYCHAT_API_KEY}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            subscriber_id: subscriberId,
-            field_name: 'email',
-            field_value: lead.email,
-          }),
-        });
-        const emailData = await emailResponse.json();
-        console.log('Email system field set:', emailData.status);
-      } catch (err) {
-        console.error('Failed to set email:', err);
-      }
-
-      // Set phone system field
-      try {
-        const phoneResponse = await fetch('https://api.manychat.com/fb/subscriber/setCustomField', {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${MANYCHAT_API_KEY}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            subscriber_id: subscriberId,
-            field_name: 'phone',
-            field_value: fullPhone,
-          }),
-        });
-        const phoneData = await phoneResponse.json();
-        console.log('Phone system field set:', phoneData.status);
-      } catch (err) {
-        console.error('Failed to set phone:', err);
-      }
-
-      // ============================================
-      // 4. ADD ALL TAGS
-      // ============================================
+      // Add tags
       const defaultTags = ['exit_intent', 'demo_request', 'website_lead', 'dj_prospect', 'free_demos'];
       const allTags = [...defaultTags, ...(lead.tags || [])];
 
-      console.log('Adding tags to subscriber:', allTags);
-
       for (const tag of allTags) {
         try {
-          const tagResponse = await fetch('https://api.manychat.com/fb/subscriber/addTag', {
+          await fetch('https://api.manychat.com/fb/subscriber/addTag', {
             method: 'POST',
             headers: {
               'Authorization': `Bearer ${MANYCHAT_API_KEY}`,
@@ -189,18 +180,13 @@ Deno.serve(async (req) => {
               tag_name: tag,
             }),
           });
-          const tagData = await tagResponse.json();
-          console.log(`Tag "${tag}" added:`, tagData.status);
         } catch (tagError) {
           console.error(`Failed to add tag "${tag}":`, tagError);
         }
       }
 
-      // ============================================
-      // 5. SET OPT-IN STATUS EXPLICITLY
-      // ============================================
+      // Set opt-in status
       try {
-        // Set SMS opt-in
         await fetch('https://api.manychat.com/fb/subscriber/setSmsOptIn', {
           method: 'POST',
           headers: {
@@ -213,13 +199,11 @@ Deno.serve(async (req) => {
             sms_phone: fullPhone,
           }),
         });
-        console.log('SMS opt-in set');
       } catch (err) {
         console.error('Failed to set SMS opt-in:', err);
       }
 
       try {
-        // Set Email opt-in
         await fetch('https://api.manychat.com/fb/subscriber/setEmailOptIn', {
           method: 'POST',
           headers: {
@@ -232,7 +216,6 @@ Deno.serve(async (req) => {
             email: lead.email,
           }),
         });
-        console.log('Email opt-in set');
       } catch (err) {
         console.error('Failed to set Email opt-in:', err);
       }
@@ -240,10 +223,8 @@ Deno.serve(async (req) => {
     } else {
       console.error('ManyChat API error:', createData);
       
-      // Try to find existing subscriber by phone or email
+      // Try to find existing subscriber
       if (createData.status === 'error') {
-        console.log('Attempting to find existing subscriber...');
-        
         try {
           const findResponse = await fetch('https://api.manychat.com/fb/subscriber/findBySystemField', {
             method: 'POST',
@@ -251,9 +232,7 @@ Deno.serve(async (req) => {
               'Authorization': `Bearer ${MANYCHAT_API_KEY}`,
               'Content-Type': 'application/json',
             },
-            body: JSON.stringify({
-              phone: fullPhone,
-            }),
+            body: JSON.stringify({ phone: fullPhone }),
           });
           const findData = await findResponse.json();
           
@@ -267,9 +246,7 @@ Deno.serve(async (req) => {
       }
     }
 
-    // ============================================
-    // 6. UPDATE LEAD IN DATABASE
-    // ============================================
+    // Update lead in database
     const { error: updateError } = await supabase
       .from('leads')
       .update({
@@ -280,8 +257,6 @@ Deno.serve(async (req) => {
 
     if (updateError) {
       console.error('Failed to update lead sync status:', updateError);
-    } else {
-      console.log('Lead updated in database with ManyChat subscriber ID:', subscriberId);
     }
 
     return new Response(
@@ -289,8 +264,6 @@ Deno.serve(async (req) => {
         success: true,
         manychat_subscriber_id: subscriberId,
         synced: subscriberId !== null,
-        phone_used: fullPhone,
-        email_used: lead.email,
       }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );

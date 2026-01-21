@@ -1,3 +1,5 @@
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
@@ -14,6 +16,61 @@ Deno.serve(async (req) => {
   }
 
   try {
+    // ============================================
+    // AUTHENTICATION: Require admin role
+    // ============================================
+    const authHeader = req.headers.get('Authorization');
+    if (!authHeader?.startsWith('Bearer ')) {
+      return new Response(
+        JSON.stringify({ error: 'Unauthorized - No token provided' }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
+    const SUPABASE_ANON_KEY = Deno.env.get('SUPABASE_ANON_KEY')!;
+    const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+
+    // Create client with user's token to verify auth
+    const supabaseAuth = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+      global: { headers: { Authorization: authHeader } }
+    });
+
+    const token = authHeader.replace('Bearer ', '');
+    const { data: claimsData, error: claimsError } = await supabaseAuth.auth.getUser(token);
+    
+    if (claimsError || !claimsData?.user) {
+      console.error('Auth error:', claimsError);
+      return new Response(
+        JSON.stringify({ error: 'Unauthorized - Invalid token' }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    const userId = claimsData.user.id;
+
+    // Check if user is admin using service role
+    const supabaseAdmin = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+    const { data: adminData, error: adminError } = await supabaseAdmin
+      .from('admin_users')
+      .select('role')
+      .eq('user_id', userId)
+      .eq('role', 'admin')
+      .single();
+
+    if (adminError || !adminData) {
+      console.error('User is not admin:', userId);
+      return new Response(
+        JSON.stringify({ error: 'Forbidden - Admin access required' }),
+        { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    console.log('Admin authenticated:', userId);
+
+    // ============================================
+    // MANYCHAT SETUP (Admin only)
+    // ============================================
     const MANYCHAT_API_KEY = Deno.env.get('MANYCHAT_API_KEY');
 
     if (!MANYCHAT_API_KEY) {
@@ -29,9 +86,7 @@ Deno.serve(async (req) => {
       errors: [],
     };
 
-    // ============================================
-    // 1. CREATE CUSTOM FIELDS
-    // ============================================
+    // Create custom fields
     const customFields = [
       { name: 'country', type: 'text', description: 'País del lead detectado automáticamente' },
       { name: 'lead_source', type: 'text', description: 'Fuente del lead (exit_intent, landing, etc)' },
@@ -63,7 +118,6 @@ Deno.serve(async (req) => {
         if (data.status === 'success') {
           (results.customFields as unknown[]).push({ name: field.name, status: 'created', data: data.data });
         } else {
-          // Field might already exist, that's ok
           (results.customFields as unknown[]).push({ name: field.name, status: 'exists_or_error', data });
         }
       } catch (err) {
@@ -73,9 +127,7 @@ Deno.serve(async (req) => {
       }
     }
 
-    // ============================================
-    // 2. CREATE TAGS
-    // ============================================
+    // Create tags
     const tags = [
       'exit_intent',
       'demo_request',
@@ -98,9 +150,7 @@ Deno.serve(async (req) => {
             'Authorization': `Bearer ${MANYCHAT_API_KEY}`,
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({
-            name: tagName,
-          }),
+          body: JSON.stringify({ name: tagName }),
         });
 
         const data: ManyChatResponse = await response.json();
@@ -109,7 +159,6 @@ Deno.serve(async (req) => {
         if (data.status === 'success') {
           (results.tags as unknown[]).push({ name: tagName, status: 'created', data: data.data });
         } else {
-          // Tag might already exist, that's ok
           (results.tags as unknown[]).push({ name: tagName, status: 'exists_or_error', data });
         }
       } catch (err) {
@@ -119,9 +168,6 @@ Deno.serve(async (req) => {
       }
     }
 
-    // ============================================
-    // 3. SUMMARY
-    // ============================================
     const summary = {
       success: true,
       message: 'ManyChat setup completed',
