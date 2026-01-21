@@ -6,7 +6,7 @@ const AggregatorSection = () => {
     {
       icon: DollarSign,
       title: "Pagamos los Pools",
-      description: "Nosotros nos suscribimos a múltiples fuentes. Tú solo pagas una."
+      description: "Nosotros nos suscribimos a múltiples fuentes. Tú pagas solo una."
     },
     {
       icon: Trash2,
@@ -16,19 +16,18 @@ const AggregatorSection = () => {
     {
       icon: Tag,
       title: "Corregimos los Tags",
-      description: "Metadata perfecta: Artista, Título, BPM, Género. Listo para tu software."
+      description: "Metadata perfecta: Artista, Título, BPM, Género."
     },
     {
       icon: Gift,
-      title: "Te lo Entregamos Limpio",
-      description: "Sin logos, sin marcas de agua, sin voces molestas. Archivos profesionales."
+      title: "Entrega Limpia",
+      description: "Sin logos, sin marcas de agua. Archivos profesionales."
     }
   ];
 
   return (
-    <section className="relative py-20 md:py-28 bg-background">
-      <div className="container mx-auto px-4">
-        {/* Main Card */}
+    <section className="relative py-24 md:py-32 bg-background-carbon">
+      <div className="container mx-auto">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -36,19 +35,19 @@ const AggregatorSection = () => {
           transition={{ duration: 0.5 }}
           className="mx-auto max-w-5xl"
         >
-          <div className="rounded-2xl border border-primary/30 bg-card/50 backdrop-blur-md p-8 md:p-12 shadow-glow">
+          <div className="glow-border bg-gradient-to-b from-card-elevated to-card p-8 md:p-14">
             {/* Header */}
-            <div className="text-center mb-12">
+            <div className="text-center mb-14">
               <motion.span
                 initial={{ opacity: 0, scale: 0.9 }}
                 whileInView={{ opacity: 1, scale: 1 }}
                 viewport={{ once: true }}
-                className="inline-block mb-4 px-4 py-1 rounded-full bg-primary/10 border border-primary/30 text-primary text-sm font-medium"
+                className="badge-primary mb-6"
               >
-                EL MODELO AGREGADOR
+                MODELO AGREGADOR
               </motion.span>
               
-              <h2 className="font-display text-3xl md:text-4xl lg:text-5xl font-bold">
+              <h2 className="font-display text-display-sm md:text-display-md font-extrabold">
                 NOSOTROS PAGAMOS LOS POOLS{" "}
                 <span className="text-gradient-red">POR TI.</span>
               </h2>
@@ -68,13 +67,13 @@ const AggregatorSection = () => {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.4, delay: index * 0.1 }}
-                  className="flex flex-col items-center text-center p-6 rounded-xl bg-secondary/30 border border-white/5 transition-all duration-300 hover:border-primary/20 hover:bg-secondary/50"
+                  className="group flex flex-col items-center text-center p-6 rounded-2xl bg-secondary/40 border border-border/50 transition-smooth hover:border-primary/30 hover:bg-secondary/60"
                 >
-                  <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-xl bg-primary/10">
-                    <feature.icon className="h-7 w-7 text-primary" />
+                  <div className="mb-5 flex h-14 w-14 items-center justify-center rounded-xl bg-primary/15 group-hover:bg-primary/25 transition-smooth">
+                    <feature.icon className="h-7 w-7 text-primary" strokeWidth={1.5} />
                   </div>
-                  <h3 className="font-display text-lg font-bold">{feature.title}</h3>
-                  <p className="mt-2 font-sans text-sm text-muted-foreground">{feature.description}</p>
+                  <h3 className="font-display text-lg font-bold tracking-wide">{feature.title}</h3>
+                  <p className="mt-2 font-sans text-sm text-muted-foreground leading-relaxed">{feature.description}</p>
                 </motion.div>
               ))}
             </div>

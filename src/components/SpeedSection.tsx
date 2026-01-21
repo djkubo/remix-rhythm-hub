@@ -1,45 +1,69 @@
 import { motion } from "framer-motion";
-import { Zap, Server, Cloud, Download, Moon } from "lucide-react";
+import { Zap, Server, Cloud, Download, Clock } from "lucide-react";
 
 const SpeedSection = () => {
+  const features = [
+    {
+      icon: Server,
+      title: "Servidores Premium",
+      description: "Alta velocidad sin throttling"
+    },
+    {
+      icon: Cloud,
+      title: "Air Explorer",
+      description: "Sincroniza con tu nube"
+    },
+    {
+      icon: Download,
+      title: "Sin Límites",
+      description: "Descarga masiva. Sin caps."
+    },
+    {
+      icon: Clock,
+      title: "Mientras Duermes",
+      description: "Programa y despierta listo"
+    }
+  ];
+
   return (
-    <section className="relative overflow-hidden py-20 md:py-28 bg-background">
-      {/* Background accent */}
-      <div className="absolute inset-0 bg-gradient-to-b from-background-carbon via-background to-background-carbon" />
+    <section className="relative overflow-hidden py-24 md:py-32 bg-background">
+      <div className="absolute inset-0 hero-gradient opacity-40" />
       
-      <div className="container relative z-10 mx-auto px-4">
+      <div className="container relative z-10 mx-auto">
         <div className="mx-auto max-w-5xl">
-          {/* Main content - Glass card */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
-            className="rounded-2xl bg-card/50 backdrop-blur-md border border-primary/20 p-8 md:p-14 shadow-glow"
+            className="glow-border bg-gradient-to-b from-card-elevated to-card p-8 md:p-14"
           >
             {/* Header */}
-            <div className="text-center mb-10">
+            <div className="text-center mb-12">
               <motion.span
                 initial={{ opacity: 0, scale: 0.9 }}
                 whileInView={{ opacity: 1, scale: 1 }}
                 viewport={{ once: true }}
-                className="inline-block mb-4 px-4 py-1 rounded-full bg-primary/10 border border-primary/30 text-primary text-sm font-medium"
+                className="badge-primary mb-6"
               >
                 SINCRONIZACIÓN MASIVA
               </motion.span>
               
-              <h2 className="font-display text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold">
-                VETE A DORMIR Y DESPIERTA CON{" "}
-                <span className="text-primary">TU LIBRERÍA ACTUALIZADA</span>{" "}
-                EN TU DISCO DURO.
+              <h2 className="font-display text-display-sm md:text-display-md font-extrabold leading-tight">
+                DESCARGA{" "}
+                <span className="text-gradient-red">1TB EN MINUTOS</span>{" "}
+                CON FTP.
               </h2>
+              
+              <p className="mt-6 max-w-2xl mx-auto font-sans text-lg text-muted-foreground">
+                Conecta FileZilla o Air Explorer. Sincroniza tu librería completa mientras duermes.
+              </p>
             </div>
 
-            {/* Feature Highlight */}
+            {/* Main Feature */}
             <div className="flex flex-col md:flex-row items-center justify-center gap-8 mb-12">
-              {/* Big Icon */}
-              <div className="flex h-28 w-28 shrink-0 items-center justify-center rounded-2xl bg-primary/10 border border-primary/30">
-                <Zap className="h-14 w-14 text-primary" />
+              <div className="flex h-24 w-24 shrink-0 items-center justify-center rounded-2xl bg-primary/15 border border-primary/30 animate-float">
+                <Zap className="h-12 w-12 text-primary" strokeWidth={1.5} />
               </div>
               
               <div className="text-center md:text-left">
@@ -47,46 +71,24 @@ const SpeedSection = () => {
                   Conexión FTP Directa
                 </h3>
                 <p className="mt-2 font-sans text-lg text-muted-foreground">
-                  Compatible con FileZilla y Air Explorer. Arrastra, suelta y sincroniza 
-                  <span className="text-primary font-semibold"> 1TB en minutos</span>.
+                  Arrastra, suelta y sincroniza. Así de fácil.
                 </p>
               </div>
             </div>
 
-            {/* Features grid - Bigger icons */}
-            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-              {[
-                {
-                  icon: Server,
-                  title: "Servidores Premium",
-                  description: "Infraestructura de alta velocidad sin throttling"
-                },
-                {
-                  icon: Cloud,
-                  title: "Air Explorer",
-                  description: "Sincronización directa con tu nube favorita"
-                },
-                {
-                  icon: Download,
-                  title: "Sin Límites",
-                  description: "Descarga masiva. Sin caps. Sin restricciones."
-                },
-                {
-                  icon: Moon,
-                  title: "Mientras Duermes",
-                  description: "Programa tus descargas y despierta listo"
-                }
-              ].map((feature, index) => (
+            {/* Features grid */}
+            <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+              {features.map((feature, index) => (
                 <motion.div
                   key={feature.title}
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.4, delay: index * 0.1 }}
-                  className="flex flex-col items-center rounded-xl bg-secondary/40 border border-white/5 p-6 text-center transition-all duration-300 hover:bg-secondary/60 hover:border-primary/20 hover:scale-105"
+                  className="group flex flex-col items-center rounded-2xl bg-secondary/40 border border-border/50 p-6 text-center transition-smooth hover:bg-secondary/60 hover:border-primary/30"
                 >
-                  <feature.icon className="mb-4 h-12 w-12 text-primary" />
-                  <h3 className="font-display text-lg font-bold">{feature.title}</h3>
+                  <feature.icon className="mb-4 h-10 w-10 text-primary group-hover:scale-110 transition-smooth" strokeWidth={1.5} />
+                  <h3 className="font-display text-lg font-bold tracking-wide">{feature.title}</h3>
                   <p className="mt-2 font-sans text-sm text-muted-foreground">{feature.description}</p>
                 </motion.div>
               ))}

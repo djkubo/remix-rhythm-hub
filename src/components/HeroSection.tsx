@@ -20,19 +20,12 @@ const HeroSection = () => {
             type="video/mp4"
           />
         </video>
-        {/* Dark overlay 60% */}
-        <div className="absolute inset-0 bg-black/60" />
+        {/* Dark overlay */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/50 to-black" />
       </div>
 
-      {/* Subtle tech grid pattern */}
-      <div 
-        className="absolute inset-0 opacity-[0.04]"
-        style={{
-          backgroundImage: `linear-gradient(hsl(var(--primary)) 1px, transparent 1px),
-                           linear-gradient(90deg, hsl(var(--primary)) 1px, transparent 1px)`,
-          backgroundSize: "40px 40px"
-        }}
-      />
+      {/* Red glow from top */}
+      <div className="absolute inset-0 hero-gradient" />
 
       <div className="container relative z-10 mx-auto flex min-h-screen flex-col items-center justify-center px-4 py-20 text-center">
         {/* Anti-Confusion Badge */}
@@ -40,10 +33,14 @@ const HeroSection = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="mb-6"
+          className="mb-8"
         >
-          <span className="inline-flex items-center gap-2 rounded-full border border-red-500/50 bg-red-500/20 px-4 py-2 text-sm font-bold uppercase tracking-wider text-red-400 backdrop-blur-sm">
-            🔴 ACCESO 100% DIGITAL & INMEDIATO (NO USB)
+          <span className="inline-flex items-center gap-2 rounded-full border-2 border-primary/60 bg-primary/20 px-5 py-2.5 text-sm font-bold uppercase tracking-wider text-white backdrop-blur-sm">
+            <span className="relative flex h-2 w-2">
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-75"></span>
+              <span className="relative inline-flex h-2 w-2 rounded-full bg-primary"></span>
+            </span>
+            ACCESO 100% DIGITAL & INMEDIATO
           </span>
         </motion.div>
 
@@ -52,10 +49,10 @@ const HeroSection = () => {
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.1 }}
-          className="max-w-5xl font-display text-4xl font-black leading-none tracking-tight text-white sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl"
+          className="max-w-5xl font-display text-5xl font-extrabold leading-none tracking-tight text-white text-shadow sm:text-6xl md:text-7xl lg:text-8xl"
         >
           El Hub Definitivo del{" "}
-          <span className="bg-gradient-to-r from-primary via-red-500 to-orange-500 bg-clip-text text-transparent">
+          <span className="text-gradient-red">
             DJ Latino
           </span>
         </motion.h1>
@@ -65,11 +62,11 @@ const HeroSection = () => {
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.3 }}
-          className="mt-8 max-w-3xl font-sans text-lg text-gray-300 md:text-xl lg:text-2xl"
+          className="mt-8 max-w-2xl font-sans text-lg text-white/80 md:text-xl"
         >
           Deja de pagar 4 membresías. Centralizamos los mejores pools en un solo lugar.{" "}
           <span className="font-semibold text-white">
-            1TB de Descarga Masiva mensual vía FTP / Air Explorer.
+            1TB de Descarga Masiva vía FTP.
           </span>
         </motion.p>
 
@@ -83,9 +80,9 @@ const HeroSection = () => {
           <Button
             asChild
             size="lg"
-            className="group h-16 gap-3 bg-gradient-to-r from-primary via-red-600 to-orange-500 px-10 text-lg font-bold shadow-2xl shadow-primary/30 transition-all duration-300 hover:scale-105 hover:shadow-primary/50"
+            className="btn-primary-glow group h-16 gap-3 px-10 text-lg font-bold"
           >
-            <a href="https://videoremixespacks.com/plan">
+            <a href="#pricing">
               <Zap className="h-5 w-5" />
               Ver Planes y Precios
             </a>
@@ -97,18 +94,18 @@ const HeroSection = () => {
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.5 }}
-          className="mt-20 flex flex-wrap items-center justify-center gap-10 md:gap-20"
+          className="mt-20 flex flex-wrap items-center justify-center gap-12 md:gap-20"
         >
           {[
             { value: "50K+", label: "Archivos Clean" },
-            { value: "60+", label: "Géneros Organizados" },
+            { value: "60+", label: "Géneros" },
             { value: "1TB", label: "Descarga Mensual" },
           ].map((stat) => (
             <div key={stat.label} className="text-center">
-              <div className="font-display text-4xl font-bold text-primary md:text-5xl">
+              <div className="font-display text-4xl font-extrabold text-primary md:text-5xl text-shadow-glow">
                 {stat.value}
               </div>
-              <div className="mt-2 font-sans text-sm uppercase tracking-wider text-gray-400">
+              <div className="mt-2 font-bebas text-sm uppercase tracking-widest text-white/60">
                 {stat.label}
               </div>
             </div>
@@ -116,8 +113,8 @@ const HeroSection = () => {
         </motion.div>
       </div>
 
-      {/* Bottom gradient fade */}
-      <div className="absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-t from-background to-transparent" />
+      {/* Bottom fade */}
+      <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-background to-transparent" />
     </section>
   );
 };
