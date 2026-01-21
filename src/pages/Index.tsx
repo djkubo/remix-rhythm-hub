@@ -1,5 +1,6 @@
 import HeroSection from "@/components/HeroSection";
 import MusicExplorer from "@/components/MusicExplorer";
+import PremiumFeaturesSection from "@/components/PremiumFeaturesSection";
 import AggregatorSection from "@/components/AggregatorSection";
 import DJTodoterrenoSection from "@/components/DJTodoterrenoSection";
 import SpeedSection from "@/components/SpeedSection";
@@ -17,6 +18,7 @@ const Index = () => {
     <main className="min-h-screen bg-background">
       <HeroSection />
       <MusicExplorer />
+      <PremiumFeaturesSection />
       <AggregatorSection />
       <DJTodoterrenoSection />
       <SpeedSection />
