@@ -534,169 +534,30 @@ export default function AdminMusic() {
     }
   };
 
-  // Bulk upload folders with files
-  const uploadFoldersWithContent = async () => {
-    if (!bulkUploadFiles || bulkUploadFiles.length === 0) return;
+  // Helper: Upload single file with retry
+  const uploadFileWithRetry = async (
+    file: File,
+    folderId: string,
+    folderName: string,
+    sortOrder: number,
+    maxRetries = 3
+  ): Promise<boolean> => {
+    const fileExt = file.name.split(".").pop();
+    const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
+    const filePath = `${folderId}/${fileName}`;
 
-    setUploading(true);
-    setUploadProgress(0);
-    setUploadStatus("Analizando archivos...");
-
-    try {
-      // Group files by their immediate parent folder (the genre folder)
-      const folderMap = new Map<string, File[]>();
-      const rootFiles: File[] = [];
-
-      // First pass: determine the base path (the selected folder)
-      let baseFolderDepth = 0;
-      const firstFile = Array.from(bulkUploadFiles)[0];
-      if (firstFile) {
-        const firstPath = (firstFile as any).webkitRelativePath || firstFile.name;
-        const firstParts = firstPath.split("/");
-        // If structure is "COPIA/Bachata/song.mp3", base depth is 1 (skip COPIA)
-        // If structure is "Bachata/song.mp3", base depth is 0
-        if (firstParts.length > 2) {
-          baseFolderDepth = 1; // Skip the selected parent folder
-        }
-      }
-
-      for (const file of Array.from(bulkUploadFiles)) {
-        const relativePath = (file as any).webkitRelativePath || file.name;
-        const pathParts = relativePath.split("/");
-        
-        // Get the genre folder name (accounting for base depth)
-        if (pathParts.length > baseFolderDepth + 1) {
-          // File is inside a subfolder
-          const folderName = pathParts[baseFolderDepth];
-          if (!folderMap.has(folderName)) {
-            folderMap.set(folderName, []);
-          }
-          folderMap.get(folderName)!.push(file);
-        } else if (pathParts.length > baseFolderDepth) {
-          // File is at the immediate level (no subfolder)
-          rootFiles.push(file);
-        }
-      }
-
-      const totalItems = folderMap.size + Array.from(folderMap.values()).reduce((acc, files) => acc + files.length, 0) + rootFiles.length;
-      let processed = 0;
-
-      // Create folders and upload their content
-      for (const [folderName, files] of folderMap) {
-        setUploadStatus(`Creando carpeta: ${folderName}`);
-        
-        // Check if folder already exists
-        const { data: existingFolder } = await supabase
-          .from("folders")
-          .select("id")
-          .eq("name", folderName)
-          .eq("parent_id", currentFolderId ?? null)
-          .maybeSingle();
-
-        let folderId: string;
-
-        if (existingFolder) {
-          folderId = existingFolder.id;
-        } else {
-          // Create the folder
-          const { data: newFolder, error: folderError } = await supabase
-            .from("folders")
-            .insert({
-              name: folderName,
-              slug: generateSlug(folderName),
-              parent_id: currentFolderId,
-              sort_order: folders.length + processed,
-            })
-            .select("id")
-            .single();
-
-          if (folderError) throw folderError;
-          folderId = newFolder.id;
-        }
-
-        processed++;
-        setUploadProgress(Math.round((processed / totalItems) * 100));
-
-        // Upload files to this folder
-        const audioFiles = files.filter(f => 
-          f.type.startsWith("audio/") || 
-          f.name.toLowerCase().endsWith(".mp3") ||
-          f.name.toLowerCase().endsWith(".wav") ||
-          f.name.toLowerCase().endsWith(".m4a") ||
-          f.name.toLowerCase().endsWith(".flac")
-        );
-
-        for (let i = 0; i < audioFiles.length; i++) {
-          const file = audioFiles[i];
-          setUploadStatus(`Subiendo: ${folderName}/${file.name}`);
-
-          const fileExt = file.name.split(".").pop();
-          const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
-          const filePath = `${folderId}/${fileName}`;
-
-          const { error: uploadError } = await supabase.storage
-            .from("music")
-            .upload(filePath, file);
-
-          if (uploadError) {
-            console.error(`Error uploading ${file.name}:`, uploadError);
-            continue;
-          }
-
-          const { data: urlData } = supabase.storage
-            .from("music")
-            .getPublicUrl(filePath);
-
-          const baseName = file.name.replace(/\.[^/.]+$/, "");
-          let artist = "Unknown Artist";
-          let title = baseName;
-
-          if (baseName.includes(" - ")) {
-            const parts = baseName.split(" - ");
-            artist = parts[0].trim();
-            title = parts.slice(1).join(" - ").trim();
-          }
-
-          await supabase.from("tracks").insert({
-            title,
-            artist,
-            folder_id: folderId,
-            file_path: filePath,
-            file_url: urlData.publicUrl,
-            file_size_bytes: file.size,
-            file_format: fileExt?.toLowerCase() || "mp3",
-            genre: folderName, // Use folder name as genre
-            sort_order: i,
-          });
-
-          processed++;
-          setUploadProgress(Math.round((processed / totalItems) * 100));
-        }
-      }
-
-      // Upload root level files
-      for (let i = 0; i < rootFiles.length; i++) {
-        const file = rootFiles[i];
-        if (!file.type.startsWith("audio/") && 
-            !file.name.toLowerCase().endsWith(".mp3") &&
-            !file.name.toLowerCase().endsWith(".wav")) {
-          continue;
-        }
-
-        setUploadStatus(`Subiendo: ${file.name}`);
-
-        const fileExt = file.name.split(".").pop();
-        const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
-        const filePath = currentFolderId
-          ? `${currentFolderId}/${fileName}`
-          : fileName;
-
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+      try {
         const { error: uploadError } = await supabase.storage
           .from("music")
           .upload(filePath, file);
 
         if (uploadError) {
-          console.error(`Error uploading ${file.name}:`, uploadError);
+          if (attempt === maxRetries) {
+            console.error(`Failed to upload ${file.name} after ${maxRetries} attempts:`, uploadError);
+            return false;
+          }
+          await new Promise(r => setTimeout(r, 1000 * attempt)); // Exponential backoff
           continue;
         }
 
@@ -717,21 +578,172 @@ export default function AdminMusic() {
         await supabase.from("tracks").insert({
           title,
           artist,
-          folder_id: currentFolderId,
+          folder_id: folderId,
           file_path: filePath,
           file_url: urlData.publicUrl,
           file_size_bytes: file.size,
           file_format: fileExt?.toLowerCase() || "mp3",
-          sort_order: tracks.length + i,
+          genre: folderName,
+          sort_order: sortOrder,
         });
 
-        processed++;
-        setUploadProgress(Math.round((processed / totalItems) * 100));
+        return true;
+      } catch (err) {
+        if (attempt === maxRetries) {
+          console.error(`Error uploading ${file.name}:`, err);
+          return false;
+        }
+        await new Promise(r => setTimeout(r, 1000 * attempt));
+      }
+    }
+    return false;
+  };
+
+  // Helper: Process batch of files in parallel
+  const uploadBatch = async (
+    files: { file: File; folderId: string; folderName: string; sortOrder: number }[],
+    onProgress: () => void
+  ): Promise<number> => {
+    const results = await Promise.allSettled(
+      files.map(async ({ file, folderId, folderName, sortOrder }) => {
+        const success = await uploadFileWithRetry(file, folderId, folderName, sortOrder);
+        onProgress();
+        return success;
+      })
+    );
+    return results.filter(r => r.status === "fulfilled" && r.value).length;
+  };
+
+  // Bulk upload folders with files - OPTIMIZED with parallel uploads
+  const uploadFoldersWithContent = async () => {
+    if (!bulkUploadFiles || bulkUploadFiles.length === 0) return;
+
+    setUploading(true);
+    setUploadProgress(0);
+    setUploadStatus("Analizando archivos...");
+
+    const BATCH_SIZE = 5; // Upload 5 files at a time
+
+    try {
+      // Group files by their immediate parent folder (the genre folder)
+      const folderMap = new Map<string, File[]>();
+      const rootFiles: File[] = [];
+
+      // First pass: determine the base path (the selected folder)
+      let baseFolderDepth = 0;
+      const firstFile = Array.from(bulkUploadFiles)[0];
+      if (firstFile) {
+        const firstPath = (firstFile as any).webkitRelativePath || firstFile.name;
+        const firstParts = firstPath.split("/");
+        if (firstParts.length > 2) {
+          baseFolderDepth = 1;
+        }
+      }
+
+      for (const file of Array.from(bulkUploadFiles)) {
+        const relativePath = (file as any).webkitRelativePath || file.name;
+        const pathParts = relativePath.split("/");
+        
+        if (pathParts.length > baseFolderDepth + 1) {
+          const folderName = pathParts[baseFolderDepth];
+          if (!folderMap.has(folderName)) {
+            folderMap.set(folderName, []);
+          }
+          folderMap.get(folderName)!.push(file);
+        } else if (pathParts.length > baseFolderDepth) {
+          rootFiles.push(file);
+        }
+      }
+
+      // Count total audio files
+      const isAudioFile = (f: File) =>
+        f.type.startsWith("audio/") ||
+        f.name.toLowerCase().endsWith(".mp3") ||
+        f.name.toLowerCase().endsWith(".wav") ||
+        f.name.toLowerCase().endsWith(".m4a") ||
+        f.name.toLowerCase().endsWith(".flac");
+
+      const totalAudioFiles = Array.from(folderMap.values()).reduce(
+        (acc, files) => acc + files.filter(isAudioFile).length,
+        0
+      ) + rootFiles.filter(isAudioFile).length;
+
+      let processedFiles = 0;
+      let successfulUploads = 0;
+      let failedUploads = 0;
+
+      // Create all folders first (fast operation)
+      setUploadStatus("Creando carpetas...");
+      const folderIds = new Map<string, string>();
+      let folderIndex = 0;
+
+      for (const [folderName] of folderMap) {
+        const { data: existingFolder } = await supabase
+          .from("folders")
+          .select("id")
+          .eq("name", folderName)
+          .eq("parent_id", currentFolderId ?? null)
+          .maybeSingle();
+
+        if (existingFolder) {
+          folderIds.set(folderName, existingFolder.id);
+        } else {
+          const { data: newFolder, error: folderError } = await supabase
+            .from("folders")
+            .insert({
+              name: folderName,
+              slug: generateSlug(folderName),
+              parent_id: currentFolderId,
+              sort_order: folders.length + folderIndex,
+            })
+            .select("id")
+            .single();
+
+          if (folderError) throw folderError;
+          folderIds.set(folderName, newFolder.id);
+        }
+        folderIndex++;
+      }
+
+      // Prepare all upload tasks
+      const uploadTasks: { file: File; folderId: string; folderName: string; sortOrder: number }[] = [];
+
+      for (const [folderName, files] of folderMap) {
+        const folderId = folderIds.get(folderName)!;
+        const audioFiles = files.filter(isAudioFile);
+        audioFiles.forEach((file, idx) => {
+          uploadTasks.push({ file, folderId, folderName, sortOrder: idx });
+        });
+      }
+
+      // Add root files
+      rootFiles.filter(isAudioFile).forEach((file, idx) => {
+        uploadTasks.push({
+          file,
+          folderId: currentFolderId || "",
+          folderName: "",
+          sortOrder: tracks.length + idx,
+        });
+      });
+
+      // Process in batches
+      for (let i = 0; i < uploadTasks.length; i += BATCH_SIZE) {
+        const batch = uploadTasks.slice(i, i + BATCH_SIZE);
+        const batchNames = batch.map(t => t.file.name.substring(0, 20)).join(", ");
+        setUploadStatus(`Subiendo: ${batchNames}...`);
+
+        const batchSuccess = await uploadBatch(batch, () => {
+          processedFiles++;
+          setUploadProgress(Math.round((processedFiles / totalAudioFiles) * 100));
+        });
+
+        successfulUploads += batchSuccess;
+        failedUploads += batch.length - batchSuccess;
       }
 
       toast({
         title: "Importación completa",
-        description: `Se crearon ${folderMap.size} carpetas con su contenido`,
+        description: `${successfulUploads} archivos subidos en ${folderIds.size} carpetas${failedUploads > 0 ? `. ${failedUploads} fallaron.` : ""}`,
       });
       setShowBulkUpload(false);
       setBulkUploadFiles(null);
@@ -740,7 +752,7 @@ export default function AdminMusic() {
       console.error("Error in bulk upload:", error);
       toast({
         title: "Error",
-        description: "Error durante la importación",
+        description: "Error durante la importación. Los archivos subidos se conservaron.",
         variant: "destructive",
       });
     } finally {
