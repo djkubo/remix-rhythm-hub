@@ -4,11 +4,18 @@ import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useCurrency } from "@/contexts/CurrencyContext";
 import { useDataLayer } from "@/hooks/useDataLayer";
+import { useAnalytics } from "@/hooks/useAnalytics";
 
 const PricingSection = () => {
   const { t, language } = useLanguage();
   const { convertPrice, currency } = useCurrency();
   const { trackClick } = useDataLayer();
+  const { trackEvent } = useAnalytics();
+
+  const handleCTAClick = (planName: string, buttonText: string) => {
+    trackClick(buttonText);
+    trackEvent("click", { button_text: buttonText, section: "pricing", plan: planName });
+  };
 
   const plans = [
     {

@@ -25,6 +25,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { useCurrency } from "@/contexts/CurrencyContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useDataLayer } from "@/hooks/useDataLayer";
+import { useAnalytics } from "@/hooks/useAnalytics";
 
 interface FolderType {
   id: string;
@@ -47,6 +48,12 @@ const MusicExplorer = () => {
   const { t, language } = useLanguage();
   const { convertPrice } = useCurrency();
   const { trackClick } = useDataLayer();
+  const { trackEvent } = useAnalytics();
+
+  const handleCTAClick = (buttonText: string) => {
+    trackClick(buttonText);
+    trackEvent("click", { button_text: buttonText, section: "music_explorer" });
+  };
   
   const [loading, setLoading] = useState(true);
   const [folders, setFolders] = useState<FolderType[]>([]);

@@ -35,6 +35,45 @@ export type Database = {
         }
         Relationships: []
       }
+      analytics_events: {
+        Row: {
+          country_code: string | null
+          created_at: string
+          event_data: Json | null
+          event_name: string
+          id: string
+          page_path: string | null
+          referrer: string | null
+          session_id: string | null
+          user_agent: string | null
+          visitor_id: string | null
+        }
+        Insert: {
+          country_code?: string | null
+          created_at?: string
+          event_data?: Json | null
+          event_name: string
+          id?: string
+          page_path?: string | null
+          referrer?: string | null
+          session_id?: string | null
+          user_agent?: string | null
+          visitor_id?: string | null
+        }
+        Update: {
+          country_code?: string | null
+          created_at?: string
+          event_data?: Json | null
+          event_name?: string
+          id?: string
+          page_path?: string | null
+          referrer?: string | null
+          session_id?: string | null
+          user_agent?: string | null
+          visitor_id?: string | null
+        }
+        Relationships: []
+      }
       folders: {
         Row: {
           cover_image_url: string | null
@@ -200,7 +239,17 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      analytics_daily_summary: {
+        Row: {
+          date: string | null
+          event_count: number | null
+          event_name: string | null
+          page_path: string | null
+          unique_sessions: number | null
+          unique_visitors: number | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       count_folder_tracks: { Args: { folder_id: string }; Returns: number }
