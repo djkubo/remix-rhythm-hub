@@ -299,7 +299,7 @@ export default function AdminMusic() {
     })
   );
 
-  // Check auth
+  // Check auth and admin role
   useEffect(() => {
     const checkAuth = async () => {
       const { data: { user } } = await supabase.auth.getUser();
@@ -307,6 +307,22 @@ export default function AdminMusic() {
         navigate("/admin/login");
         return;
       }
+
+      // Verify admin role
+      const { data: adminData, error: adminError } = await supabase
+        .from('admin_users')
+        .select('role')
+        .eq('user_id', user.id)
+        .eq('role', 'admin')
+        .single();
+
+      if (adminError || !adminData) {
+        console.error("User is not admin:", user.id);
+        await supabase.auth.signOut();
+        navigate("/admin/login");
+        return;
+      }
+
       setUser(user);
       setLoading(false);
     };
