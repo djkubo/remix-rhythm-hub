@@ -633,7 +633,7 @@ export default function AdminMusic() {
     setUploadProgress(0);
     setUploadStatus("Analizando archivos...");
 
-    const BATCH_SIZE = 5; // Upload 5 files at a time
+    const BATCH_SIZE = 10; // Upload 10 files at a time for faster uploads
 
     try {
       // Group files by their immediate parent folder (the genre folder)
@@ -683,37 +683,44 @@ export default function AdminMusic() {
       let successfulUploads = 0;
       let failedUploads = 0;
 
-      // Create all folders first (fast operation)
+      // Create all folders in PARALLEL (much faster)
       setUploadStatus("Creando carpetas...");
       const folderIds = new Map<string, string>();
-      let folderIndex = 0;
+      const folderNames = Array.from(folderMap.keys());
 
-      for (const [folderName] of folderMap) {
-        const { data: existingFolder } = await supabase
-          .from("folders")
-          .select("id")
-          .eq("name", folderName)
-          .eq("parent_id", currentFolderId ?? null)
-          .maybeSingle();
-
-        if (existingFolder) {
-          folderIds.set(folderName, existingFolder.id);
-        } else {
-          const { data: newFolder, error: folderError } = await supabase
+      // Process folders in parallel batches of 10
+      const FOLDER_BATCH = 10;
+      for (let i = 0; i < folderNames.length; i += FOLDER_BATCH) {
+        const batch = folderNames.slice(i, i + FOLDER_BATCH);
+        await Promise.all(batch.map(async (folderName, idx) => {
+          const { data: existingFolder } = await supabase
             .from("folders")
-            .insert({
-              name: folderName,
-              slug: generateSlug(folderName),
-              parent_id: currentFolderId,
-              sort_order: folders.length + folderIndex,
-            })
             .select("id")
-            .single();
+            .eq("name", folderName)
+            .eq("parent_id", currentFolderId ?? null)
+            .maybeSingle();
 
-          if (folderError) throw folderError;
-          folderIds.set(folderName, newFolder.id);
-        }
-        folderIndex++;
+          if (existingFolder) {
+            folderIds.set(folderName, existingFolder.id);
+          } else {
+            const { data: newFolder, error: folderError } = await supabase
+              .from("folders")
+              .insert({
+                name: folderName,
+                slug: generateSlug(folderName),
+                parent_id: currentFolderId,
+                sort_order: folders.length + i + idx,
+              })
+              .select("id")
+              .single();
+
+            if (folderError) {
+              console.warn(`Error creating folder ${folderName}:`, folderError);
+              return;
+            }
+            folderIds.set(folderName, newFolder.id);
+          }
+        }));
       }
 
       // Prepare all upload tasks
