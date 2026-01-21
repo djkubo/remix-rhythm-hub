@@ -14,6 +14,53 @@ export type Database = {
   }
   public: {
     Tables: {
+      folders: {
+        Row: {
+          cover_image_url: string | null
+          created_at: string
+          description: string | null
+          id: string
+          is_visible: boolean | null
+          name: string
+          parent_id: string | null
+          slug: string
+          sort_order: number | null
+          updated_at: string
+        }
+        Insert: {
+          cover_image_url?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_visible?: boolean | null
+          name: string
+          parent_id?: string | null
+          slug: string
+          sort_order?: number | null
+          updated_at?: string
+        }
+        Update: {
+          cover_image_url?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_visible?: boolean | null
+          name?: string
+          parent_id?: string | null
+          slug?: string
+          sort_order?: number | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "folders_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "folders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       leads: {
         Row: {
           country_code: string | null
@@ -59,12 +106,92 @@ export type Database = {
         }
         Relationships: []
       }
+      tracks: {
+        Row: {
+          artist: string
+          bpm: number | null
+          created_at: string
+          duration_formatted: string | null
+          duration_seconds: number | null
+          file_format: string | null
+          file_path: string
+          file_size_bytes: number | null
+          file_url: string
+          folder_id: string | null
+          genre: string | null
+          id: string
+          is_visible: boolean | null
+          play_count: number | null
+          sort_order: number | null
+          title: string
+          updated_at: string
+          year: number | null
+        }
+        Insert: {
+          artist: string
+          bpm?: number | null
+          created_at?: string
+          duration_formatted?: string | null
+          duration_seconds?: number | null
+          file_format?: string | null
+          file_path: string
+          file_size_bytes?: number | null
+          file_url: string
+          folder_id?: string | null
+          genre?: string | null
+          id?: string
+          is_visible?: boolean | null
+          play_count?: number | null
+          sort_order?: number | null
+          title: string
+          updated_at?: string
+          year?: number | null
+        }
+        Update: {
+          artist?: string
+          bpm?: number | null
+          created_at?: string
+          duration_formatted?: string | null
+          duration_seconds?: number | null
+          file_format?: string | null
+          file_path?: string
+          file_size_bytes?: number | null
+          file_url?: string
+          folder_id?: string | null
+          genre?: string | null
+          id?: string
+          is_visible?: boolean | null
+          play_count?: number | null
+          sort_order?: number | null
+          title?: string
+          updated_at?: string
+          year?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tracks_folder_id_fkey"
+            columns: ["folder_id"]
+            isOneToOne: false
+            referencedRelation: "folders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      count_folder_tracks: { Args: { folder_id: string }; Returns: number }
+      get_folder_path: {
+        Args: { folder_id: string }
+        Returns: {
+          depth: number
+          id: string
+          name: string
+          slug: string
+        }[]
+      }
     }
     Enums: {
       [_ in never]: never

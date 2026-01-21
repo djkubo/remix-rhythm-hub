@@ -9,6 +9,8 @@ import { CurrencyProvider } from "@/contexts/CurrencyContext";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import ThankYou from "./pages/ThankYou";
+import AdminLogin from "./pages/AdminLogin";
+import AdminMusic from "./pages/AdminMusic";
 
 const queryClient = new QueryClient();
 
@@ -25,6 +27,8 @@ const App = () => {
                 <Routes>
                   <Route path="/" element={<Index />} />
                   <Route path="/gracias" element={<ThankYou />} />
+                  <Route path="/admin/login" element={<AdminLogin />} />
+                  <Route path="/admin/music" element={<AdminMusic />} />
                   {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                   <Route path="*" element={<NotFound />} />
                 </Routes>
