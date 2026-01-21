@@ -13,10 +13,11 @@ import FinalCTA from "@/components/FinalCTA";
 import TrustBar from "@/components/TrustBar";
 import GuaranteeSection from "@/components/GuaranteeSection";
 import Footer from "@/components/Footer";
+import MobileStickyBar from "@/components/MobileStickyBar";
 
 const Index = () => {
   return (
-    <main className="min-h-screen bg-background">
+    <main className="min-h-screen bg-background pb-16 md:pb-0">
       <HeroSection />
       <MusicExplorer />
       <PremiumFeaturesSection />
@@ -45,6 +46,7 @@ const Index = () => {
       <TrustBar />
       <GuaranteeSection />
       <Footer />
+      <MobileStickyBar />
     </main>
   );
 };
