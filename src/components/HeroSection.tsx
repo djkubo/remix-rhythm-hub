@@ -27,13 +27,15 @@ const HeroSection = () => {
             type="video/mp4"
           />
         </video>
-        {/* Dark overlay */}
-        <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/50 to-black" />
+        {/* Dark overlay for readability */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/60 to-black" />
       </div>
 
-      {/* Light mode background - elegant gradient */}
-      <div className="absolute inset-0 block dark:hidden bg-gradient-to-b from-background via-background to-background-carbon">
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[600px] bg-primary/5 rounded-full blur-3xl" />
+      {/* Light mode background - clean with subtle accent */}
+      <div className="absolute inset-0 block dark:hidden">
+        <div className="absolute inset-0 bg-gradient-to-b from-background via-background to-muted/30" />
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[700px] bg-primary/[0.03] rounded-full blur-3xl" />
+        <div className="absolute bottom-1/3 right-0 w-[500px] h-[500px] bg-primary/[0.02] rounded-full blur-3xl" />
       </div>
 
       {/* Red glow from top */}
@@ -61,7 +63,7 @@ const HeroSection = () => {
           transition={{ duration: 0.5, delay: 0.1 }}
           className="mb-8"
         >
-          <span className="inline-flex items-center gap-2 rounded-full border-2 border-primary/60 bg-primary/20 px-5 py-2.5 text-sm font-bold uppercase tracking-wider text-primary-foreground dark:text-white backdrop-blur-sm">
+          <span className="inline-flex items-center gap-2 rounded-full border border-primary/40 bg-primary/10 dark:bg-primary/20 px-5 py-2.5 text-sm font-bold uppercase tracking-wider text-primary dark:text-white backdrop-blur-sm shadow-sm">
             <span className="relative flex h-2 w-2">
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-75"></span>
               <span className="relative inline-flex h-2 w-2 rounded-full bg-primary"></span>
@@ -75,7 +77,7 @@ const HeroSection = () => {
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
-          className="max-w-5xl font-display text-5xl font-extrabold leading-none tracking-tight text-foreground dark:text-white text-shadow sm:text-6xl md:text-7xl lg:text-8xl"
+          className="max-w-5xl font-display text-5xl font-extrabold leading-none tracking-tight text-foreground dark:text-shadow sm:text-6xl md:text-7xl lg:text-8xl"
         >
           {t("hero.title")}{" "}
           <span className="text-gradient-red">
@@ -128,10 +130,10 @@ const HeroSection = () => {
             { value: "1TB", label: t("hero.stat3") },
           ].map((stat) => (
             <div key={stat.label} className="text-center">
-              <div className="font-display text-4xl font-extrabold text-primary md:text-5xl text-shadow-glow">
+              <div className="font-display text-4xl font-extrabold text-primary md:text-5xl dark:text-shadow-glow">
                 {stat.value}
               </div>
-              <div className="mt-2 font-bebas text-sm uppercase tracking-widest text-muted-foreground dark:text-white/60">
+              <div className="mt-2 font-bebas text-sm uppercase tracking-widest text-muted-foreground">
                 {stat.label}
               </div>
             </div>

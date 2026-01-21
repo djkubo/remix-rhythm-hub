@@ -35,7 +35,7 @@ const TestimonialsSection = () => {
   ];
 
   return (
-    <section className="relative py-16 md:py-24 bg-background-carbon">
+    <section className="relative py-16 md:py-24 bg-muted/30 dark:bg-background-carbon">
       <div className="container mx-auto px-4">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -44,7 +44,7 @@ const TestimonialsSection = () => {
           viewport={{ once: true }}
           className="mb-12 text-center"
         >
-          <h2 className="mb-3 font-display text-4xl font-bold md:text-5xl lg:text-6xl">
+          <h2 className="mb-3 font-display text-4xl font-bold md:text-5xl lg:text-6xl text-foreground">
             {t("testimonialCard.title")}
           </h2>
           <p className="font-sans text-lg text-muted-foreground">
@@ -60,14 +60,14 @@ const TestimonialsSection = () => {
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: index * 0.15 }}
               viewport={{ once: true }}
-              className="group rounded-2xl bg-card/50 backdrop-blur-md border border-border/50 p-6 transition-all duration-300 hover:border-primary/30 hover:shadow-glow"
+              className="group rounded-2xl bg-card dark:bg-card/60 backdrop-blur-md border border-border p-6 transition-all duration-300 hover:border-primary/30 hover:shadow-lg dark:hover:shadow-glow"
             >
               <StarRating />
-              <p className="mb-4 font-sans text-base text-foreground/90 italic">
+              <p className="mb-4 font-sans text-base text-foreground/90 italic leading-relaxed">
                 "{testimonial.text}"
               </p>
               <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/20 font-display text-sm font-bold text-primary">
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/15 font-display text-sm font-bold text-primary">
                   {testimonial.name.charAt(0)}
                 </div>
                 <div>

@@ -55,7 +55,7 @@ const PricingSection = () => {
           <span className="badge-primary mb-6">
             {t("pricing.badge")}
           </span>
-          <h2 className="font-display text-display-md md:text-display-lg font-extrabold">
+          <h2 className="font-display text-display-md md:text-display-lg font-extrabold text-foreground">
             {t("pricing.title")}{" "}
             <span className="text-gradient-red">{t("pricing.titleHighlight")}</span>
           </h2>
@@ -84,9 +84,9 @@ const PricingSection = () => {
 
               {/* Card */}
               <div
-                className={`relative h-full flex flex-col rounded-3xl p-8 md:p-10 transition-all duration-500 ${
+                className={`relative h-full flex flex-col rounded-3xl p-8 md:p-10 transition-all duration-300 ${
                   plan.highlighted
-                    ? "bg-gradient-to-b from-card-elevated to-card border-2 border-gold/50 shadow-glow-gold"
+                    ? "bg-card dark:bg-gradient-to-b dark:from-card-elevated dark:to-card border-2 border-gold/50 shadow-xl dark:shadow-glow-gold"
                     : "glass-card-hover"
                 }`}
               >
