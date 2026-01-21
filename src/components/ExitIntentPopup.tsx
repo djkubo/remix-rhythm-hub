@@ -9,6 +9,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useDataLayer } from "@/hooks/useDataLayer";
+import { useAnalytics } from "@/hooks/useAnalytics";
 
 interface CountryData {
   country_code: string;
@@ -67,6 +68,7 @@ export default function ExitIntentPopup() {
   const { toast } = useToast();
   const navigate = useNavigate();
   const { trackFormSubmit, trackClick } = useDataLayer();
+  const { trackEvent, trackFormSubmit: trackFormInternal } = useAnalytics();
 
   // Detect user's country based on IP
   useEffect(() => {

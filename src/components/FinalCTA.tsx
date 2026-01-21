@@ -3,10 +3,17 @@ import { Check, ArrowRight, Shield, Clock, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useDataLayer } from "@/hooks/useDataLayer";
+import { useAnalytics } from "@/hooks/useAnalytics";
 
 const FinalCTA = () => {
   const { t, language } = useLanguage();
   const { trackClick } = useDataLayer();
+  const { trackEvent } = useAnalytics();
+
+  const handleCTAClick = (buttonText: string) => {
+    trackClick(buttonText);
+    trackEvent("click", { button_text: buttonText, section: "final_cta" });
+  };
 
   const benefits = [
     { icon: Zap, text: t("cta.benefit1") },
