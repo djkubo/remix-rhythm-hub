@@ -453,8 +453,8 @@ const MusicExplorer = () => {
               size="lg"
               className="h-14 bg-gradient-to-r from-primary via-red-600 to-orange-500 text-lg font-bold shadow-lg transition-transform hover:scale-105"
             >
-              <a href="#pricing">
-                {t("explorer.modalCta")} ({convertPrice(35)})
+              <a href="https://videoremixespacks.com/plan" target="_blank" rel="noopener noreferrer">
+                {t("explorer.modalCta")}
               </a>
             </Button>
             <button

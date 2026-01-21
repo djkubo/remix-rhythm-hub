@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Check, CheckCheck, ShieldCheck } from "lucide-react";
+import { Check, CheckCheck, ShieldCheck, ArrowRight } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { Button } from "@/components/ui/button";
 
 const paymentMethods = [
   { name: "Stripe", logo: "Stripe" },
@@ -164,7 +165,7 @@ const TrustSecuritySection = () => {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5, delay: 0.3 }}
-          className="text-center"
+          className="text-center space-y-6"
         >
           <div className="inline-flex items-center gap-3 rounded-full border border-border bg-card px-6 py-4 backdrop-blur-sm shadow-md dark:shadow-none">
             <Check className="h-5 w-5 text-success" />
@@ -172,6 +173,20 @@ const TrustSecuritySection = () => {
               <span className="font-semibold text-foreground">{t("trust.cancel")}</span>{" "}
               {t("trust.noContracts")}
             </p>
+          </div>
+          
+          {/* CTA Button */}
+          <div>
+            <Button
+              asChild
+              size="lg"
+              className="btn-primary-glow group h-14 px-10 text-base font-bold"
+            >
+              <a href="https://videoremixespacks.com/plan" target="_blank" rel="noopener noreferrer">
+                {t("cta.button")}
+                <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
+              </a>
+            </Button>
           </div>
         </motion.div>
       </div>
