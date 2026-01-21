@@ -6,7 +6,7 @@ const Header = () => {
   const { theme } = useTheme();
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b border-border/30">
+    <header className="fixed top-0 left-0 right-0 z-50 bg-background/90 dark:bg-background/80 backdrop-blur-md border-b border-border/50 shadow-sm dark:shadow-none">
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
         {/* Logo */}
         <a href="/" className="flex items-center">

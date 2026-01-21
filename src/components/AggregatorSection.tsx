@@ -29,7 +29,7 @@ const AggregatorSection = () => {
   ];
 
   return (
-    <section className="relative py-24 md:py-32 bg-background-carbon">
+    <section className="relative py-24 md:py-32 bg-muted/20 dark:bg-background-carbon">
       <div className="container mx-auto">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -38,7 +38,7 @@ const AggregatorSection = () => {
           transition={{ duration: 0.5 }}
           className="mx-auto max-w-5xl"
         >
-          <div className="glow-border bg-gradient-to-b from-card-elevated to-card p-8 md:p-14">
+          <div className="glow-border bg-card dark:bg-gradient-to-b dark:from-card-elevated dark:to-card p-8 md:p-14">
             {/* Header */}
             <div className="text-center mb-14">
               <motion.span
@@ -50,7 +50,7 @@ const AggregatorSection = () => {
                 {t("aggregator.badge")}
               </motion.span>
               
-              <h2 className="font-display text-display-sm md:text-display-md font-extrabold">
+              <h2 className="font-display text-display-sm md:text-display-md font-extrabold text-foreground">
                 {t("aggregator.title")}{" "}
                 <span className="text-gradient-red">{t("aggregator.titleHighlight")}</span>
               </h2>
@@ -69,12 +69,12 @@ const AggregatorSection = () => {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.4, delay: index * 0.1 }}
-                  className="group flex flex-col items-center text-center p-6 rounded-2xl bg-secondary/40 border border-border/50 transition-smooth hover:border-primary/30 hover:bg-secondary/60"
+                  className="group flex flex-col items-center text-center p-6 rounded-2xl bg-muted/50 dark:bg-secondary/40 border border-border transition-all duration-300 hover:border-primary/30 hover:bg-muted dark:hover:bg-secondary/60 hover:shadow-md dark:hover:shadow-none"
                 >
-                  <div className="mb-5 flex h-14 w-14 items-center justify-center rounded-xl bg-primary/15 group-hover:bg-primary/25 transition-smooth">
+                  <div className="mb-5 flex h-14 w-14 items-center justify-center rounded-xl bg-primary/10 dark:bg-primary/15 group-hover:bg-primary/20 transition-all duration-300">
                     <feature.icon className="h-7 w-7 text-primary" strokeWidth={1.5} />
                   </div>
-                  <h3 className="font-display text-lg font-bold tracking-wide">{feature.title}</h3>
+                  <h3 className="font-display text-lg font-bold tracking-wide text-foreground">{feature.title}</h3>
                   <p className="mt-2 font-sans text-sm text-muted-foreground leading-relaxed">{feature.description}</p>
                 </motion.div>
               ))}

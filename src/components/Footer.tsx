@@ -8,7 +8,7 @@ const Footer = () => {
   const { theme } = useTheme();
 
   return (
-    <footer className="border-t border-border/30 bg-background-carbon py-10">
+    <footer className="border-t border-border bg-muted/30 dark:bg-background-carbon py-10">
       <div className="container mx-auto px-4">
         <div className="flex flex-col items-center justify-center gap-6 text-center">
           {/* Logo */}

@@ -24,7 +24,10 @@ const TrustBar = () => {
   ];
 
   return (
-    <section className="relative py-16 md:py-20 bg-background section-divider">
+    <section className="relative py-16 md:py-20 bg-background">
+      {/* Subtle top border for light mode */}
+      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-border to-transparent" />
+      
       <div className="container mx-auto">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -46,9 +49,9 @@ const TrustBar = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.4, delay: index * 0.1 }}
-              className="flex items-center gap-4 p-5 rounded-2xl bg-card/40 backdrop-blur-sm border border-border/50 transition-smooth hover:border-primary/30 hover:bg-card/60"
+              className="flex items-center gap-4 p-5 rounded-2xl bg-card border border-border transition-all duration-300 hover:border-primary/30 hover:shadow-md dark:hover:shadow-glow dark:bg-card/60"
             >
-              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-primary/15">
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-primary/10 dark:bg-primary/15">
                 <rule.icon className="h-6 w-6 text-primary" strokeWidth={1.5} />
               </div>
               <div>
