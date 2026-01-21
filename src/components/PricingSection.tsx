@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Check, ArrowRight, Zap, Crown, Shield, Flame } from "lucide-react";
+import { Check, ArrowRight, Crown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const PricingSection = () => {
@@ -21,7 +21,8 @@ const PricingSection = () => {
       name: "ANUAL ELITE",
       price: "$195",
       period: "USD / año",
-      badge: "🔥 MEJOR VALOR (Ahorras 2 meses)",
+      badge: "🔥 MEJOR VALOR",
+      savingsText: "Ahorras 2 meses",
       features: [
         "2TB Descargas (Doble Velocidad)",
         "Acceso FTP Prioritario",
@@ -33,18 +34,11 @@ const PricingSection = () => {
   ];
 
   return (
-    <section id="pricing" className="relative py-20 md:py-28 bg-background overflow-hidden">
-      {/* Background effects */}
-      <div className="absolute inset-0 hero-gradient opacity-30" />
-      <div 
-        className="absolute inset-0 opacity-[0.02]"
-        style={{
-          backgroundImage: `radial-gradient(circle at 1px 1px, hsl(var(--primary)) 1px, transparent 0)`,
-          backgroundSize: "40px 40px"
-        }}
-      />
-
-      <div className="container relative z-10 mx-auto px-4">
+    <section id="pricing" className="relative py-24 md:py-32 bg-background overflow-hidden">
+      {/* Background */}
+      <div className="absolute inset-0 hero-gradient" />
+      
+      <div className="container relative z-10 mx-auto">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -53,17 +47,20 @@ const PricingSection = () => {
           transition={{ duration: 0.5 }}
           className="mb-16 text-center"
         >
-          <h2 className="font-display text-3xl font-bold md:text-4xl lg:text-5xl xl:text-6xl">
-            PLANES SIMPLES.{" "}
-            <span className="text-gradient-red">VALOR REAL.</span>
+          <span className="badge-primary mb-6">
+            Precios Transparentes
+          </span>
+          <h2 className="font-display text-display-md md:text-display-lg font-extrabold">
+            ELIGE TU PLAN.{" "}
+            <span className="text-gradient-red">EMPIEZA HOY.</span>
           </h2>
-          <p className="mx-auto mt-4 max-w-2xl font-sans text-lg text-muted-foreground">
-            El tiempo es tu activo más caro. Deja de perderlo buscando música en 5 lugares diferentes.
+          <p className="mx-auto mt-6 max-w-xl font-sans text-lg text-muted-foreground">
+            Sin sorpresas. Sin cargos ocultos. Cancela cuando quieras.
           </p>
         </motion.div>
 
         {/* Pricing Cards */}
-        <div className="mx-auto grid max-w-5xl gap-8 md:grid-cols-2 md:items-center">
+        <div className="mx-auto grid max-w-4xl gap-8 md:grid-cols-2 md:items-stretch">
           {plans.map((plan, index) => (
             <motion.div
               key={plan.name}
@@ -71,64 +68,53 @@ const PricingSection = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: index * 0.15 }}
-              className={`group relative rounded-3xl transition-all duration-500 ${
-                plan.highlighted
-                  ? "scale-[1.02] md:scale-105 md:-my-6 z-10"
-                  : "opacity-90"
+              className={`group relative ${
+                plan.highlighted ? "md:-my-4 z-10" : ""
               }`}
             >
-              {/* Animated golden border for highlighted */}
+              {/* Gold glow for highlighted */}
               {plan.highlighted && (
-                <div className="absolute -inset-[2px] rounded-3xl bg-gradient-to-r from-yellow-400 via-amber-500 to-yellow-400 opacity-80 blur-[1px] animate-pulse" />
+                <div className="absolute -inset-[3px] rounded-3xl bg-gradient-to-r from-gold via-gold-light to-gold animate-pulse-gold opacity-70" />
               )}
 
               {/* Card */}
               <div
-                className={`relative h-full overflow-hidden rounded-3xl p-8 md:p-10 ${
+                className={`relative h-full flex flex-col rounded-3xl p-8 md:p-10 transition-all duration-500 ${
                   plan.highlighted
-                    ? "border-2 border-yellow-500/60 bg-gradient-to-br from-yellow-500/10 via-amber-500/5 to-card/90 shadow-[0_0_80px_rgba(234,179,8,0.25)]"
-                    : "border border-white/10 bg-card/40 backdrop-blur-md"
+                    ? "bg-gradient-to-b from-card-elevated to-card border-2 border-gold/50 shadow-glow-gold"
+                    : "glass-card-hover"
                 }`}
               >
-                {/* Multi-layer glow effect for highlighted */}
-                {plan.highlighted && (
-                  <>
-                    <div className="absolute -inset-px -z-10 rounded-3xl bg-gradient-to-br from-yellow-500/30 via-amber-500/10 to-transparent blur-xl" />
-                    <div className="absolute inset-0 -z-10 rounded-3xl bg-gradient-to-t from-primary/20 to-transparent" />
-                  </>
-                )}
-
                 {/* Badge */}
                 {plan.badge && (
-                  <div className="absolute -top-px left-0 right-0 flex justify-center">
-                    <span className="inline-flex items-center gap-2 rounded-b-xl bg-gradient-to-r from-yellow-500 via-amber-500 to-yellow-400 px-6 py-2.5 text-sm font-black uppercase tracking-wide text-black shadow-lg shadow-yellow-500/30">
+                  <div className="absolute -top-4 left-1/2 -translate-x-1/2">
+                    <span className="badge-gold">
                       {plan.badge}
                     </span>
                   </div>
                 )}
 
                 {/* Plan Header */}
-                <div className={`text-center ${plan.badge ? "mt-6" : ""}`}>
-                  <h3 className="font-display text-xl font-bold text-muted-foreground">
-                    Plan {plan.name}
+                <div className={`text-center ${plan.badge ? "mt-4" : ""}`}>
+                  <h3 className="font-bebas text-2xl tracking-wider text-muted-foreground">
+                    {plan.name}
                   </h3>
-                  <div className="mt-6 flex items-baseline justify-center gap-2">
-                    <span
-                      className={`font-display text-5xl font-black md:text-6xl lg:text-7xl ${
-                        plan.highlighted
-                          ? "bg-gradient-to-r from-primary via-red-500 to-orange-500 bg-clip-text text-transparent"
-                          : "text-foreground"
-                      }`}
-                    >
+                  
+                  <div className="mt-4 flex items-baseline justify-center gap-1">
+                    <span className={`font-display text-6xl md:text-7xl font-extrabold ${
+                      plan.highlighted ? "text-gradient-gold" : "text-foreground"
+                    }`}>
                       {plan.price}
                     </span>
-                    <span className="font-sans text-base text-muted-foreground">
+                    <span className="font-sans text-sm text-muted-foreground">
                       {plan.period}
                     </span>
                   </div>
+
                   {plan.highlighted && (
-                    <p className="mt-2 text-sm text-green-400 font-medium">
-                      Equivale a solo $16.25/mes
+                    <p className="mt-3 inline-flex items-center gap-2 rounded-full bg-success/20 px-4 py-1 text-sm font-semibold text-success">
+                      <Check className="h-4 w-4" />
+                      Equivale a $16.25/mes
                     </p>
                   )}
                 </div>
@@ -137,19 +123,17 @@ const PricingSection = () => {
                 <div className="my-8 h-px bg-gradient-to-r from-transparent via-border to-transparent" />
 
                 {/* Features */}
-                <ul className="mb-8 space-y-4">
+                <ul className="mb-8 flex-1 space-y-4">
                   {plan.features.map((feature) => (
-                    <li key={feature} className="flex items-center gap-3">
-                      <div
-                        className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full ${
-                          plan.highlighted
-                            ? "bg-primary/20 text-primary"
-                            : "bg-muted text-muted-foreground"
-                        }`}
-                      >
-                        <Check className="h-4 w-4" strokeWidth={3} />
+                    <li key={feature} className="flex items-start gap-3">
+                      <div className={`mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full ${
+                        plan.highlighted
+                          ? "bg-gold/20 text-gold"
+                          : "bg-primary/20 text-primary"
+                      }`}>
+                        <Check className="h-3 w-3" strokeWidth={3} />
                       </div>
-                      <span className="font-sans text-foreground">{feature}</span>
+                      <span className="font-sans text-foreground/90">{feature}</span>
                     </li>
                   ))}
                 </ul>
@@ -158,10 +142,10 @@ const PricingSection = () => {
                 <Button
                   asChild
                   size="lg"
-                  className={`w-full h-14 text-base font-bold transition-all duration-300 hover:scale-[1.02] ${
+                  className={`w-full h-14 text-base font-bold transition-smooth ${
                     plan.highlighted
-                      ? "bg-gradient-to-r from-yellow-500 via-amber-500 to-yellow-400 text-black shadow-xl shadow-yellow-500/40 hover:shadow-yellow-500/60 hover:from-yellow-400 hover:to-amber-400"
-                      : "bg-secondary text-foreground hover:bg-secondary/80"
+                      ? "btn-gold-glow"
+                      : "bg-secondary hover:bg-secondary/80 text-foreground"
                   }`}
                 >
                   <a href="https://videoremixespacks.com/plan">
