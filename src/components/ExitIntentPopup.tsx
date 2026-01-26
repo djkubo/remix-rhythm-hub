@@ -97,47 +97,37 @@ export default function ExitIntentPopup() {
   const handleMouseLeave = useCallback((e: MouseEvent) => {
     if (e.clientY <= 0 && !hasTriggered) {
       const dismissed = sessionStorage.getItem("exit-popup-dismissed");
-      const hasInteracted = sessionStorage.getItem("user-has-interacted");
       
-      if (!dismissed && !hasInteracted) {
+      // REMOVED: hasInteracted check - was too restrictive
+      if (!dismissed) {
+        console.log("🎯 Exit Intent Popup: Activado por mouse leave");
         setIsOpen(true);
         setHasTriggered(true);
+        trackEvent("popup", { trigger: "exit_intent" });
+      } else {
+        console.log("⏭️ Exit Intent Popup: Ya fue cerrado anteriormente");
       }
     }
-  }, [hasTriggered]);
+  }, [hasTriggered, trackEvent]);
 
-  // Track user interactions
+  // Timer-based trigger: Show popup after 45 seconds if not dismissed
   useEffect(() => {
-    const trackInteraction = () => {
-      sessionStorage.setItem("user-has-interacted", "true");
-    };
-
-    // Track meaningful interactions (clicks on CTAs, scroll past fold, etc.)
-    const handleClick = (e: MouseEvent) => {
-      const target = e.target as HTMLElement;
-      if (target.closest("a[href*='pricing']") || 
-          target.closest("button") ||
-          target.closest("[data-cta]")) {
-        trackInteraction();
+    console.log("⏰ Exit Intent Popup: Timer de 45s iniciado");
+    const timer = setTimeout(() => {
+      const dismissed = sessionStorage.getItem("exit-popup-dismissed");
+      
+      if (!dismissed && !hasTriggered) {
+        console.log("🎯 Exit Intent Popup: Activado por timer (45s)");
+        setIsOpen(true);
+        setHasTriggered(true);
+        trackEvent("popup", { trigger: "timer_45s" });
+      } else {
+        console.log("⏭️ Exit Intent Popup: Timer cumplido pero modal ya fue mostrado o cerrado");
       }
-    };
+    }, 45000); // 45 seconds
 
-    const handleScroll = () => {
-      // If user scrolls past 70% of the page, consider it engaged
-      const scrollPercent = (window.scrollY + window.innerHeight) / document.body.scrollHeight;
-      if (scrollPercent > 0.7) {
-        trackInteraction();
-      }
-    };
-
-    document.addEventListener("click", handleClick);
-    window.addEventListener("scroll", handleScroll, { passive: true });
-
-    return () => {
-      document.removeEventListener("click", handleClick);
-      window.removeEventListener("scroll", handleScroll);
-    };
-  }, []);
+    return () => clearTimeout(timer);
+  }, [hasTriggered, trackEvent]);
 
   useEffect(() => {
     document.addEventListener("mouseleave", handleMouseLeave);
@@ -147,6 +137,7 @@ export default function ExitIntentPopup() {
   const handleClose = () => {
     setIsOpen(false);
     sessionStorage.setItem("exit-popup-dismissed", "true");
+    trackEvent("popup", { action: "closed", trigger: "manual_close" });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {

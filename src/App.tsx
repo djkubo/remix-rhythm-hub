@@ -12,6 +12,7 @@ import ThankYou from "./pages/ThankYou";
 import AdminLogin from "./pages/AdminLogin";
 import AdminMusic from "./pages/AdminMusic";
 import Admin from "./pages/Admin";
+import TestPopup from "./pages/TestPopup";
 
 const queryClient = new QueryClient();
 
@@ -28,6 +29,7 @@ const App = () => {
                 <Routes>
                   <Route path="/" element={<Index />} />
                   <Route path="/gracias" element={<ThankYou />} />
+                  <Route path="/test-popup" element={<TestPopup />} />
                   <Route path="/admin" element={<Admin />} />
                   <Route path="/admin/login" element={<AdminLogin />} />
                   <Route path="/admin/music" element={<AdminMusic />} />
