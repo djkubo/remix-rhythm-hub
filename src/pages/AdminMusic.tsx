@@ -61,6 +61,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 interface Folder {
   id: string;
@@ -286,6 +287,7 @@ export default function AdminMusic() {
 
   const { toast } = useToast();
   const navigate = useNavigate();
+  const { t } = useLanguage();
 
   // DnD sensors
   const sensors = useSensors(
@@ -1108,11 +1110,11 @@ export default function AdminMusic() {
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-4">
             <Music className="w-8 h-8 text-primary" />
-            <h1 className="text-xl font-bold">Admin Music Library</h1>
+            <h1 className="text-xl font-bold">{t("admin.music.title")}</h1>
           </div>
           <Button variant="ghost" size="sm" onClick={handleLogout}>
             <LogOut className="w-4 h-4 mr-2" />
-            Salir
+            {t("admin.music.logout")}
           </Button>
         </div>
       </header>
@@ -1125,7 +1127,7 @@ export default function AdminMusic() {
             className="flex items-center gap-1 text-muted-foreground hover:text-foreground transition-colors"
           >
             <Home className="w-4 h-4" />
-            Inicio
+            {t("admin.music.home")}
           </button>
           {breadcrumbs.map((crumb) => (
             <div key={crumb.id} className="flex items-center gap-2">
@@ -1144,15 +1146,15 @@ export default function AdminMusic() {
         <div className="flex flex-wrap items-center gap-3 mb-8">
           <Button onClick={() => setShowNewFolder(true)}>
             <FolderPlus className="w-4 h-4 mr-2" />
-            Nueva Carpeta
+            {t("admin.music.newFolder")}
           </Button>
           <Button variant="secondary" onClick={() => setShowUpload(true)}>
             <Upload className="w-4 h-4 mr-2" />
-            Subir Archivos
+            {t("admin.music.uploadFiles")}
           </Button>
           <Button variant="outline" onClick={() => setShowBulkUpload(true)}>
             <FolderUp className="w-4 h-4 mr-2" />
-            Importar Carpetas
+            {t("admin.music.bulkImport")}
           </Button>
           
           <Button
@@ -1162,7 +1164,7 @@ export default function AdminMusic() {
             className="text-destructive hover:text-destructive hover:bg-destructive/10"
           >
             <Trash className="w-4 h-4 mr-2" />
-            Limpiar Todo
+            {t("admin.music.cleanAll")}
           </Button>
           
           {hasSelection && (
@@ -1172,7 +1174,7 @@ export default function AdminMusic() {
               className="ml-auto"
             >
               <Trash className="w-4 h-4 mr-2" />
-              Eliminar ({selectedFolders.size + selectedTracks.size})
+              {t("admin.music.deleteSelected")} ({selectedFolders.size + selectedTracks.size})
             </Button>
           )}
         </div>
@@ -1190,13 +1192,10 @@ export default function AdminMusic() {
                 ) : (
                   <Square className="w-4 h-4" />
                 )}
-                Seleccionar todas
+                {t("admin.music.selectAll")}
               </button>
               <h2 className="text-lg font-semibold flex items-center gap-2">
-                Carpetas ({folders.length})
-                <span className="text-xs text-muted-foreground font-normal">
-                  (arrastra para reordenar)
-                </span>
+                {t("admin.music.folders")} ({folders.length})
               </h2>
             </div>
             <DndContext
@@ -1259,13 +1258,10 @@ export default function AdminMusic() {
                 ) : (
                   <Square className="w-4 h-4" />
                 )}
-                Seleccionar todos
+                {t("admin.music.selectAll")}
               </button>
               <h2 className="text-lg font-semibold flex items-center gap-2">
-                Tracks ({tracks.length})
-                <span className="text-xs text-muted-foreground font-normal">
-                  (arrastra para reordenar)
-                </span>
+                {t("admin.music.tracks")} ({tracks.length})
               </h2>
             </div>
             <DndContext

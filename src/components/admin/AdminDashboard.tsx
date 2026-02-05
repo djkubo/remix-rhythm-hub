@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { format, subDays, startOfDay, endOfDay } from "date-fns";
-import { es } from "date-fns/locale";
+import { es, enUS } from "date-fns/locale";
 import {
   Users,
   Eye,
@@ -45,6 +45,7 @@ import {
   Pie,
   Cell,
 } from "recharts";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const COLORS = ["#ef4444", "#f97316", "#eab308", "#22c55e", "#3b82f6", "#8b5cf6"];
 
@@ -87,6 +88,9 @@ interface SourceBreakdown {
 }
 
 export default function AdminDashboard() {
+  const { t, language } = useLanguage();
+  const dateLocale = language === "es" ? es : enUS;
+  
   const [dateRange, setDateRange] = useState("7");
   const [activeTab, setActiveTab] = useState<"overview" | "sources" | "leads" | "events">("overview");
 
@@ -206,7 +210,7 @@ export default function AdminDashboard() {
   const exportLeadsCSV = () => {
     if (!leads?.length) return;
     
-    const headers = ["Nombre", "Email", "Teléfono", "País", "Fuente", "Fecha", "ManyChat Sync"];
+    const headers = [t("admin.dashboard.name"), t("admin.dashboard.email"), t("admin.dashboard.phone"), t("admin.dashboard.country"), t("admin.dashboard.source"), t("admin.dashboard.date"), "ManyChat Sync"];
     const rows = leads.map(lead => [
       lead.name,
       lead.email,
@@ -214,7 +218,7 @@ export default function AdminDashboard() {
       lead.country_name || "",
       lead.source || "",
       format(new Date(lead.created_at), "dd/MM/yyyy HH:mm"),
-      lead.manychat_synced ? "Sí" : "No",
+      lead.manychat_synced ? t("admin.dashboard.yes") : t("admin.dashboard.no"),
     ]);
 
     const csv = [headers, ...rows].map(row => row.join(",")).join("\n");
@@ -231,8 +235,8 @@ export default function AdminDashboard() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold">Dashboard de Analítica</h1>
-          <p className="text-muted-foreground">Métricas de tráfico y conversiones</p>
+          <h1 className="text-2xl font-bold">{t("admin.dashboard.title")}</h1>
+          <p className="text-muted-foreground">{t("admin.dashboard.subtitle")}</p>
         </div>
         
         <div className="flex items-center gap-3">
@@ -242,10 +246,10 @@ export default function AdminDashboard() {
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="7">Últimos 7 días</SelectItem>
-              <SelectItem value="14">Últimos 14 días</SelectItem>
-              <SelectItem value="30">Últimos 30 días</SelectItem>
-              <SelectItem value="90">Últimos 90 días</SelectItem>
+              <SelectItem value="7">{t("admin.dashboard.last7days")}</SelectItem>
+              <SelectItem value="14">{t("admin.dashboard.last14days")}</SelectItem>
+              <SelectItem value="30">{t("admin.dashboard.last30days")}</SelectItem>
+              <SelectItem value="90">{t("admin.dashboard.last90days")}</SelectItem>
             </SelectContent>
           </Select>
           
@@ -258,10 +262,10 @@ export default function AdminDashboard() {
       {/* Tabs */}
       <div className="flex gap-2 border-b overflow-x-auto">
         {[
-          { id: "overview", label: "Resumen" },
-          { id: "sources", label: "Fuentes" },
-          { id: "leads", label: `Leads (${leads?.length || 0})` },
-          { id: "events", label: "Eventos" },
+          { id: "overview", label: t("admin.dashboard.tabOverview") },
+          { id: "sources", label: t("admin.dashboard.tabSources") },
+          { id: "leads", label: `${t("admin.dashboard.tabLeads")} (${leads?.length || 0})` },
+          { id: "events", label: t("admin.dashboard.tabEvents") },
         ].map((tab) => (
           <button
             key={tab.id}
@@ -285,7 +289,7 @@ export default function AdminDashboard() {
             <Card>
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-sm font-medium text-muted-foreground">
-                  Visitantes Únicos
+                  {t("admin.dashboard.uniqueVisitors")}
                 </CardTitle>
                 <Users className="w-4 h-4 text-muted-foreground" />
               </CardHeader>
@@ -299,7 +303,7 @@ export default function AdminDashboard() {
             <Card>
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-sm font-medium text-muted-foreground">
-                  Páginas Vistas
+                  {t("admin.dashboard.pageViews")}
                 </CardTitle>
                 <Eye className="w-4 h-4 text-muted-foreground" />
               </CardHeader>
@@ -313,7 +317,7 @@ export default function AdminDashboard() {
             <Card>
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-sm font-medium text-muted-foreground">
-                  Clics en CTAs
+                  {t("admin.dashboard.ctaClicks")}
                 </CardTitle>
                 <MousePointer className="w-4 h-4 text-muted-foreground" />
               </CardHeader>
@@ -327,7 +331,7 @@ export default function AdminDashboard() {
             <Card>
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-sm font-medium text-muted-foreground">
-                  Tasa de Conversión
+                  {t("admin.dashboard.conversionRate")}
                 </CardTitle>
                 <TrendingUp className="w-4 h-4 text-muted-foreground" />
               </CardHeader>
@@ -344,7 +348,7 @@ export default function AdminDashboard() {
             {/* Traffic Trend */}
             <Card>
               <CardHeader>
-                <CardTitle>Tendencia de Tráfico</CardTitle>
+                <CardTitle>{t("admin.dashboard.trafficTrend")}</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="h-64">
@@ -360,7 +364,7 @@ export default function AdminDashboard() {
                         stroke="hsl(var(--primary))"
                         strokeWidth={2}
                         dot={false}
-                        name="Visitantes"
+                        name={t("admin.dashboard.visitors")}
                       />
                       <Line
                         type="monotone"
@@ -368,7 +372,7 @@ export default function AdminDashboard() {
                         stroke="hsl(var(--muted-foreground))"
                         strokeWidth={2}
                         dot={false}
-                        name="Páginas Vistas"
+                        name={t("admin.dashboard.pageViews")}
                       />
                     </LineChart>
                   </ResponsiveContainer>
@@ -379,7 +383,7 @@ export default function AdminDashboard() {
             {/* Events Breakdown */}
             <Card>
               <CardHeader>
-                <CardTitle>Eventos por Tipo</CardTitle>
+                <CardTitle>{t("admin.dashboard.eventsByType")}</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="h-64">
@@ -399,7 +403,7 @@ export default function AdminDashboard() {
             {/* Country Distribution */}
             <Card>
               <CardHeader>
-                <CardTitle>Visitantes por País</CardTitle>
+                <CardTitle>{t("admin.dashboard.visitorsByCountry")}</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="h-64">
@@ -429,12 +433,12 @@ export default function AdminDashboard() {
             {/* Engagement Metrics */}
             <Card>
               <CardHeader>
-                <CardTitle>Métricas de Engagement</CardTitle>
+                <CardTitle>{t("admin.dashboard.engagementMetrics")}</CardTitle>
               </CardHeader>
               <CardContent className="space-y-6">
                 <div>
                   <div className="flex justify-between text-sm mb-2">
-                    <span className="text-muted-foreground">Scroll Promedio</span>
+                    <span className="text-muted-foreground">{t("admin.dashboard.avgScroll")}</span>
                     <span className="font-medium">{analytics?.avg_scroll_depth?.toFixed(0) || 0}%</span>
                   </div>
                   <div className="h-2 bg-muted rounded-full overflow-hidden">
@@ -447,7 +451,7 @@ export default function AdminDashboard() {
                 
                 <div>
                   <div className="flex justify-between text-sm mb-2">
-                    <span className="text-muted-foreground">Tiempo Promedio</span>
+                    <span className="text-muted-foreground">{t("admin.dashboard.avgTime")}</span>
                     <span className="font-medium">
                       {Math.floor((analytics?.avg_time_on_page || 0) / 60)}m {Math.round((analytics?.avg_time_on_page || 0) % 60)}s
                     </span>
@@ -455,14 +459,14 @@ export default function AdminDashboard() {
                   <div className="flex items-center gap-2">
                     <Clock className="w-4 h-4 text-muted-foreground" />
                     <span className="text-sm text-muted-foreground">
-                      {analytics?.total_sessions?.toLocaleString() || 0} sesiones totales
+                      {analytics?.total_sessions?.toLocaleString() || 0} {t("admin.dashboard.totalSessions")}
                     </span>
                   </div>
                 </div>
 
                 <div className="pt-4 border-t">
                   <div className="flex justify-between items-center">
-                    <span className="text-sm text-muted-foreground">Leads Capturados</span>
+                    <span className="text-sm text-muted-foreground">{t("admin.dashboard.capturedLeads")}</span>
                     <span className="text-2xl font-bold text-green-500">{leads?.length || 0}</span>
                   </div>
                 </div>
@@ -481,7 +485,7 @@ export default function AdminDashboard() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Filter className="w-5 h-5" />
-                  Fuentes de Tráfico (utm_source)
+                  {t("admin.dashboard.trafficSources")} (utm_source)
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -517,7 +521,7 @@ export default function AdminDashboard() {
                   })}
                   {!sourceBreakdown?.sources?.length && (
                     <p className="text-muted-foreground text-center py-8">
-                      Sin datos de fuentes
+                      {t("admin.dashboard.noSourceData")}
                     </p>
                   )}
                 </div>
@@ -527,7 +531,7 @@ export default function AdminDashboard() {
             {/* Traffic Mediums */}
             <Card>
               <CardHeader>
-                <CardTitle>Medios (utm_medium)</CardTitle>
+                <CardTitle>{t("admin.dashboard.mediums")} (utm_medium)</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="h-64">
@@ -562,7 +566,7 @@ export default function AdminDashboard() {
             {/* Campaigns */}
             <Card className="lg:col-span-2">
               <CardHeader>
-                <CardTitle>Campañas (utm_campaign)</CardTitle>
+                <CardTitle>{t("admin.dashboard.campaigns")} (utm_campaign)</CardTitle>
               </CardHeader>
               <CardContent>
                 {sourceBreakdown?.campaigns?.length ? (
@@ -583,14 +587,14 @@ export default function AdminDashboard() {
                           dataKey="value"
                           fill="hsl(var(--primary))"
                           radius={[4, 4, 0, 0]}
-                          name="Visitantes"
+                          name={t("admin.dashboard.visitors")}
                         />
                       </BarChart>
                     </ResponsiveContainer>
                   </div>
                 ) : (
                   <p className="text-muted-foreground text-center py-8">
-                    Sin campañas activas. Usa utm_campaign en tus enlaces.
+                    {t("admin.dashboard.noCampaigns")}
                   </p>
                 )}
               </CardContent>
@@ -600,12 +604,12 @@ export default function AdminDashboard() {
           {/* UTM Guide */}
           <Card>
             <CardHeader>
-              <CardTitle>Cómo usar parámetros UTM</CardTitle>
+              <CardTitle>{t("admin.dashboard.utmGuideTitle")}</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-4 text-sm">
                 <p className="text-muted-foreground">
-                  Agrega estos parámetros a tus enlaces para rastrear de dónde viene el tráfico:
+                  {t("admin.dashboard.utmGuideDesc")}
                 </p>
                 <div className="bg-muted p-4 rounded-lg font-mono text-xs overflow-x-auto">
                   <code>
@@ -616,19 +620,19 @@ export default function AdminDashboard() {
                   <div className="space-y-1">
                     <p className="font-medium">utm_source</p>
                     <p className="text-muted-foreground">
-                      Origen: whatsapp, instagram, tiktok, email, facebook
+                      {t("admin.dashboard.utmSource")}
                     </p>
                   </div>
                   <div className="space-y-1">
                     <p className="font-medium">utm_medium</p>
                     <p className="text-muted-foreground">
-                      Medio: social, paid, email, messaging, organic
+                      {t("admin.dashboard.utmMedium")}
                     </p>
                   </div>
                   <div className="space-y-1">
                     <p className="font-medium">utm_campaign</p>
                     <p className="text-muted-foreground">
-                      Nombre de campaña: lanzamiento, promo_navidad, etc.
+                      {t("admin.dashboard.utmCampaign")}
                     </p>
                   </div>
                 </div>
@@ -643,11 +647,11 @@ export default function AdminDashboard() {
         <div className="space-y-4">
           <div className="flex justify-between items-center">
             <p className="text-muted-foreground">
-              {leads?.length || 0} leads en el período seleccionado
+              {leads?.length || 0} {t("admin.dashboard.leadsInPeriod")}
             </p>
             <Button variant="outline" onClick={exportLeadsCSV} disabled={!leads?.length}>
               <Download className="w-4 h-4 mr-2" />
-              Exportar CSV
+              {t("admin.dashboard.exportCSV")}
             </Button>
           </div>
 
@@ -655,12 +659,12 @@ export default function AdminDashboard() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Nombre</TableHead>
-                  <TableHead>Email</TableHead>
-                  <TableHead>Teléfono</TableHead>
-                  <TableHead>País</TableHead>
-                  <TableHead>Fuente</TableHead>
-                  <TableHead>Fecha</TableHead>
+                  <TableHead>{t("admin.dashboard.name")}</TableHead>
+                  <TableHead>{t("admin.dashboard.email")}</TableHead>
+                  <TableHead>{t("admin.dashboard.phone")}</TableHead>
+                  <TableHead>{t("admin.dashboard.country")}</TableHead>
+                  <TableHead>{t("admin.dashboard.source")}</TableHead>
+                  <TableHead>{t("admin.dashboard.date")}</TableHead>
                   <TableHead>ManyChat</TableHead>
                 </TableRow>
               </TableHeader>
@@ -668,13 +672,13 @@ export default function AdminDashboard() {
                 {leadsLoading ? (
                   <TableRow>
                     <TableCell colSpan={7} className="text-center py-8">
-                      Cargando...
+                      {t("admin.dashboard.loading")}
                     </TableCell>
                   </TableRow>
                 ) : leads?.length === 0 ? (
                   <TableRow>
                     <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
-                      No hay leads en este período
+                      {t("admin.dashboard.noLeads")}
                     </TableCell>
                   </TableRow>
                 ) : (
@@ -690,7 +694,7 @@ export default function AdminDashboard() {
                         </span>
                       </TableCell>
                       <TableCell className="text-muted-foreground">
-                        {format(new Date(lead.created_at), "dd MMM yyyy HH:mm", { locale: es })}
+                        {format(new Date(lead.created_at), "dd MMM yyyy HH:mm", { locale: dateLocale })}
                       </TableCell>
                       <TableCell>
                         {lead.manychat_synced ? (
@@ -713,7 +717,7 @@ export default function AdminDashboard() {
         <div className="space-y-4">
           <Card>
             <CardHeader>
-              <CardTitle>Todos los Eventos</CardTitle>
+              <CardTitle>{t("admin.dashboard.allEvents")}</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="h-96">
