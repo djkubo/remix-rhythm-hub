@@ -8,6 +8,16 @@ DROP POLICY IF EXISTS "Anyone can view music files" ON storage.objects;
 DROP POLICY IF EXISTS "Authenticated users can upload music" ON storage.objects;
 DROP POLICY IF EXISTS "Authenticated users can update music" ON storage.objects;
 DROP POLICY IF EXISTS "Authenticated users can delete music" ON storage.objects;
+DROP POLICY IF EXISTS "Only admins can upload music" ON storage.objects;
+DROP POLICY IF EXISTS "Only admins can update music" ON storage.objects;
+DROP POLICY IF EXISTS "Only admins can delete music" ON storage.objects;
+
+-- If this migration gets re-applied in a reset dev DB, avoid duplicates.
+DROP POLICY IF EXISTS "Anyone can view visible music files" ON storage.objects;
+DROP POLICY IF EXISTS "Admins can view all music files" ON storage.objects;
+DROP POLICY IF EXISTS "Admins can upload music" ON storage.objects;
+DROP POLICY IF EXISTS "Admins can update music" ON storage.objects;
+DROP POLICY IF EXISTS "Admins can delete music" ON storage.objects;
 
 -- Public read: only files that map to a visible track row.
 CREATE POLICY "Anyone can view visible music files"
@@ -64,4 +74,3 @@ USING (
   bucket_id = 'music'
   AND public.has_role(auth.uid(), 'admin')
 );
-
