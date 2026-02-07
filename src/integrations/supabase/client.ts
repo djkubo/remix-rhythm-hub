@@ -2,6 +2,36 @@
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from './types';
 
+// NOTE:
+// Lovable Cloud deployments may not expose Vite build-time env vars to the bundle.
+// To avoid a production blank screen, we provide a hostname-based fallback for the
+// public (anon) Supabase config. These values are public by design.
+const HOSTNAME_FALLBACKS: Record<
+  string,
+  { projectId: string; anonKey: string; url?: string }
+> = {
+  "videoremixpack.com": {
+    projectId: "sstxifqsickevprpuhap",
+    anonKey:
+      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNzdHhpZnFzaWNrZXZwcnB1aGFwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg1NzM3MDAsImV4cCI6MjA4NDE0OTcwMH0.yNYJflrpmmQatP6t0ClLIu2urvqpRfaMPDeC2FlOEZA",
+  },
+  "www.videoremixpack.com": {
+    projectId: "sstxifqsickevprpuhap",
+    anonKey:
+      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNzdHhpZnFzaWNrZXZwcnB1aGFwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg1NzM3MDAsImV4cCI6MjA4NDE0OTcwMH0.yNYJflrpmmQatP6t0ClLIu2urvqpRfaMPDeC2FlOEZA",
+  },
+  "videoremixespacks.com": {
+    projectId: "sstxifqsickevprpuhap",
+    anonKey:
+      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNzdHhpZnFzaWNrZXZwcnB1aGFwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg1NzM3MDAsImV4cCI6MjA4NDE0OTcwMH0.yNYJflrpmmQatP6t0ClLIu2urvqpRfaMPDeC2FlOEZA",
+  },
+  "www.videoremixespacks.com": {
+    projectId: "sstxifqsickevprpuhap",
+    anonKey:
+      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNzdHhpZnFzaWNrZXZwcnB1aGFwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg1NzM3MDAsImV4cCI6MjA4NDE0OTcwMH0.yNYJflrpmmQatP6t0ClLIu2urvqpRfaMPDeC2FlOEZA",
+  },
+};
+
 function decodeJwtPayload(token: string): Record<string, unknown> | null {
   const parts = token.split('.');
   if (parts.length !== 3) return null;
@@ -21,13 +51,20 @@ function decodeJwtPayload(token: string): Record<string, unknown> | null {
 
 const env = import.meta.env;
 
+const hostnameFallback =
+  typeof window !== "undefined" ? HOSTNAME_FALLBACKS[window.location.hostname] : undefined;
+
 export const supabaseAnonKey =
   env.VITE_SUPABASE_PUBLISHABLE_KEY ||
   env.VITE_SUPABASE_ANON_KEY ||
   env.VITE_PUBLIC_SUPABASE_ANON_KEY ||
-  env.VITE_PUBLIC_SUPABASE_KEY;
+  env.VITE_PUBLIC_SUPABASE_KEY ||
+  hostnameFallback?.anonKey;
 
-const projectId = env.VITE_SUPABASE_PROJECT_ID || env.VITE_PUBLIC_SUPABASE_PROJECT_ID;
+const projectId =
+  env.VITE_SUPABASE_PROJECT_ID ||
+  env.VITE_PUBLIC_SUPABASE_PROJECT_ID ||
+  hostnameFallback?.projectId;
 
 const refFromKey = (() => {
   if (!supabaseAnonKey) return null;
@@ -39,6 +76,7 @@ const refFromKey = (() => {
 export const supabaseUrl =
   env.VITE_SUPABASE_URL ||
   env.VITE_PUBLIC_SUPABASE_URL ||
+  hostnameFallback?.url ||
   (projectId ? `https://${projectId}.supabase.co` : undefined) ||
   (refFromKey ? `https://${refFromKey}.supabase.co` : undefined);
 
