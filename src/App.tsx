@@ -7,6 +7,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import { LanguageProvider } from "@/contexts/LanguageContext";
 import { CurrencyProvider } from "@/contexts/CurrencyContext";
+import AppErrorBoundary from "@/components/AppErrorBoundary";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import ThankYou from "./pages/ThankYou";
@@ -19,39 +20,41 @@ const DevTestPopup = import.meta.env.DEV ? lazy(() => import("./pages/TestPopup"
 
 const App = () => {
   return (
-    <QueryClientProvider client={queryClient}>
-      <ThemeProvider>
-        <LanguageProvider>
-          <CurrencyProvider>
-            <TooltipProvider>
-              <Toaster />
-              <Sonner />
-              <BrowserRouter>
-                <Routes>
-                  <Route path="/" element={<Index />} />
-                  <Route path="/gracias" element={<ThankYou />} />
-                  {import.meta.env.DEV && DevTestPopup && (
-                    <Route
-                      path="/test-popup"
-                      element={
-                        <Suspense fallback={null}>
-                          <DevTestPopup />
-                        </Suspense>
-                      }
-                    />
-                  )}
-                  <Route path="/admin" element={<Admin />} />
-                  <Route path="/admin/login" element={<AdminLogin />} />
-                  <Route path="/admin/music" element={<AdminMusic />} />
-                  {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-                  <Route path="*" element={<NotFound />} />
-                </Routes>
-              </BrowserRouter>
-            </TooltipProvider>
-          </CurrencyProvider>
-        </LanguageProvider>
-      </ThemeProvider>
-    </QueryClientProvider>
+    <AppErrorBoundary>
+      <QueryClientProvider client={queryClient}>
+        <ThemeProvider>
+          <LanguageProvider>
+            <CurrencyProvider>
+              <TooltipProvider>
+                <Toaster />
+                <Sonner />
+                <BrowserRouter>
+                  <Routes>
+                    <Route path="/" element={<Index />} />
+                    <Route path="/gracias" element={<ThankYou />} />
+                    {import.meta.env.DEV && DevTestPopup && (
+                      <Route
+                        path="/test-popup"
+                        element={
+                          <Suspense fallback={null}>
+                            <DevTestPopup />
+                          </Suspense>
+                        }
+                      />
+                    )}
+                    <Route path="/admin" element={<Admin />} />
+                    <Route path="/admin/login" element={<AdminLogin />} />
+                    <Route path="/admin/music" element={<AdminMusic />} />
+                    {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                    <Route path="*" element={<NotFound />} />
+                  </Routes>
+                </BrowserRouter>
+              </TooltipProvider>
+            </CurrencyProvider>
+          </LanguageProvider>
+        </ThemeProvider>
+      </QueryClientProvider>
+    </AppErrorBoundary>
   );
 };
 
