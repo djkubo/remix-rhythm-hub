@@ -1,5 +1,5 @@
 import { useEffect, useRef, useCallback } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase, supabaseAnonKey, supabaseUrl } from "@/integrations/supabase/client";
 import type { Json } from "@/integrations/supabase/types";
 
 // UTM parameter interface
@@ -229,9 +229,8 @@ export const useAnalytics = () => {
   const flushQueueWithKeepalive = useCallback((events: AnalyticsEvent[]) => {
     if (events.length === 0) return;
 
-    const url = `${import.meta.env.VITE_SUPABASE_URL}/rest/v1/analytics_events`;
-    const anonKey =
-      import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || import.meta.env.VITE_SUPABASE_ANON_KEY;
+    const url = `${supabaseUrl}/rest/v1/analytics_events`;
+    const anonKey = supabaseAnonKey;
     const records = events.slice(0, KEEPALIVE_FLUSH_LIMIT).map(buildRecord);
 
     try {

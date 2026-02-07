@@ -2,14 +2,56 @@
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from './types';
 
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
-const SUPABASE_PUBLISHABLE_KEY =
-  import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || import.meta.env.VITE_SUPABASE_ANON_KEY;
+function decodeJwtPayload(token: string): Record<string, unknown> | null {
+  const parts = token.split('.');
+  if (parts.length !== 3) return null;
+
+  try {
+    // JWT uses base64url encoding
+    const base64 = parts[1].replace(/-/g, '+').replace(/_/g, '/');
+    const padded = base64.padEnd(Math.ceil(base64.length / 4) * 4, '=');
+    const json = atob(padded);
+    const parsed = JSON.parse(json) as unknown;
+    if (!parsed || typeof parsed !== 'object') return null;
+    return parsed as Record<string, unknown>;
+  } catch {
+    return null;
+  }
+}
+
+const env = import.meta.env;
+
+export const supabaseAnonKey =
+  env.VITE_SUPABASE_PUBLISHABLE_KEY ||
+  env.VITE_SUPABASE_ANON_KEY ||
+  env.VITE_PUBLIC_SUPABASE_ANON_KEY ||
+  env.VITE_PUBLIC_SUPABASE_KEY;
+
+const projectId = env.VITE_SUPABASE_PROJECT_ID || env.VITE_PUBLIC_SUPABASE_PROJECT_ID;
+
+const refFromKey = (() => {
+  if (!supabaseAnonKey) return null;
+  const payload = decodeJwtPayload(supabaseAnonKey);
+  const ref = payload?.ref;
+  return typeof ref === 'string' && ref.length > 0 ? ref : null;
+})();
+
+export const supabaseUrl =
+  env.VITE_SUPABASE_URL ||
+  env.VITE_PUBLIC_SUPABASE_URL ||
+  (projectId ? `https://${projectId}.supabase.co` : undefined) ||
+  (refFromKey ? `https://${refFromKey}.supabase.co` : undefined);
+
+if (!supabaseUrl || !supabaseAnonKey) {
+  throw new Error(
+    'Supabase configuration missing. Set VITE_SUPABASE_URL (or VITE_SUPABASE_PROJECT_ID) and VITE_SUPABASE_ANON_KEY.'
+  );
+}
 
 // Import the supabase client like this:
 // import { supabase } from "@/integrations/supabase/client";
 
-export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
+export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey, {
   auth: {
     storage: localStorage,
     persistSession: true,
