@@ -230,7 +230,8 @@ export const useAnalytics = () => {
     if (events.length === 0) return;
 
     const url = `${import.meta.env.VITE_SUPABASE_URL}/rest/v1/analytics_events`;
-    const anonKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+    const anonKey =
+      import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || import.meta.env.VITE_SUPABASE_ANON_KEY;
     const records = events.slice(0, KEEPALIVE_FLUSH_LIMIT).map(buildRecord);
 
     try {

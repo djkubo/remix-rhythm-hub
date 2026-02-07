@@ -1,4 +1,4 @@
-project_id = "sstxifqsickevprpuhap"
+project_id = "sbexeqqizazjfsbsgrbd"
 
 [functions.sync-manychat]
 verify_jwt = false
