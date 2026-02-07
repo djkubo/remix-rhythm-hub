@@ -178,6 +178,14 @@ Deno.serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
+  // Simple health-check to make it easy to validate deployment (especially from a browser).
+  if (req.method === 'GET') {
+    return new Response(
+      JSON.stringify({ ok: true, function: 'sync-manychat' }),
+      { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+    );
+  }
+
   if (req.method !== 'POST') {
     return new Response(
       JSON.stringify({ error: 'Method not allowed' }),
