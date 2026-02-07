@@ -209,34 +209,29 @@ Deno.serve(async (req) => {
       );
     }
 
-    if (!body || typeof body !== 'object' || !('lead' in body)) {
+    if (!body || typeof body !== 'object' || !('leadId' in body)) {
       return new Response(
-        JSON.stringify({ error: 'Missing lead data' }),
+        JSON.stringify({ error: 'Missing leadId' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
-    // Validate lead data
-    const validation = validateLead((body as { lead: unknown }).lead);
-    if (!validation.valid) {
-      console.error('[Validation] Lead data validation failed');
+    const leadId = (body as Record<string, unknown>).leadId;
+    if (typeof leadId !== 'string' || !UUID_REGEX.test(leadId)) {
+      console.error('[Validation] leadId validation failed');
       return new Response(
-        JSON.stringify({ error: 'Invalid lead data' }),
+        JSON.stringify({ error: 'Invalid leadId' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
-    const lead = validation.data;
-    // Sanitized log - only ID, no PII
-    console.log('[Lead] Processing lead');
-
-    // Verify lead exists in database
+    // Verify lead exists in database (and use DB values as source of truth).
     const supabaseAdmin = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
-    
+
     const { data: dbLead, error: leadError } = await supabaseAdmin
       .from('leads')
-      .select('id, email, manychat_synced, manychat_subscriber_id')
-      .eq('id', lead.id)
+      .select('id, name, email, phone, country_code, country_name, source, tags, manychat_synced, manychat_subscriber_id')
+      .eq('id', leadId)
       .single();
 
     if (leadError || !dbLead) {
@@ -247,14 +242,6 @@ Deno.serve(async (req) => {
       );
     }
 
-    if (dbLead.email.toLowerCase() !== lead.email.toLowerCase()) {
-      console.error('[Security] Email mismatch');
-      return new Response(
-        JSON.stringify({ error: 'Data mismatch' }),
-        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
-
     // Idempotency: if already synced, don't call ManyChat again.
     if (dbLead.manychat_synced && dbLead.manychat_subscriber_id) {
       return new Response(
@@ -262,6 +249,19 @@ Deno.serve(async (req) => {
         { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
+
+    // Validate lead data from DB
+    const leadValidation = validateLead(dbLead);
+    if (!leadValidation.valid) {
+      console.error('[Validation] Lead data validation failed');
+      return new Response(
+        JSON.stringify({ error: 'Invalid lead data' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    const lead = leadValidation.data;
+    console.log('[Lead] Processing lead', lead.id);
 
     // Format phone number
     let cleanPhone = lead.phone.replace(/^0+/, '');

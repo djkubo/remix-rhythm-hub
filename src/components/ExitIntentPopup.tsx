@@ -67,8 +67,11 @@ export default function ExitIntentPopup() {
   const { t, language } = useLanguage();
   const { toast } = useToast();
   const navigate = useNavigate();
-  const { trackFormSubmit, trackClick } = useDataLayer();
+  const { trackFormSubmit } = useDataLayer();
   const { trackEvent, trackFormSubmit: trackFormInternal } = useAnalytics();
+  const debugLog = useCallback((...args: unknown[]) => {
+    if (import.meta.env.DEV) console.log(...args);
+  }, []);
 
   // Detect user's country based on IP
   useEffect(() => {
@@ -86,12 +89,12 @@ export default function ExitIntentPopup() {
           });
         }
       } catch (error) {
-        console.log("Could not detect country, using default");
+        debugLog("Could not detect country, using default");
       }
     };
     
     detectCountry();
-  }, []);
+  }, [debugLog]);
 
   // Exit intent detection
   const handleMouseLeave = useCallback((e: MouseEvent) => {
@@ -100,34 +103,34 @@ export default function ExitIntentPopup() {
       
       // REMOVED: hasInteracted check - was too restrictive
       if (!dismissed) {
-        console.log("🎯 Exit Intent Popup: Activado por mouse leave");
+        debugLog("Exit Intent Popup triggered (mouseleave)");
         setIsOpen(true);
         setHasTriggered(true);
         trackEvent("popup", { trigger: "exit_intent" });
       } else {
-        console.log("⏭️ Exit Intent Popup: Ya fue cerrado anteriormente");
+        debugLog("Exit Intent Popup already dismissed in this session");
       }
     }
-  }, [hasTriggered, trackEvent]);
+  }, [hasTriggered, trackEvent, debugLog]);
 
   // Timer-based trigger: Show popup after 45 seconds if not dismissed
   useEffect(() => {
-    console.log("⏰ Exit Intent Popup: Timer de 45s iniciado");
+    debugLog("Exit Intent Popup timer started (45s)");
     const timer = setTimeout(() => {
       const dismissed = sessionStorage.getItem("exit-popup-dismissed");
       
       if (!dismissed && !hasTriggered) {
-        console.log("🎯 Exit Intent Popup: Activado por timer (45s)");
+        debugLog("Exit Intent Popup triggered (timer_45s)");
         setIsOpen(true);
         setHasTriggered(true);
         trackEvent("popup", { trigger: "timer_45s" });
       } else {
-        console.log("⏭️ Exit Intent Popup: Timer cumplido pero modal ya fue mostrado o cerrado");
+        debugLog("Exit Intent Popup timer elapsed, but already shown/dismissed");
       }
     }, 45000); // 45 seconds
 
     return () => clearTimeout(timer);
-  }, [hasTriggered, trackEvent]);
+  }, [hasTriggered, trackEvent, debugLog]);
 
   useEffect(() => {
     document.addEventListener("mouseleave", handleMouseLeave);
@@ -170,13 +173,15 @@ export default function ExitIntentPopup() {
     setIsSubmitting(true);
 
     try {
+      const cleanPhone = formData.phone.trim().replace(/[\s\-\(\)\.]/g, "");
+
       // Insert lead into database
       const { data: lead, error: insertError } = await supabase
         .from("leads")
         .insert({
           name: formData.name.trim(),
           email: formData.email.trim().toLowerCase(),
-          phone: formData.phone.trim(),
+          phone: cleanPhone,
           country_code: countryData.dial_code,
           country_name: countryData.country_name,
           source: "exit_intent",
@@ -189,22 +194,22 @@ export default function ExitIntentPopup() {
         console.error("Error inserting lead:", insertError);
         throw insertError;
       }
+      if (!lead?.id) {
+        throw new Error("Lead insert did not return an id");
+      }
 
-      console.log("Lead created:", lead);
-      
       // Track form submission
       trackFormSubmit("exit_intent_popup");
+      trackFormInternal("exit_intent_popup");
 
       // Sync with ManyChat via edge function
       try {
-        const { data: syncData, error: syncError } = await supabase.functions.invoke("sync-manychat", {
-          body: { lead },
+        const { error: syncError } = await supabase.functions.invoke("sync-manychat", {
+          body: { leadId: lead.id },
         });
 
         if (syncError) {
           console.error("ManyChat sync error:", syncError);
-        } else {
-          console.log("ManyChat sync result:", syncData);
         }
       } catch (syncErr) {
         console.error("Failed to sync with ManyChat:", syncErr);

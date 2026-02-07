@@ -57,7 +57,7 @@ export const CurrencyProvider = ({ children }: { children: ReactNode }) => {
           detectUserCurrency(updatedCurrencies);
         }
       } catch (error) {
-        console.log("Using default exchange rates");
+        if (import.meta.env.DEV) console.log("Using default exchange rates");
         detectUserCurrency(defaultCurrencies);
       } finally {
         setLoading(false);
@@ -109,7 +109,7 @@ export const CurrencyProvider = ({ children }: { children: ReactNode }) => {
         }
       }
     } catch (error) {
-      console.log("Could not detect user location, using USD");
+      if (import.meta.env.DEV) console.log("Could not detect user location, using USD");
     }
   };
 

@@ -2,6 +2,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { Suspense, lazy } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import { LanguageProvider } from "@/contexts/LanguageContext";
@@ -12,9 +13,9 @@ import ThankYou from "./pages/ThankYou";
 import AdminLogin from "./pages/AdminLogin";
 import AdminMusic from "./pages/AdminMusic";
 import Admin from "./pages/Admin";
-import TestPopup from "./pages/TestPopup";
 
 const queryClient = new QueryClient();
+const DevTestPopup = import.meta.env.DEV ? lazy(() => import("./pages/TestPopup")) : null;
 
 const App = () => {
   return (
@@ -29,8 +30,15 @@ const App = () => {
                 <Routes>
                   <Route path="/" element={<Index />} />
                   <Route path="/gracias" element={<ThankYou />} />
-                  {import.meta.env.DEV && (
-                    <Route path="/test-popup" element={<TestPopup />} />
+                  {import.meta.env.DEV && DevTestPopup && (
+                    <Route
+                      path="/test-popup"
+                      element={
+                        <Suspense fallback={null}>
+                          <DevTestPopup />
+                        </Suspense>
+                      }
+                    />
                   )}
                   <Route path="/admin" element={<Admin />} />
                   <Route path="/admin/login" element={<AdminLogin />} />
