@@ -129,6 +129,8 @@ Deno.serve(async (req) => {
       'free_demos',
       'gratis',
       'whatsapp_group',
+      'usb128',
+      'usb_order',
     ];
 
     console.log('Creating tags...');

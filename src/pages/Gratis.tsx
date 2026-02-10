@@ -13,7 +13,13 @@ import {
   X,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import SettingsToggle from "@/components/SettingsToggle";
@@ -171,7 +177,12 @@ export default function Gratis() {
       }
 
       // Similar UX to the reference page: validate phone and show a clear error.
-      if (!/^\d{7,20}$/.test(phoneDigits) || !/[1-9]/.test(phoneDigits)) {
+      // NOTE: Supabase RLS policy enforces phone length <= 20.
+      if (
+        cleanPhone.length > 20 ||
+        !/^\+?\d{7,20}$/.test(cleanPhone) ||
+        !/[1-9]/.test(phoneDigits)
+      ) {
         toast({
           title: language === "es" ? "WhatsApp inválido" : "Invalid WhatsApp",
           description:
@@ -595,6 +606,14 @@ export default function Gratis() {
       {/* Video Dialog */}
       <Dialog open={isVideoOpen} onOpenChange={setIsVideoOpen}>
         <DialogContent className="glass-card border-primary/20 p-0 sm:max-w-3xl">
+          <DialogHeader className="sr-only">
+            <DialogTitle>{language === "es" ? "Preview" : "Preview"}</DialogTitle>
+            <DialogDescription>
+              {language === "es"
+                ? "Vista previa del contenido."
+                : "Content preview."}
+            </DialogDescription>
+          </DialogHeader>
           <div className="flex items-center justify-between border-b border-border/50 p-4">
             <div className="flex items-center gap-2">
               <Disc3 className="h-5 w-5 text-primary" />
@@ -630,6 +649,16 @@ export default function Gratis() {
       {/* Join Dialog */}
       <Dialog open={isJoinOpen} onOpenChange={(open) => !isSubmitting && setIsJoinOpen(open)}>
         <DialogContent className="glass-card border-primary/20 sm:max-w-md">
+          <DialogHeader className="sr-only">
+            <DialogTitle>
+              {language === "es" ? "Unete gratis" : "Join for free"}
+            </DialogTitle>
+            <DialogDescription>
+              {language === "es"
+                ? "Te enviaremos el acceso directo a tu WhatsApp."
+                : "We’ll send direct access to your WhatsApp."}
+            </DialogDescription>
+          </DialogHeader>
           <div className="flex items-start justify-between gap-4">
             <div>
               <h2 className="font-display text-2xl font-extrabold uppercase">

@@ -173,7 +173,12 @@ export default function ExitIntentPopup() {
 	    // Basic phone validation (digits, reasonable length, not all zeros)
 	    const cleanPhoneInput = formData.phone.trim().replace(/[\s().-]/g, "");
 	    const phoneDigits = cleanPhoneInput.startsWith("+") ? cleanPhoneInput.slice(1) : cleanPhoneInput;
-	    if (!/^\d{7,20}$/.test(phoneDigits) || !/[1-9]/.test(phoneDigits)) {
+	    // NOTE: Supabase RLS policy enforces phone length <= 20.
+	    if (
+	      cleanPhoneInput.length > 20 ||
+	      !/^\+?\d{7,20}$/.test(cleanPhoneInput) ||
+	      !/[1-9]/.test(phoneDigits)
+	    ) {
 	      toast({
 	        title: language === "es" ? "WhatsApp inválido" : "Invalid WhatsApp",
 	        description:
