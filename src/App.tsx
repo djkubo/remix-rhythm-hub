@@ -14,6 +14,7 @@ import ThankYou from "./pages/ThankYou";
 import Gratis from "./pages/Gratis";
 import GratisThankYou from "./pages/GratisThankYou";
 import Usb128 from "./pages/Usb128";
+import Usb128ThankYou from "./pages/Usb128ThankYou";
 import AdminLogin from "./pages/AdminLogin";
 import AdminMusic from "./pages/AdminMusic";
 import Admin from "./pages/Admin";
@@ -37,6 +38,7 @@ const App = () => {
                   <Route path="/gratis" element={<Gratis />} />
                   <Route path="/gratis/gracias" element={<GratisThankYou />} />
                   <Route path="/usb128" element={<Usb128 />} />
+                  <Route path="/usb128/gracias" element={<Usb128ThankYou />} />
                   <Route path="/gracias" element={<ThankYou />} />
                   {import.meta.env.DEV && DevTestPopup && (
                     <Route

@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   CheckCircle2,
   CreditCard,
@@ -82,14 +83,11 @@ function normalizePhoneInput(input: string): { clean: string; digits: string } {
   return { clean, digits };
 }
 
-// NOTE: Update this if you have your own checkout link.
-// For now we default to the reference funnel checkout.
-const USB128_CHECKOUT_URL = "https://dedjaempresario.com/checkout500-6961";
-
 export default function Usb128() {
   const { language } = useLanguage();
   const { theme } = useTheme();
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   const [isOrderOpen, setIsOrderOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -223,9 +221,9 @@ export default function Usb128() {
           if (import.meta.env.DEV) console.warn("ManyChat sync threw:", syncErr);
         }
 
-        // Close modal and redirect to checkout.
+        // Close modal and go to thank-you page.
         setIsOrderOpen(false);
-        window.location.href = USB128_CHECKOUT_URL;
+        navigate("/usb128/gracias");
       } catch (err) {
         console.error("USB128 lead submit error:", err);
         toast({
@@ -240,7 +238,7 @@ export default function Usb128() {
         setIsSubmitting(false);
       }
     },
-    [countryData.dial_code, countryData.country_name, formData, isSubmitting, language, toast]
+    [countryData.dial_code, countryData.country_name, formData, isSubmitting, language, navigate, toast]
   );
 
   return (
