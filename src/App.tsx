@@ -22,6 +22,7 @@ import AnualThankYou from "./pages/AnualThankYou";
 import Membresia from "./pages/Membresia";
 import MembresiaThankYou from "./pages/MembresiaThankYou";
 import Explorer from "./pages/Explorer";
+import DjEdits from "./pages/DjEdits";
 import AdminLogin from "./pages/AdminLogin";
 import AdminMusic from "./pages/AdminMusic";
 import Admin from "./pages/Admin";
@@ -67,6 +68,10 @@ const App = () => {
                     <Route path="/plan" element={<Membresia />} />
 
                     <Route path="/explorer" element={<Explorer />} />
+
+                    <Route path="/djedits" element={<DjEdits />} />
+                    {/* Aliases requested by marketing */} 
+                    <Route path="/DJEDITS" element={<DjEdits />} />
 
                     <Route path="/gracias" element={<ThankYou />} />
 

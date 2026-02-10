@@ -138,6 +138,8 @@ Deno.serve(async (req) => {
       'membresia',
       'plan_1tb_mensual',
       'plan_2tb_anual',
+      'djedits',
+      'course_interest',
     ];
 
     console.log('Creating tags...');
