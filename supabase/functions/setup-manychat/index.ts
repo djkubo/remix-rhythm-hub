@@ -134,6 +134,7 @@ Deno.serve(async (req) => {
       'paid_stripe',
       'paid_paypal',
       'needs_shipping',
+      'shipping_not_allowed',
       'shippo_label_created',
       'shippo_label',
       'usb128',

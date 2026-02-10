@@ -119,6 +119,23 @@ function buildShippoToAddress(args: {
   };
 }
 
+function getOrderShippingCountryCode(orderInfo: Record<string, unknown>): string {
+  const purchaseUnits = Array.isArray(orderInfo.purchase_units)
+    ? (orderInfo.purchase_units as unknown[])
+    : [];
+  const pu0 = purchaseUnits[0];
+  if (!isRecord(pu0)) return "";
+
+  const shipping = pu0.shipping;
+  if (!isRecord(shipping)) return "";
+
+  const addr = shipping.address;
+  if (!isRecord(addr)) return "";
+
+  const cc = typeof addr.country_code === "string" ? addr.country_code : "";
+  return cc.trim().toUpperCase();
+}
+
 function parseAmountCents(value: string | null | undefined): number | null {
   if (!value) return null;
   const n = Number.parseInt(value, 10);
@@ -476,6 +493,58 @@ Deno.serve(async (req) => {
       });
     }
 
+    const parsedProduct =
+      referenceId && referenceId in PRODUCTS ? (referenceId as ProductKey) : null;
+
+    // Enforce US-only shipping for physical products (USBs) BEFORE capturing payment.
+    if (parsedProduct && isShippingProduct(parsedProduct)) {
+      const shippingCountry = getOrderShippingCountryCode(orderInfo.json);
+
+      if (!shippingCountry) {
+        return new Response(
+          JSON.stringify({
+            ok: true,
+            completed: false,
+            code: "SHIPPING_ADDRESS_REQUIRED",
+            message: "Shipping address is required for this product",
+          }),
+          {
+            status: 200,
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          }
+        );
+      }
+
+      if (shippingCountry !== "US") {
+        // Best-effort: mark lead for manual follow-up (do not treat as "paid").
+        try {
+          const { data: lead } = await supabaseAdmin
+            .from("leads")
+            .select("tags")
+            .eq("id", leadId)
+            .maybeSingle();
+          const nextTags = mergeTags(lead?.tags, ["shipping_not_allowed"]);
+          await supabaseAdmin.from("leads").update({ tags: nextTags }).eq("id", leadId);
+        } catch {
+          // ignore
+        }
+
+        return new Response(
+          JSON.stringify({
+            ok: true,
+            completed: false,
+            code: "SHIPPING_COUNTRY_NOT_ALLOWED",
+            allowedCountries: ["US"],
+            country: shippingCountry,
+          }),
+          {
+            status: 200,
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          }
+        );
+      }
+    }
+
     const captureInfo = await paypalFetchJson({
       baseUrl,
       token: accessToken,
@@ -508,10 +577,6 @@ Deno.serve(async (req) => {
 
         const baseTags = mergeTags(lead?.tags, ["paid_paypal"]);
 
-        const parsedProduct = referenceId && referenceId in PRODUCTS
-          ? (referenceId as ProductKey)
-          : null;
-
         // Auto-create a Shippo label for physical products (USBs) if Shippo is configured.
         if (parsedProduct && isShippingProduct(parsedProduct)) {
           const alreadyHasLabel =
@@ -525,7 +590,13 @@ Deno.serve(async (req) => {
               orderInfo: orderInfo.json,
             });
 
-            if (shippoToken && fromAddress && toAddress) {
+            // Defense-in-depth: never attempt to buy a label outside the US.
+            if (toAddress && toAddress.country.trim().toUpperCase() !== "US") {
+              shippo = { ok: false };
+              const tagsNotAllowed = mergeTags(baseTags, ["shipping_not_allowed"]);
+              await supabaseAdmin.from("leads").update({ tags: tagsNotAllowed }).eq("id", leadId);
+              // Continue without Shippo.
+            } else if (shippoToken && fromAddress && toAddress) {
               try {
                 const label = await createShippoLabel({
                   token: shippoToken,

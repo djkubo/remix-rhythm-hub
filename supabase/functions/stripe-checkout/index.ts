@@ -497,7 +497,12 @@ Deno.serve(async (req) => {
           session,
         });
 
-        if (shippoToken && fromAddress && toAddress) {
+        // Defense-in-depth: never attempt to buy a label outside the US.
+        if (toAddress && toAddress.country.trim().toUpperCase() !== "US") {
+          shippo = { ok: false };
+          const tagsNotAllowed = mergeTags(baseTags, ["shipping_not_allowed"]);
+          await supabaseAdmin.from("leads").update({ tags: tagsNotAllowed }).eq("id", leadId);
+        } else if (shippoToken && fromAddress && toAddress) {
           try {
             const label = await createShippoLabel({
               token: shippoToken,

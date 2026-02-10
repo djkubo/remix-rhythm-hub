@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ArrowLeft, CheckCircle2, MessageCircle } from "lucide-react";
+import { AlertTriangle, ArrowLeft, CheckCircle2, MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { supabase } from "@/integrations/supabase/client";
@@ -26,7 +26,7 @@ export default function Usb128ThankYou() {
   >("idle");
 
   const [paypalCaptureState, setPaypalCaptureState] = useState<
-    "idle" | "processing" | "success" | "error"
+    "idle" | "processing" | "success" | "error" | "shipping_not_allowed"
   >("idle");
 
   useEffect(() => {
@@ -70,6 +70,14 @@ export default function Usb128ThankYou() {
           body: { action: "capture", leadId, orderId: paypalOrderId },
         });
 
+        const code = typeof (data as { code?: unknown } | null)?.code === "string"
+          ? String((data as { code?: unknown }).code)
+          : "";
+        if (code === "SHIPPING_COUNTRY_NOT_ALLOWED" || code === "SHIPPING_ADDRESS_REQUIRED") {
+          setPaypalCaptureState("shipping_not_allowed");
+          return;
+        }
+
         const completed = Boolean((data as { completed?: unknown } | null)?.completed);
         if (error || !completed) {
           setPaypalCaptureState("error");
@@ -94,6 +102,9 @@ export default function Usb128ThankYou() {
     (hasStripeSession && stripeVerifyState === "success") ||
     (hasPayPalOrder && paypalCaptureState === "success");
 
+  const shippingBlocked =
+    hasPayPalOrder && paypalCaptureState === "shipping_not_allowed";
+
   return (
     <main className="min-h-screen bg-background flex items-center justify-center p-4">
       <div className="w-full max-w-lg">
@@ -107,13 +118,25 @@ export default function Usb128ThankYou() {
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
             transition={{ type: "spring", damping: 15, stiffness: 200, delay: 0.15 }}
-            className="inline-flex items-center justify-center w-24 h-24 rounded-full bg-green-500/10 mb-6"
+            className={`inline-flex items-center justify-center w-24 h-24 rounded-full mb-6 ${
+              shippingBlocked ? "bg-red-500/10" : "bg-green-500/10"
+            }`}
           >
-            <CheckCircle2 className="w-12 h-12 text-green-500" />
+            {shippingBlocked ? (
+              <AlertTriangle className="w-12 h-12 text-red-500" />
+            ) : (
+              <CheckCircle2 className="w-12 h-12 text-green-500" />
+            )}
           </motion.div>
 
           <h1 className="text-3xl md:text-4xl font-bold mb-4">
-            {language === "es" ? "¡Listo!" : "All set!"}
+            {shippingBlocked
+              ? language === "es"
+                ? "Atención"
+                : "Action needed"
+              : language === "es"
+                ? "¡Listo!"
+                : "All set!"}
           </h1>
 
           <p className="text-lg text-muted-foreground mb-8">
@@ -121,6 +144,10 @@ export default function Usb128ThankYou() {
               ? language === "es"
                 ? "Pago recibido. En breve te enviaremos por WhatsApp el seguimiento y cualquier detalle de entrega."
                 : "Payment received. You’ll receive tracking and delivery details via WhatsApp shortly."
+              : shippingBlocked
+                ? language === "es"
+                  ? "Solo enviamos productos físicos dentro de Estados Unidos. Tu pago con PayPal no se completó. Regresa e intenta de nuevo con una dirección en USA, o escríbenos por WhatsApp."
+                  : "We only ship physical products within the United States. Your PayPal payment was not completed. Go back and try again with a US address, or message us on WhatsApp."
               : hasStripeSession && stripeVerifyState === "processing"
                 ? language === "es"
                   ? "Estamos confirmando tu pago con Stripe. No cierres esta página."
