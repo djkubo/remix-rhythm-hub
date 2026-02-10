@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { Check, ArrowRight, Shield, Clock, Zap } from "lucide-react";
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useDataLayer } from "@/hooks/useDataLayer";
@@ -70,10 +71,10 @@ const FinalCTA = () => {
                   className="btn-primary-glow animate-pulse-glow group h-16 w-full max-w-md px-10 text-lg font-bold sm:w-auto"
                   onClick={() => trackClick(t("cta.button"))}
                 >
-                  <a href="https://videoremixespacks.com/plan" target="_blank" rel="noopener noreferrer">
+                  <Link to="/membresia">
                     {t("cta.button")}
                     <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
-                  </a>
+                  </Link>
                 </Button>
               </div>
 

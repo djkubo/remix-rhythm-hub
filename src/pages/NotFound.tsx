@@ -41,10 +41,10 @@ const NotFound = () => {
             </Link>
           </Button>
           <Button asChild size="lg" variant="outline" className="h-12 gap-2">
-            <a href="https://videoremixespacks.com/plan" target="_blank" rel="noopener noreferrer">
+            <Link to="/membresia">
               <Search className="h-4 w-4" />
               {language === "es" ? "Ver planes y precios" : "View plans & pricing"}
-            </a>
+            </Link>
           </Button>
         </div>
 

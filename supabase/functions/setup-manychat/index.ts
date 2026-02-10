@@ -135,6 +135,9 @@ Deno.serve(async (req) => {
       'usb_definitiva',
       'anual',
       'membresia_anual',
+      'membresia',
+      'plan_1tb_mensual',
+      'plan_2tb_anual',
     ];
 
     console.log('Creating tags...');

@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { Check, ShieldCheck, ArrowRight } from "lucide-react";
+import { Link } from "react-router-dom";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Button } from "@/components/ui/button";
 
@@ -79,10 +80,10 @@ const TrustSecuritySection = () => {
               size="lg"
               className="btn-primary-glow group h-14 px-10 text-base font-bold"
             >
-              <a href="https://videoremixespacks.com/plan" target="_blank" rel="noopener noreferrer">
+              <Link to="/membresia">
                 {t("cta.button")}
                 <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
-              </a>
+              </Link>
             </Button>
           </div>
         </motion.div>

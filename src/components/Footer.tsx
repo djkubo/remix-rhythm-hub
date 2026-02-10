@@ -23,13 +23,13 @@ const Footer = () => {
           {/* Links */}
           <div className="flex gap-8">
             <a
-              href="https://videoremixespacks.com/plan"
+              href="/membresia"
               className="font-sans text-sm text-muted-foreground transition-colors hover:text-primary hover:scale-105 duration-300"
             >
               {t("footer.plans")}
             </a>
             <a
-              href="https://videoremixespacks.com"
+              href="/"
               className="font-sans text-sm text-muted-foreground transition-colors hover:text-primary hover:scale-105 duration-300"
             >
               {t("footer.main")}

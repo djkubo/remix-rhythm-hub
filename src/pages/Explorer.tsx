@@ -1,0 +1,78 @@
+import { useEffect } from "react";
+import { Link } from "react-router-dom";
+import { Headphones, Zap } from "lucide-react";
+import SettingsToggle from "@/components/SettingsToggle";
+import MusicExplorer from "@/components/MusicExplorer";
+import { Button } from "@/components/ui/button";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { useTheme } from "@/contexts/ThemeContext";
+import logoWhite from "@/assets/logo-white.png";
+import logoDark from "@/assets/logo-dark.png";
+
+export default function Explorer() {
+  const { language } = useLanguage();
+  const { theme } = useTheme();
+
+  useEffect(() => {
+    document.title =
+      language === "es"
+        ? "Demos | VideoRemixesPacks"
+        : "Demos | VideoRemixesPacks";
+  }, [language]);
+
+  return (
+    <main className="min-h-screen bg-background">
+      <SettingsToggle />
+
+      <section className="relative overflow-hidden">
+        <div className="absolute inset-0 hero-gradient opacity-60" />
+        <div className="pointer-events-none absolute -top-40 left-1/2 h-[520px] w-[820px] -translate-x-1/2 rounded-full bg-primary/10 blur-3xl" />
+
+        <div className="container relative z-10 mx-auto max-w-6xl px-4 pb-10 pt-10 md:pb-14 md:pt-14">
+          <div className="flex items-center justify-between gap-4">
+            <Link to="/" className="inline-flex items-center">
+              <img
+                src={theme === "dark" ? logoWhite : logoDark}
+                alt="VideoRemixesPacks"
+                className="h-10 w-auto object-contain md:h-12"
+              />
+            </Link>
+
+            <Button asChild className="btn-primary-glow h-11 gap-2 px-5 font-black">
+              <Link to="/membresia">
+                <Zap className="h-4 w-4" />
+                {language === "es" ? "Ver planes" : "View plans"}
+              </Link>
+            </Button>
+          </div>
+
+          <div className="mt-10 glass-card p-8 md:p-10">
+            <div className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-4 py-2 text-sm font-black text-primary">
+              <Headphones className="h-4 w-4" />
+              {language === "es" ? "PREVIEW" : "PREVIEW"}
+            </div>
+            <h1 className="mt-5 font-display text-5xl font-black leading-[0.92] md:text-6xl">
+              {language === "es" ? (
+                <>
+                  Explora <span className="text-gradient-red">los demos</span>
+                </>
+              ) : (
+                <>
+                  Explore <span className="text-gradient-red">the demos</span>
+                </>
+              )}
+            </h1>
+            <p className="mt-4 max-w-2xl text-sm text-muted-foreground md:text-base">
+              {language === "es"
+                ? "Busca, escucha y valida la calidad y organización antes de suscribirte."
+                : "Search, listen, and validate the quality and organization before you subscribe."}
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <MusicExplorer />
+    </main>
+  );
+}
+

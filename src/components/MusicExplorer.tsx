@@ -12,6 +12,7 @@ import {
   Home,
   Loader2,
 } from "lucide-react";
+import { Link } from "react-router-dom";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
@@ -509,9 +510,9 @@ const MusicExplorer = () => {
               className="h-14 bg-gradient-to-r from-primary via-red-600 to-orange-500 text-lg font-bold shadow-lg transition-transform hover:scale-105"
               onClick={() => trackClick(t("explorer.modalCta"))}
             >
-              <a href="https://videoremixespacks.com/plan" target="_blank" rel="noopener noreferrer">
+              <Link to="/membresia">
                 {t("explorer.modalCta")}
-              </a>
+              </Link>
             </Button>
             <button
               onClick={() => setShowModal(false)}

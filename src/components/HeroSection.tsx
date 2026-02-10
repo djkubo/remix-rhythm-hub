@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useTheme } from "@/contexts/ThemeContext";
 import { useDataLayer } from "@/hooks/useDataLayer";
@@ -120,10 +121,10 @@ const HeroSection = () => {
             className="btn-primary-glow group h-16 gap-3 px-10 text-lg font-bold"
             onClick={() => handleCTAClick(t("hero.cta"))}
           >
-            <a href="https://videoremixespacks.com/plan" target="_blank" rel="noopener noreferrer">
+            <Link to="/membresia">
               <Zap className="h-5 w-5" />
               {t("hero.cta")}
-            </a>
+            </Link>
           </Button>
         </motion.div>
 

@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { Check, ArrowRight, Crown } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useCurrency } from "@/contexts/CurrencyContext";
 import { useDataLayer } from "@/hooks/useDataLayer";
@@ -163,11 +164,11 @@ const PricingSection = () => {
                   }`}
                   onClick={() => trackClick(plan.cta)}
                 >
-                  <a href="https://videoremixespacks.com/plan">
+                  <Link to="/membresia">
                     {plan.highlighted && <Crown className="mr-2 h-5 w-5" />}
                     {plan.cta}
                     <ArrowRight className="ml-2 h-5 w-5" />
-                  </a>
+                  </Link>
                 </Button>
               </div>
             </motion.div>

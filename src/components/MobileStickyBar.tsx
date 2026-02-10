@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Zap } from "lucide-react";
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useTheme } from "@/contexts/ThemeContext";
@@ -52,10 +53,10 @@ const MobileStickyBar = () => {
               size="sm"
               className="btn-primary-glow h-11 gap-2 px-5 font-bold text-sm flex-shrink-0"
             >
-              <a href="https://videoremixespacks.com/plan">
+              <Link to="/membresia">
                 <Zap className="h-4 w-4" />
                 {t("mobile.cta")}
-              </a>
+              </Link>
             </Button>
           </div>
           

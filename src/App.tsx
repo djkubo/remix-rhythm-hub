@@ -19,6 +19,9 @@ import Usb500gb from "./pages/Usb500gb";
 import Usb500gbThankYou from "./pages/Usb500gbThankYou";
 import Anual from "./pages/Anual";
 import AnualThankYou from "./pages/AnualThankYou";
+import Membresia from "./pages/Membresia";
+import MembresiaThankYou from "./pages/MembresiaThankYou";
+import Explorer from "./pages/Explorer";
 import AdminLogin from "./pages/AdminLogin";
 import AdminMusic from "./pages/AdminMusic";
 import Admin from "./pages/Admin";
@@ -54,6 +57,16 @@ const App = () => {
                     {/* Aliases requested by marketing (uppercase URLs) */}
                     <Route path="/ANUAL" element={<Anual />} />
                     <Route path="/ANUAL/gracias" element={<AnualThankYou />} />
+
+                    <Route path="/membresia" element={<Membresia />} />
+                    <Route path="/membresia/gracias" element={<MembresiaThankYou />} />
+                    {/* Aliases requested by marketing (uppercase URLs) */}
+                    <Route path="/MEMBRESIA" element={<Membresia />} />
+                    <Route path="/MEMBRESIA/gracias" element={<MembresiaThankYou />} />
+                    {/* Common short alias (legacy) */}
+                    <Route path="/plan" element={<Membresia />} />
+
+                    <Route path="/explorer" element={<Explorer />} />
 
                     <Route path="/gracias" element={<ThankYou />} />
 
