@@ -33,7 +33,7 @@ export default function AdminLogin() {
           .single();
         
         if (adminData) {
-          navigate("/admin/music");
+          navigate("/admin");
           return;
         }
       }
@@ -134,7 +134,7 @@ export default function AdminLogin() {
         title: language === "es" ? "Bienvenido" : "Welcome",
         description: language === "es" ? "Sesión iniciada correctamente" : "Signed in successfully",
       });
-      navigate("/admin/music");
+      navigate("/admin");
       
     } catch (error: unknown) {
       console.error("Auth error:", error);

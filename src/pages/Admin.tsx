@@ -40,8 +40,18 @@ export default function AdminPanel() {
         .maybeSingle();
 
       if (adminError || !adminData) {
-        console.error("User is not admin:", user.id);
+        if (adminError) {
+          console.error("Admin role check error:", adminError);
+        } else {
+          console.error("User is not admin:", user.id);
+        }
         await supabase.auth.signOut();
+        toast({
+          title: "Acceso denegado",
+          description:
+            "Tu cuenta no tiene permisos de administrador. Si ya deberías tener acceso, revisa Supabase > Authentication > Users (copia tu UUID) e insértalo en public.admin_users.",
+          variant: "destructive",
+        });
         navigate("/admin/login");
         return;
       }
@@ -58,7 +68,7 @@ export default function AdminPanel() {
     });
 
     return () => subscription.unsubscribe();
-  }, [navigate]);
+  }, [navigate, toast]);
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
