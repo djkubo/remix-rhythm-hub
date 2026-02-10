@@ -11,6 +11,8 @@ import AppErrorBoundary from "@/components/AppErrorBoundary";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import ThankYou from "./pages/ThankYou";
+import Gratis from "./pages/Gratis";
+import GratisThankYou from "./pages/GratisThankYou";
 import AdminLogin from "./pages/AdminLogin";
 import AdminMusic from "./pages/AdminMusic";
 import Admin from "./pages/Admin";
@@ -30,12 +32,14 @@ const App = () => {
                 <Sonner />
                 <BrowserRouter>
                   <Routes>
-                    <Route path="/" element={<Index />} />
-                    <Route path="/gracias" element={<ThankYou />} />
-                    {import.meta.env.DEV && DevTestPopup && (
-                      <Route
-                        path="/test-popup"
-                        element={
+                  <Route path="/" element={<Index />} />
+                  <Route path="/gratis" element={<Gratis />} />
+                  <Route path="/gratis/gracias" element={<GratisThankYou />} />
+                  <Route path="/gracias" element={<ThankYou />} />
+                  {import.meta.env.DEV && DevTestPopup && (
+                    <Route
+                      path="/test-popup"
+                      element={
                           <Suspense fallback={null}>
                             <DevTestPopup />
                           </Suspense>

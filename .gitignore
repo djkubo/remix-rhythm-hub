@@ -31,3 +31,7 @@ dist-ssr
 # Supabase CLI temp/linking artifacts
 supabase/.temp/
 .supabase/
+
+# Playwright CLI artifacts
+.playwright-cli/
+output/playwright/
