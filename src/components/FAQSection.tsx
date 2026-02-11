@@ -50,19 +50,19 @@ const FAQSection = () => {
       ];
 
   return (
-    <section className="relative py-16 md:py-24 bg-background">
-      <div className="container mx-auto max-w-3xl px-4">
+    <section className="relative bg-background py-16 md:py-24">
+      <div className="container mx-auto max-w-4xl px-4">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
+          transition={{ duration: 0.35 }}
           viewport={{ once: true }}
           className="mb-12 text-center"
         >
-          <h2 className="mb-3 font-display text-4xl font-bold md:text-5xl lg:text-6xl">
+          <h2 className="mb-3 font-display text-4xl font-black md:text-5xl">
             {isSpanish ? "Objeciones antes de comprar" : "Buying objections answered"}
           </h2>
-          <p className="font-sans text-lg text-muted-foreground">
+          <p className="mx-auto max-w-2xl text-sm text-muted-foreground md:text-base">
             {isSpanish
               ? "Lo esencial sobre pago, compatibilidad, cancelación y soporte."
               : "The essentials about payment, compatibility, cancellation, and support."}
@@ -72,20 +72,20 @@ const FAQSection = () => {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
+          transition={{ duration: 0.35, delay: 0.06 }}
           viewport={{ once: true }}
         >
-          <Accordion type="single" collapsible className="space-y-4">
+          <Accordion type="single" collapsible className="space-y-3">
             {faqs.map((faq, index) => (
               <AccordionItem
                 key={index}
                 value={`item-${index}`}
-                className="rounded-xl border border-border/50 bg-card/30 backdrop-blur-sm px-6 transition-all duration-300 data-[state=open]:border-primary/50 data-[state=open]:shadow-glow"
+                className="rounded-2xl border border-border/80 bg-card px-5 transition-all data-[state=open]:border-primary/35"
               >
-                <AccordionTrigger className="py-5 font-display text-base font-semibold text-foreground hover:text-primary hover:no-underline md:text-lg">
+                <AccordionTrigger className="py-4 text-left font-sans text-base font-semibold text-foreground hover:text-primary hover:no-underline">
                   {faq.question}
                 </AccordionTrigger>
-                <AccordionContent className="pb-5 font-sans text-sm text-muted-foreground md:text-base">
+                <AccordionContent className="pb-4 text-sm leading-relaxed text-muted-foreground md:text-base">
                   {faq.answer}
                 </AccordionContent>
               </AccordionItem>

@@ -37,7 +37,7 @@ const HowItWorksSection = () => {
           <p className="text-xs font-bold uppercase tracking-[0.18em] text-primary">
             {isSpanish ? "Cómo funciona" : "How it works"}
           </p>
-          <h2 className="mt-3 font-display text-4xl font-black md:text-5xl">
+          <h2 className="mt-3 font-display text-4xl font-black md:text-5xl lg:text-6xl">
             {isSpanish ? "Más claro, más rápido, más rentable" : "Clearer, faster, more profitable"}
           </h2>
         </div>
@@ -50,13 +50,15 @@ const HowItWorksSection = () => {
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.35, delay: index * 0.08 }}
               viewport={{ once: true }}
-              className="glass-card p-6"
+              className="rounded-2xl border border-border/80 bg-card p-6 shadow-[0_10px_24px_rgba(15,23,42,0.05)]"
             >
               <div className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10">
                 <step.icon className="h-5 w-5 text-primary" />
               </div>
               <h3 className="mt-4 font-display text-2xl font-black">{step.title}</h3>
-              <p className="mt-2 text-sm text-muted-foreground md:text-base">{step.description}</p>
+              <p className="mt-2 text-sm leading-relaxed text-muted-foreground md:text-base">
+                {step.description}
+              </p>
             </motion.article>
           ))}
         </div>

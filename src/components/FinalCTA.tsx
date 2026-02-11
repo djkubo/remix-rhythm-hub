@@ -30,63 +30,57 @@ const FinalCTA = () => {
   ];
 
   return (
-    <section className="relative py-24 md:py-32 bg-muted/20 dark:bg-background-carbon">
+    <section className="relative border-y border-border/60 bg-muted/20 py-20 md:py-24">
       <div className="container mx-auto px-4">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
-          className="mx-auto max-w-3xl"
+          transition={{ duration: 0.35 }}
+          className="mx-auto max-w-5xl"
         >
-          <div className="glow-border relative overflow-hidden bg-card dark:bg-gradient-to-b dark:from-card-elevated dark:to-card p-10 md:p-14">
-            {/* Background accent */}
-            <div className="absolute inset-0 hero-gradient opacity-50" />
-            
-            <div className="relative z-10 text-center">
-              {/* Heading */}
-              <h2 className="font-display text-display-sm md:text-display-md font-extrabold text-foreground">
+          <div className="rounded-3xl border border-border/80 bg-card p-8 shadow-[0_16px_32px_rgba(15,23,42,0.07)] md:p-12">
+            <div className="grid gap-8 md:grid-cols-[1.15fr_1fr] md:items-center">
+              <div>
+                <h2 className="font-display text-4xl font-black leading-[0.95] text-foreground md:text-5xl">
                 {t("cta.title")}{" "}
                 <span className="text-gradient-red">{t("cta.titleHighlight")}</span>
               </h2>
 
-              <p className="mx-auto mt-6 max-w-xl text-muted-foreground font-sans text-lg">
-                {t("cta.subtitleSimple")}
-              </p>
+                <p className="mt-4 max-w-lg text-sm leading-relaxed text-muted-foreground md:text-base">
+                  {t("cta.subtitleSimple")}
+                </p>
 
-              {/* Benefits grid */}
-              <div className="mt-10 grid gap-4 sm:grid-cols-2">
-                {benefits.map((benefit) => (
-                  <div
-                    key={benefit.text}
-                    className="flex items-center gap-4 rounded-xl bg-muted/50 dark:bg-secondary/40 border border-border p-4 text-left transition-all duration-300 hover:border-primary/30 hover:shadow-md dark:hover:shadow-none"
-                  >
-                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 dark:bg-primary/15">
-                      <benefit.icon className="h-5 w-5 text-primary" strokeWidth={1.5} />
-                    </div>
-                    <span className="font-sans text-sm font-medium text-foreground/90">{benefit.text}</span>
-                  </div>
-                ))}
-              </div>
-
-              {/* CTA Button */}
-              <div className="mt-12">
                 <Button
                   asChild
                   size="lg"
-                  className="btn-primary-glow animate-pulse-glow group h-16 w-full max-w-md px-10 text-lg font-bold sm:w-auto"
+                  className="btn-primary-glow mt-7 h-12 w-full gap-2 px-6 text-sm font-bold md:w-auto md:text-base"
                   onClick={() => handleCTAClick(t("cta.button"))}
                 >
                   <Link to="/plan">
                     {t("cta.button")}
-                    <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
+                    <ArrowRight className="h-4.5 w-4.5" />
                   </Link>
                 </Button>
-              </div>
 
-              <p className="mt-8 font-bebas text-sm tracking-widest text-muted-foreground">
+                <p className="mt-4 font-bebas text-xs tracking-[0.14em] text-muted-foreground">
                 FTP / AIR EXPLORER • 320KBPS / 1080P • {language === "es" ? "SOPORTE INCLUIDO" : "SUPPORT INCLUDED"}
               </p>
+              </div>
+
+              <div className="grid gap-3">
+                {benefits.map((benefit) => (
+                  <div
+                    key={benefit.text}
+                    className="flex items-center gap-3 rounded-xl border border-border/70 bg-background px-4 py-3 text-left"
+                  >
+                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary/10">
+                      <benefit.icon className="h-4.5 w-4.5 text-primary" strokeWidth={1.8} />
+                    </div>
+                    <span className="text-sm font-medium text-foreground/90">{benefit.text}</span>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </motion.div>

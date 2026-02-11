@@ -13,89 +13,84 @@ const paymentMethods = [
 ];
 
 const TrustSecuritySection = () => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const { trackEvent } = useAnalytics();
+  const isSpanish = language === "es";
 
   return (
-    <section className="relative py-20 md:py-28 bg-background overflow-hidden">
-      <div className="absolute inset-0 hero-gradient opacity-30" />
-
-      <div className="container relative z-10 mx-auto">
-        {/* Section Header */}
+    <section className="relative bg-background py-16 md:py-22">
+      <div className="container mx-auto max-w-6xl px-4">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
-          className="mb-12 text-center"
+          transition={{ duration: 0.35 }}
+          className="rounded-3xl border border-border/80 bg-card p-6 shadow-[0_14px_30px_rgba(15,23,42,0.06)] md:p-10"
         >
-          <span className="inline-flex items-center gap-2 rounded-full border border-success/40 bg-success/15 px-4 py-2 text-sm font-semibold text-success mb-6">
-            <ShieldCheck className="h-4 w-4" />
-            {t("trust.badge")}
-          </span>
-          <h2 className="font-display text-display-sm md:text-display-md font-extrabold text-foreground">
-            {t("trust.title")}{" "}
-            <span className="text-gradient-red">{t("trust.titleHighlight")}</span>
-          </h2>
-        </motion.div>
-
-        {/* Payment Methods */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5, delay: 0.1 }}
-          className="mb-12 flex flex-wrap items-center justify-center gap-6 md:gap-10"
-        >
-          {paymentMethods.map((method) => (
-            <div
-              key={method.name}
-              className="flex items-center justify-center rounded-xl bg-card border border-border px-6 py-4 backdrop-blur-sm transition-all duration-300 hover:border-primary/30 hover:bg-muted dark:hover:bg-card/80 hover:shadow-md dark:hover:shadow-none"
-            >
-              <span className="font-bebas text-xl tracking-wider text-muted-foreground">
-                {method.logo}
+          <div className="grid gap-8 md:grid-cols-[1.2fr_1fr] md:items-center">
+            <div>
+              <span className="inline-flex items-center gap-2 rounded-full border border-success/35 bg-success/10 px-3 py-1.5 text-xs font-bold uppercase tracking-[0.12em] text-success">
+                <ShieldCheck className="h-3.5 w-3.5" />
+                {t("trust.badge")}
               </span>
-            </div>
-          ))}
-        </motion.div>
+              <h2 className="mt-4 max-w-xl font-display text-4xl font-black leading-[0.95] md:text-5xl">
+                {t("trust.title")}{" "}
+                <span className="text-gradient-red">{t("trust.titleHighlight")}</span>
+              </h2>
+              <p className="mt-4 max-w-xl text-sm leading-relaxed text-muted-foreground md:text-base">
+                {isSpanish
+                  ? "Pagos protegidos, acceso claro y soporte real para que compres con confianza."
+                  : "Protected payments, clear access, and real support so you buy with confidence."}
+              </p>
 
-        {/* Guarantee & CTA */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5, delay: 0.2 }}
-          className="text-center space-y-6"
-        >
-          <div className="inline-flex items-center gap-3 rounded-full border border-border bg-card px-6 py-4 backdrop-blur-sm shadow-md dark:shadow-none">
-            <Check className="h-5 w-5 text-success" />
-            <p className="text-muted-foreground font-sans">
-              <span className="font-semibold text-foreground">{t("trust.cancel")}</span>{" "}
-              {t("trust.noContracts")}
-            </p>
-          </div>
-          
-          {/* CTA Button */}
-          <div>
-            <Button
-              asChild
-              size="lg"
-              className="btn-primary-glow group h-14 px-10 text-base font-bold"
-              onClick={() =>
-                trackEvent("click", {
-                  button_text: t("cta.button"),
-                  section: "trust_security",
-                  cta_id: "trust_ver_planes",
-                  plan_id: "plan_2tb_anual",
-                  funnel_step: "decision",
-                })
-              }
-            >
-              <Link to="/plan">
-                {t("cta.button")}
-                <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
-              </Link>
-            </Button>
+              <div className="mt-6 flex flex-wrap items-center gap-2.5">
+                {paymentMethods.map((method) => (
+                  <div
+                    key={method.name}
+                    className="rounded-lg border border-border bg-background px-3 py-2 text-xs font-semibold text-muted-foreground"
+                  >
+                    {method.logo}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="rounded-2xl border border-border bg-background p-5">
+              <div className="space-y-3 text-sm">
+                <div className="flex items-center gap-2.5 text-foreground/90">
+                  <Check className="h-4 w-4 text-success" />
+                  <span>{t("trust.cancel")}</span>
+                </div>
+                <div className="flex items-center gap-2.5 text-foreground/90">
+                  <Check className="h-4 w-4 text-success" />
+                  <span>{t("trust.noContracts")}</span>
+                </div>
+                <div className="flex items-center gap-2.5 text-foreground/90">
+                  <Check className="h-4 w-4 text-success" />
+                  <span>{isSpanish ? "Checkout seguro en segundos" : "Secure checkout in seconds"}</span>
+                </div>
+              </div>
+
+              <Button
+                asChild
+                size="lg"
+                className="btn-primary-glow mt-6 h-12 w-full text-sm font-bold"
+                onClick={() =>
+                  trackEvent("click", {
+                    button_text: t("cta.button"),
+                    section: "trust_security",
+                    cta_id: "trust_ver_planes",
+                    plan_id: "plan_2tb_anual",
+                    funnel_step: "decision",
+                  })
+                }
+              >
+                <Link to="/plan">
+                  {t("cta.button")}
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Link>
+              </Button>
+            </div>
           </div>
         </motion.div>
       </div>

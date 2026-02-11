@@ -1,11 +1,13 @@
-import { CreditCard, Headphones, MessageCircle, Usb } from "lucide-react";
+import { ArrowRight, Check, Headphones, MessageCircle, Usb } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useAnalytics } from "@/hooks/useAnalytics";
 
 const OfferComparisonSection = () => {
   const { language } = useLanguage();
+  const { trackEvent } = useAnalytics();
   const isEs = language === "es";
 
   const offers = [
@@ -29,6 +31,8 @@ const OfferComparisonSection = () => {
       cta: isEs ? "Escuchar demos" : "Listen to demos",
       to: "/explorer",
       variant: "outline" as const,
+      ctaId: "offer_pack_demos",
+      planId: null,
     },
     {
       key: "membresia",
@@ -51,6 +55,8 @@ const OfferComparisonSection = () => {
       to: "/membresia",
       variant: "default" as const,
       highlighted: true,
+      ctaId: "offer_membresia",
+      planId: "plan_2tb_anual",
     },
     {
       key: "usb",
@@ -72,32 +78,34 @@ const OfferComparisonSection = () => {
       cta: isEs ? "Ver USB" : "View USB",
       to: "/usb128",
       variant: "outline" as const,
+      ctaId: "offer_usb",
+      planId: null,
     },
   ];
 
   return (
-    <section className="relative py-16 md:py-24 bg-muted/20 dark:bg-background-carbon">
+    <section className="relative border-y border-border/60 bg-muted/20 py-16 md:py-24">
       <div className="container mx-auto px-4">
         <div className="mx-auto max-w-6xl">
           <div className="text-center">
-            <Badge className="bg-primary/10 text-primary hover:bg-primary/10">
+            <Badge className="bg-primary/10 px-3 py-1 text-primary hover:bg-primary/10">
               {isEs ? "OFERTA CLARA" : "CLEAR OFFER"}
             </Badge>
-            <h2 className="mt-4 font-display text-4xl font-black md:text-5xl">
+            <h2 className="mt-4 font-display text-4xl font-black md:text-5xl lg:text-6xl">
               {isEs ? (
                 <>
-                  Elige la opción que <span className="text-gradient-red">más te conviene</span>
+                  Elige la opción con <span className="text-gradient-red">mejor retorno</span>
                 </>
               ) : (
                 <>
-                  Choose the option that <span className="text-gradient-red">fits your stage</span>
+                  Choose the option with <span className="text-gradient-red">best ROI</span>
                 </>
               )}
             </h2>
-            <p className="mt-4 text-sm text-muted-foreground md:text-base">
+            <p className="mx-auto mt-4 max-w-2xl text-sm text-muted-foreground md:text-base">
               {isEs
-                ? "Compara precio, formato y objetivo en segundos. Sin letras chiquitas."
-                : "Compare price, format, and goal in seconds. No fine print."}
+                ? "Comparación directa de precio, formato y objetivo. Sin letras chiquitas, sin confusión."
+                : "Direct comparison of price, format, and goal. No fine print, no confusion."}
             </p>
           </div>
 
@@ -105,30 +113,52 @@ const OfferComparisonSection = () => {
             {offers.map((offer) => (
               <div
                 key={offer.key}
-                className={`glass-card p-6 ${offer.highlighted ? "ring-1 ring-primary/30" : ""}`}
+                className={`rounded-2xl border bg-card p-6 shadow-[0_12px_28px_rgba(15,23,42,0.06)] ${
+                  offer.highlighted ? "border-primary/40 ring-2 ring-primary/15" : "border-border/80"
+                }`}
               >
-                <div className="flex items-center gap-3">
-                  <div className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-primary/15">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10">
                     <offer.icon className="h-5 w-5 text-primary" />
                   </div>
-                  <p className="font-display text-2xl font-black">{offer.title}</p>
+                  {offer.highlighted && (
+                    <span className="rounded-full bg-primary px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-primary-foreground">
+                      {isEs ? "Recomendado" : "Recommended"}
+                    </span>
+                  )}
                 </div>
 
-                <p className="mt-5 font-display text-3xl font-black text-gradient-red">{offer.price}</p>
+                <p className="mt-4 font-display text-2xl font-black text-foreground">{offer.title}</p>
+                <p className="mt-2 font-display text-4xl font-black text-gradient-red">{offer.price}</p>
                 <p className="mt-1 text-sm text-muted-foreground">{offer.subtitle}</p>
 
-                <ul className="mt-5 space-y-2 text-sm text-muted-foreground">
+                <ul className="mt-6 space-y-2 text-sm text-foreground/90">
                   {offer.bullets.map((bullet) => (
-                    <li key={bullet} className="flex items-start gap-2">
-                      <CreditCard className="mt-0.5 h-4 w-4 text-primary" />
+                    <li key={bullet} className="flex items-start gap-2.5">
+                      <Check className="mt-0.5 h-4 w-4 text-primary" />
                       <span>{bullet}</span>
                     </li>
                   ))}
                 </ul>
 
-                <div className="mt-6">
-                  <Button asChild variant={offer.variant} className="h-11 w-full font-black">
-                    <Link to={offer.to}>{offer.cta}</Link>
+                <div className="mt-7">
+                  <Button
+                    asChild
+                    variant={offer.variant}
+                    className={`h-11 w-full font-black ${offer.highlighted ? "btn-primary-glow" : ""}`}
+                    onClick={() =>
+                      trackEvent("click", {
+                        cta_id: offer.ctaId,
+                        plan_id: offer.planId,
+                        section: "offer_comparison",
+                        funnel_step: "decision",
+                      })
+                    }
+                  >
+                    <Link to={offer.to}>
+                      {offer.cta}
+                      <ArrowRight className="ml-2 h-4 w-4" />
+                    </Link>
                   </Button>
                 </div>
               </div>
@@ -137,8 +167,8 @@ const OfferComparisonSection = () => {
 
           <p className="mt-6 text-center text-xs text-muted-foreground">
             {isEs
-              ? "Tip: si todavía tienes dudas, empieza por demos y luego avanza al plan que mejor encaje contigo."
-              : "Tip: if you still have doubts, start with demos and move to the plan that fits you best."}
+              ? "Tip CRO: si dudas, valida con demos y vuelve al plan recomendado."
+              : "CRO tip: if unsure, validate with demos and return to the recommended plan."}
           </p>
         </div>
       </div>
