@@ -31,7 +31,7 @@ const HowItWorksSection = () => {
   ];
 
   return (
-    <section className="relative bg-background py-14 md:py-20">
+    <section className="relative bg-background-carbon/62 py-14 md:py-20">
       <div className="container mx-auto max-w-6xl px-4">
         <div className="text-center">
           <p className="text-xs font-bold uppercase tracking-[0.18em] text-primary">

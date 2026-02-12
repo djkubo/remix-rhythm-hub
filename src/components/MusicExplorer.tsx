@@ -191,7 +191,7 @@ const MusicExplorer = ({ compact = false }: MusicExplorerProps) => {
   };
 
   return (
-    <section className={`relative ${isCompactPreview ? "bg-background-carbon/58 py-10 md:py-12" : "bg-background py-16 md:py-24"}`}>
+    <section className={`relative ${isCompactPreview ? "bg-background-carbon/66 py-10 md:py-12" : "bg-background py-16 md:py-24"}`}>
       <div className="absolute inset-0 hero-gradient opacity-8" />
 
       <div className="container relative z-10 mx-auto px-4">

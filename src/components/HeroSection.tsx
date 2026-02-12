@@ -79,7 +79,7 @@ const HeroSection = () => {
 
   return (
     <section className="relative overflow-hidden border-b border-border/75 bg-background">
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(236,9,50,0.035),transparent_70%)]" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(218,10,43,0.08),transparent_62%)]" />
       <div className="container relative z-10 mx-auto max-w-6xl px-4 pb-14 pt-10 md:pb-20 md:pt-16">
         <div className="grid items-center gap-9 md:grid-cols-2">
           <motion.div

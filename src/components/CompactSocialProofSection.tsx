@@ -32,7 +32,7 @@ const CompactSocialProofSection = () => {
       ];
 
   return (
-    <section className="relative bg-background py-10 md:py-14">
+    <section className="relative bg-background-carbon/56 py-10 md:py-14">
       <div className="container mx-auto max-w-6xl px-4">
         <div className="rounded-3xl border border-border/90 bg-card p-6 shadow-[0_12px_24px_rgba(15,23,42,0.09)] md:p-8">
           <div className="flex flex-col items-start justify-between gap-6 md:flex-row md:items-center">

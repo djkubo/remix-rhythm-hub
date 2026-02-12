@@ -84,7 +84,7 @@ const OfferComparisonSection = () => {
   ];
 
   return (
-    <section className="relative border-y border-border/75 bg-background-carbon/58 py-16 md:py-24">
+    <section className="relative border-y border-border/75 bg-background-carbon/68 py-16 md:py-24">
       <div className="container mx-auto px-4">
         <div className="mx-auto max-w-6xl">
           <div className="text-center">

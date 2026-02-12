@@ -54,7 +54,7 @@ const Index = () => {
         {language === "es" ? "Saltar al contenido" : "Skip to main content"}
       </a>
 
-      <main id="main-content" className="min-h-screen bg-background pb-16 md:pb-0" role="main">
+      <main id="main-content" className="min-h-screen bg-background-carbon pb-16 md:pb-0" role="main">
         <HeroSection />
 
         {showSocialProofEarly && <CompactSocialProofSection />}

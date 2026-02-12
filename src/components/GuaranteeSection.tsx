@@ -9,7 +9,7 @@ const GuaranteeSection = () => {
   const isSpanish = language === "es";
 
   return (
-    <section className="relative bg-background-carbon/56 py-14 md:py-18">
+    <section className="relative bg-background-carbon/66 py-14 md:py-18">
       <div className="container mx-auto px-4">
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}

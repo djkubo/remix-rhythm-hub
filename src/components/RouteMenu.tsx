@@ -56,7 +56,7 @@ export default function RouteMenu() {
   };
 
   return (
-    <header className="sticky top-0 z-50 border-b border-border/90 bg-card shadow-[0_8px_16px_rgba(15,23,42,0.06)]">
+    <header className="sticky top-0 z-50 border-b border-border/90 bg-card/95 backdrop-blur-md shadow-[0_8px_16px_rgba(15,23,42,0.08)]">
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
         <Link to="/" className="inline-flex items-center" onClick={() => handleNavClick("header_logo")}>
           <img

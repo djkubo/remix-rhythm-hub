@@ -18,7 +18,7 @@ const TrustSecuritySection = () => {
   const isSpanish = language === "es";
 
   return (
-    <section className="relative bg-background py-16 md:py-22">
+    <section className="relative bg-background-carbon/62 py-16 md:py-22">
       <div className="container mx-auto max-w-6xl px-4">
         <motion.div
           initial={{ opacity: 0, y: 20 }}

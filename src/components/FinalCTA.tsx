@@ -30,7 +30,7 @@ const FinalCTA = () => {
   ];
 
   return (
-    <section className="relative border-y border-border/75 bg-background-carbon/58 py-18 md:py-22">
+    <section className="relative border-y border-border/75 bg-background-carbon/68 py-18 md:py-22">
       <div className="container mx-auto px-4">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
