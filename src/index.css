@@ -67,7 +67,7 @@
   }
 
   /* Keep explicit light class for runtime toggles */
-  .light {
+  :root.light {
     --background: 214 13% 92%;
     --background-carbon: 214 14% 88%;
     --foreground: 224 24% 14%;
@@ -110,7 +110,7 @@
     --sidebar-ring: 0 94% 31%;
   }
 
-  .dark {
+  :root.dark {
     --background: 0 0% 0%;
     --background-carbon: 0 0% 3%;
     --foreground: 0 0% 100%;
@@ -166,13 +166,13 @@
     font-feature-settings: "cv11", "ss01";
   }
 
-  .light body {
+  :root.light body {
     background-color: hsl(var(--background));
     background-image: none;
     background-attachment: scroll;
   }
 
-  .dark body {
+  :root.dark body {
     background-image: none;
   }
 
@@ -218,12 +218,12 @@
     }
   }
 
-  .dark .glass-card {
+  :root.dark .glass-card {
     background: linear-gradient(180deg, hsl(0 0% 8% / 0.85) 0%, hsl(0 0% 4% / 0.92) 100%);
     border-color: hsl(0 0% 22% / 0.5);
   }
 
-  .light .glass-card {
+  :root.light .glass-card {
     background: hsl(var(--card));
     border-color: hsl(var(--border) / 0.95);
     box-shadow: 0 12px 26px hsl(220 30% 12% / 0.1), 0 1px 2px hsl(220 20% 12% / 0.05);
@@ -234,13 +234,13 @@
     @apply glass-card transition-all duration-300;
   }
 
-  .dark .glass-card-hover:hover {
+  :root.dark .glass-card-hover:hover {
     border-color: hsl(1 99% 40% / 0.5);
     box-shadow: 0 0 50px hsl(1 99% 34% / 0.15);
     transform: translateY(-3px);
   }
 
-  .light .glass-card-hover:hover {
+  :root.light .glass-card-hover:hover {
     border-color: hsl(var(--primary) / 0.48);
     box-shadow: 0 14px 34px hsl(220 30% 12% / 0.12), 0 6px 16px hsl(var(--primary) / 0.14);
     transform: translateY(-3px);
@@ -252,13 +252,13 @@
     border: 2px solid hsl(var(--primary));
   }
 
-  .dark .glow-border {
+  :root.dark .glow-border {
     box-shadow: 
       0 0 50px hsl(1 99% 34% / 0.25),
       inset 0 0 40px hsl(1 99% 34% / 0.03);
   }
 
-  .light .glow-border {
+  :root.light .glow-border {
     border-color: hsl(var(--primary));
     box-shadow: 
       0 10px 32px hsl(var(--primary) / 0.18),
@@ -269,14 +269,14 @@
     @apply relative rounded-2xl;
   }
 
-  .dark .glow-border-gold {
+  :root.dark .glow-border-gold {
     border: 2px solid hsl(45 93% 50%);
     box-shadow: 
       0 0 60px hsl(45 93% 47% / 0.35),
       inset 0 0 30px hsl(45 93% 47% / 0.05);
   }
 
-  .light .glow-border-gold {
+  :root.light .glow-border-gold {
     border: 2px solid hsl(40 85% 45%);
     box-shadow: 
       0 8px 40px hsl(40 85% 45% / 0.18),
@@ -288,11 +288,11 @@
     background: var(--gradient-hero);
   }
 
-  .dark .hero-gradient {
+  :root.dark .hero-gradient {
     background: radial-gradient(ellipse 120% 70% at 50% 5%, hsl(1 99% 20% / 0.55) 0%, transparent 50%);
   }
 
-  .light .hero-gradient {
+  :root.light .hero-gradient {
     background: radial-gradient(ellipse 120% 70% at 50% 5%, hsl(var(--primary) / 0.04) 0%, transparent 62%);
   }
 
@@ -300,11 +300,11 @@
     @apply bg-clip-text text-transparent;
   }
 
-  .dark .text-gradient-red {
+  :root.dark .text-gradient-red {
     background-image: linear-gradient(135deg, hsl(1 99% 58%) 0%, hsl(1 99% 40%) 50%, hsl(1 99% 32%) 100%);
   }
 
-  .light .text-gradient-red {
+  :root.light .text-gradient-red {
     background-image: linear-gradient(135deg, hsl(349 93% 50%) 0%, hsl(350 91% 44%) 48%, hsl(352 87% 36%) 100%);
   }
 
@@ -312,11 +312,11 @@
     @apply bg-clip-text text-transparent;
   }
 
-  .dark .text-gradient-gold {
+  :root.dark .text-gradient-gold {
     background-image: linear-gradient(135deg, hsl(45 95% 62%) 0%, hsl(42 92% 52%) 50%, hsl(38 88% 45%) 100%);
   }
 
-  .light .text-gradient-gold {
+  :root.light .text-gradient-gold {
     background-image: linear-gradient(135deg, hsl(40 88% 42%) 0%, hsl(38 82% 35%) 50%, hsl(35 78% 30%) 100%);
   }
 
@@ -334,11 +334,11 @@
     transform: translateY(-1px);
   }
 
-  .light .btn-primary-glow {
+  :root.light .btn-primary-glow {
     box-shadow: 0 10px 22px hsl(349 93% 48% / 0.42);
   }
 
-  .light .btn-primary-glow:hover {
+  :root.light .btn-primary-glow:hover {
     box-shadow: 0 12px 26px hsl(349 93% 48% / 0.5);
   }
 
@@ -391,7 +391,7 @@
     color: hsl(var(--primary));
   }
 
-  .light .badge-primary {
+  :root.light .badge-primary {
     background: hsl(var(--card));
     border-color: hsl(var(--primary) / 0.72);
   }
@@ -403,7 +403,7 @@
     box-shadow: 0 2px 10px hsl(45 93% 47% / 0.3);
   }
 
-  .light .badge-gold {
+  :root.light .badge-gold {
     box-shadow: 0 2px 12px hsl(45 90% 40% / 0.25);
   }
 
@@ -413,22 +413,22 @@
     height: 8px;
   }
 
-  .dark ::-webkit-scrollbar-track,
+  :root.dark ::-webkit-scrollbar-track,
   ::-webkit-scrollbar-track {
     background: hsl(0 0% 5%);
   }
 
-  .light ::-webkit-scrollbar-track {
+  :root.light ::-webkit-scrollbar-track {
     background: hsl(214 21% 91%);
   }
 
-  .dark ::-webkit-scrollbar-thumb,
+  :root.dark ::-webkit-scrollbar-thumb,
   ::-webkit-scrollbar-thumb {
     background: hsl(0 0% 25%);
     border-radius: 4px;
   }
 
-  .light ::-webkit-scrollbar-thumb {
+  :root.light ::-webkit-scrollbar-thumb {
     background: hsl(220 12% 64%);
     border-radius: 4px;
   }
@@ -442,11 +442,11 @@
     @apply w-full h-px;
   }
 
-  .dark .section-divider {
+  :root.dark .section-divider {
     background: linear-gradient(90deg, transparent 0%, hsl(0 0% 20%) 50%, transparent 100%);
   }
 
-  .light .section-divider {
+  :root.light .section-divider {
     background: linear-gradient(90deg, transparent 0%, hsl(220 14% 74%) 50%, transparent 100%);
   }
 }
