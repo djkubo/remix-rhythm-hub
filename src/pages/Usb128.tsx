@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
+  ArrowRight,
   CheckCircle2,
-  ChevronRight,
   CreditCard,
   Loader2,
   MessageCircle,
@@ -132,21 +132,57 @@ export default function Usb128() {
     []
   );
 
+  const socialStats = useMemo(
+    () => [
+      {
+        label: isSpanish ? "DJs latinos" : "Latino DJs",
+        value: "7,000+",
+      },
+      {
+        label: isSpanish ? "Canciones en la USB" : "Songs on USB",
+        value: "10,000+",
+      },
+      {
+        label: isSpanish ? "Calificación soporte" : "Support rating",
+        value: "4.9/5",
+      },
+    ],
+    [isSpanish]
+  );
+
+  const valueBullets = useMemo(
+    () => [
+      isSpanish
+        ? "Biblioteca latina lista para tocar: cumbia, salsa, bachata, reggaetón, regional y más"
+        : "Latin library ready for gigs: cumbia, salsa, bachata, reggaeton, regional, and more",
+      isSpanish
+        ? "Estructura por género para encontrar rápido lo que te pide la pista"
+        : "Genre-first structure so you find requested tracks fast",
+      isSpanish
+        ? "Compatibilidad real con Serato, VirtualDJ y Rekordbox"
+        : "Real compatibility with Serato, VirtualDJ, and Rekordbox",
+      isSpanish
+        ? "Soporte humano por WhatsApp en español"
+        : "Human Spanish WhatsApp support",
+    ],
+    [isSpanish]
+  );
+
   const faqItems = useMemo(
     () => [
       {
         id: "faq-1",
         q: isSpanish ? "¿Cuánto cuesta la USB 128 GB?" : "How much is the 128 GB USB?",
         a: isSpanish
-          ? "La oferta es $147 USD pago único. Puedes pagar en checkout con tarjeta o PayPal, y si aplica, en cuotas con Klarna/Afterpay."
-          : "The offer is a one-time $147 USD payment. You can pay at checkout with card or PayPal, and if available, in installments via Klarna/Afterpay.",
+          ? "La oferta es $147 USD pago único. Puedes pagar con tarjeta o PayPal, y según país también en cuotas con Klarna/Afterpay."
+          : "The offer is a one-time $147 USD payment. You can pay with card or PayPal, and depending on country also in installments via Klarna/Afterpay.",
       },
       {
         id: "faq-2",
         q: isSpanish ? "¿Qué incluye exactamente?" : "What exactly is included?",
         a: isSpanish
-          ? "+10,000 canciones latinas en MP3 (320 kbps), organizadas por género para DJs. Incluye acceso al grupo y soporte en español por WhatsApp."
-          : "+10,000 Latin MP3 songs (320 kbps), organized by genre for DJs. Includes group access and Spanish WhatsApp support.",
+          ? "Incluye +10,000 canciones latinas en MP3 (320 kbps), organizadas por género para DJs, más soporte en español."
+          : "It includes +10,000 Latin MP3 songs (320 kbps), organized by genre for DJs, plus Spanish support.",
       },
       {
         id: "faq-3",
@@ -154,29 +190,29 @@ export default function Usb128() {
           ? "¿Funciona con Serato, VirtualDJ y Rekordbox?"
           : "Does it work with Serato, VirtualDJ, and Rekordbox?",
         a: isSpanish
-          ? "Sí. El formato MP3 es compatible con Serato, VirtualDJ, Rekordbox y setups DJ estándar en Mac/Windows."
-          : "Yes. MP3 format is compatible with Serato, VirtualDJ, Rekordbox, and standard DJ setups on Mac/Windows.",
+          ? "Sí. El formato MP3 funciona en Serato, VirtualDJ, Rekordbox y setups DJ estándar en Mac/Windows."
+          : "Yes. MP3 works with Serato, VirtualDJ, Rekordbox, and standard DJ setups on Mac/Windows.",
       },
       {
         id: "faq-4",
-        q: isSpanish ? "¿Envían fuera de Estados Unidos?" : "Do you ship outside the United States?",
+        q: isSpanish ? "¿Puedo escuchar demos antes?" : "Can I hear demos before buying?",
         a: isSpanish
-          ? "Esta oferta de envío gratis aplica dentro de EE. UU. Si necesitas otro país, escríbenos antes de pagar para revisar opciones."
-          : "This free-shipping offer applies within the U.S. If you need another country, contact us before paying to check options.",
+          ? "Sí. Puedes revisar previews por género en el explorador antes de pagar."
+          : "Yes. You can review genre previews in the explorer before paying.",
       },
       {
         id: "faq-5",
-        q: isSpanish ? "¿Puedo escuchar demos antes?" : "Can I hear demos first?",
+        q: isSpanish ? "¿Envían fuera de Estados Unidos?" : "Do you ship outside the U.S.?",
         a: isSpanish
-          ? "Sí. Puedes ir al explorador y escuchar previews por género antes de pagar."
-          : "Yes. You can go to the explorer and hear genre previews before paying.",
+          ? "Esta oferta de envío gratis aplica dentro de EE. UU. Si necesitas otro destino, escríbenos antes de pagar para confirmarlo."
+          : "This free-shipping offer applies within the U.S. If you need another destination, contact us before checkout to confirm.",
       },
       {
         id: "faq-6",
-        q: isSpanish ? "¿Qué pasa si tengo problemas de acceso o soporte?" : "What if I need technical support?",
+        q: isSpanish ? "¿Qué pasa si necesito ayuda técnica?" : "What if I need technical help?",
         a: isSpanish
-          ? "Te atendemos por WhatsApp en español. El objetivo es que quedes listo para tocar, no dejarte solo con un link."
-          : "You get Spanish WhatsApp support. The goal is to get you ready to play, not leave you with just a link.",
+          ? "Te atendemos por WhatsApp en español para acceso, descarga y configuración básica."
+          : "We support you via Spanish WhatsApp for access, downloads, and basic setup.",
       },
     ],
     [isSpanish]
@@ -189,11 +225,11 @@ export default function Usb128() {
         who: "DJ Carlos · Miami, FL",
       },
       {
-        quote: "Muy buena música. Todo más ordenado para tocar.",
+        quote: "Muy buena música, todo más ordenado para mis eventos.",
         who: "DJ Andrea · Los Angeles, CA",
       },
       {
-        quote: "Excelente, gracias. Me ahorró horas de búsqueda.",
+        quote: "Excelente, me ahorró horas de búsqueda cada semana.",
         who: "DJ Javier · Houston, TX",
       },
     ],
@@ -247,6 +283,17 @@ export default function Usb128() {
       dial_code: dialCode,
     });
   }, [isSpanish]);
+
+  const trackCta = useCallback(
+    (ctaId: string, funnelStep: string = "consideration") => {
+      trackEvent("cta_click", {
+        cta_id: ctaId,
+        plan_id: "usb128",
+        funnel_step: funnelStep,
+      });
+    },
+    [trackEvent]
+  );
 
   const openOrder = useCallback(
     (ctaId: string) => {
@@ -474,28 +521,31 @@ export default function Usb128() {
   );
 
   return (
-    <main className="min-h-screen bg-[#f3f4f6] text-[#111827] dark:bg-background dark:text-foreground">
-      <section className="relative overflow-hidden bg-[#0f1115]">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_16%_12%,rgba(224,6,19,0.55),transparent_55%),radial-gradient(circle_at_82%_18%,rgba(224,6,19,0.3),transparent_46%),linear-gradient(135deg,#1a0005_0%,#71010b_30%,#ba0916_62%,#e10613_100%)]" />
-        <div className="relative container mx-auto max-w-6xl px-4 pb-12 pt-10 md:pb-16 md:pt-14">
-          <div className="grid items-start gap-8 lg:grid-cols-[1.05fr_0.95fr]">
+    <main className="min-h-screen bg-[#edf1f5] text-[#0f172a] dark:bg-background dark:text-foreground">
+      <section className="relative overflow-hidden bg-[#090b0f]">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_14%_20%,rgba(225,6,19,0.45),transparent_52%),radial-gradient(circle_at_80%_15%,rgba(225,6,19,0.25),transparent_44%),linear-gradient(130deg,#140003_0%,#5e0008_35%,#9c020d_60%,#d90413_100%)]" />
+
+        <div className="relative container mx-auto max-w-6xl px-4 pb-12 pt-8 md:pb-16 md:pt-12">
+          <div className="grid gap-8 lg:grid-cols-[1.1fr_0.9fr] lg:items-start">
             <div>
-              <Badge className="border border-white/30 bg-white/10 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.12em] text-white">
+              <Badge className="border border-white/35 bg-black/20 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.11em] text-white">
                 <ShieldCheck className="mr-2 h-3.5 w-3.5" />
                 {isSpanish ? "USB física · envío gratis USA" : "Physical USB · free USA shipping"}
               </Badge>
 
-              <h1 className="mt-5 max-w-3xl text-4xl font-black leading-[0.95] text-white sm:text-5xl lg:text-6xl">
-                {isSpanish ? "Tu música latina lista para conectar y mezclar" : "Your Latin library ready to plug and mix"}
+              <h1 className="mt-5 max-w-3xl text-4xl font-black leading-[0.94] text-white sm:text-5xl lg:text-6xl">
+                {isSpanish
+                  ? "Tu música latina lista para conectar y mezclar"
+                  : "Your Latin music ready to plug and mix"}
               </h1>
 
-              <p className="mt-5 max-w-2xl text-sm text-white/88 sm:text-base">
+              <p className="mt-4 max-w-2xl text-sm text-white/90 sm:text-base">
                 {isSpanish
-                  ? "+10,000 canciones en MP3 (320 kbps), organizadas por género para DJs latinos en Estados Unidos."
-                  : "+10,000 MP3 songs (320 kbps), organized by genre for Latino DJs in the United States."}
+                  ? "+10,000 canciones en MP3 320 kbps, organizadas por género para DJs latinos en Estados Unidos."
+                  : "+10,000 MP3 320 kbps songs, genre-organized for Latino DJs in the United States."}
               </p>
 
-              <div className="mt-7 flex flex-wrap items-center gap-2">
+              <div className="mt-6 flex flex-wrap items-center gap-2">
                 {[
                   isSpanish ? "Pago único" : "One-time payment",
                   "$147 USD",
@@ -503,47 +553,54 @@ export default function Usb128() {
                 ].map((pill) => (
                   <span
                     key={pill}
-                    className="rounded-full border border-white/28 bg-black/25 px-4 py-1.5 text-xs font-semibold text-white"
+                    className="rounded-full border border-white/35 bg-black/25 px-4 py-1.5 text-xs font-semibold text-white"
                   >
                     {pill}
                   </span>
                 ))}
               </div>
 
-              <div className="mt-7 flex flex-col gap-3 sm:flex-row">
+              <div className="mt-6 flex flex-col gap-3 sm:flex-row">
                 <Button
                   onClick={() => openOrder("usb128_hero_buy")}
                   className="btn-primary-glow h-12 px-8 text-base font-black"
                 >
                   {isSpanish ? "Comprar USB 128GB" : "Buy USB 128GB"}
-                  <ChevronRight className="ml-2 h-4 w-4" />
+                  <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
 
                 <Button
                   asChild
                   variant="outline"
-                  className="h-12 border-white/45 bg-white/10 px-8 text-base font-bold text-white hover:bg-white/18"
+                  className="h-12 border-white/45 bg-white/10 px-8 text-base font-bold text-white hover:bg-white/20"
                 >
                   <Link
                     to="/explorer"
-                    onClick={() =>
-                      trackEvent("cta_click", {
-                        cta_id: "usb128_hero_demos",
-                        plan_id: "usb128",
-                        funnel_step: "consideration",
-                      })
-                    }
+                    onClick={() => trackCta("usb128_hero_demos")}
                   >
                     {isSpanish ? "Escuchar demos" : "Listen to demos"}
                   </Link>
                 </Button>
               </div>
 
-              <div className="mt-6 flex flex-wrap items-center gap-2">
+              <p className="mt-3 text-xs text-white/80">
+                {isSpanish
+                  ? "¿Primero quieres valor gratis? Entra al grupo y recibe contenido antes de comprar."
+                  : "Want free value first? Join the group and receive content before buying."}{" "}
+                <Link
+                  to="/gratis"
+                  onClick={() => trackCta("usb128_hero_group", "awareness")}
+                  className="font-semibold text-white underline underline-offset-2"
+                >
+                  {isSpanish ? "Ir al acceso gratis" : "Go to free access"}
+                </Link>
+              </p>
+
+              <div className="mt-5 flex flex-wrap gap-2">
                 {paymentBadges.map((label) => (
                   <Badge
                     key={label}
-                    className="border border-white/30 bg-white/8 px-3 py-1 text-[11px] font-semibold text-white"
+                    className="border border-white/35 bg-white/10 px-3 py-1 text-[11px] text-white"
                   >
                     <CreditCard className="mr-1.5 h-3 w-3" />
                     {label}
@@ -552,8 +609,8 @@ export default function Usb128() {
               </div>
             </div>
 
-            <div className="rounded-3xl border border-white/20 bg-white p-4 text-[#121722] shadow-[0_24px_54px_rgba(0,0,0,0.35)] md:p-5">
-              <div className="overflow-hidden rounded-2xl border border-[#d7dbe1] bg-[#eef1f4] p-2">
+            <div className="rounded-3xl border border-white/25 bg-white p-4 text-[#111827] shadow-[0_24px_52px_rgba(0,0,0,0.35)] md:p-5">
+              <div className="overflow-hidden rounded-2xl border border-[#d7dbe2] bg-[#eef1f4] p-2">
                 <img
                   src={usbSamsungBarPlus}
                   alt="Samsung BAR Plus 128GB"
@@ -562,148 +619,126 @@ export default function Usb128() {
                 />
               </div>
 
-              <div className="mt-4 rounded-2xl border border-[#e4e7eb] bg-[#f8fafc] p-4">
-                <div className="flex items-start justify-between gap-4">
+              <div className="mt-4 rounded-2xl border border-[#e0e5ec] bg-[#f9fbff] p-4">
+                <div className="flex items-start justify-between gap-3">
                   <div>
                     <p className="text-xs font-bold uppercase tracking-[0.1em] text-[#6b7280]">USB 128 GB</p>
-                    <p className="mt-1 text-3xl font-black text-[#e10613]">$147 USD</p>
-                    <p className="text-xs text-[#667085]">
-                      {isSpanish ? "Envío gratis USA · pago único" : "Free USA shipping · one-time payment"}
+                    <p className="mt-1 text-3xl font-black text-[#d90413]">$147 USD</p>
+                    <p className="text-xs text-[#5f6b7a]">
+                      {isSpanish
+                        ? "Envío gratis en USA · pago único"
+                        : "Free shipping in USA · one-time payment"}
                     </p>
                   </div>
-                  <Badge className="border border-[#f8c9cf] bg-[#fff1f2] px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.08em] text-[#b10010]">
-                    {isSpanish ? "Top oferta" : "Top offer"}
+
+                  <Badge className="border border-[#f8c8cd] bg-[#fff1f2] px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.08em] text-[#b10010]">
+                    {isSpanish ? "Recomendada" : "Recommended"}
                   </Badge>
                 </div>
 
-                <ul className="mt-4 space-y-2 text-sm text-[#374151]">
-                  {[
-                    isSpanish ? "+10,000 canciones listas para evento" : "+10,000 event-ready songs",
-                    isSpanish ? "Organizada por género para DJ" : "Genre-organized for DJs",
-                    isSpanish ? "Compatible con Serato / VDJ / Rekordbox" : "Works with Serato / VDJ / Rekordbox",
-                    isSpanish ? "Incluye acceso al grupo de WhatsApp" : "Includes WhatsApp group access",
-                  ].map((item) => (
+                <ul className="mt-4 space-y-2 text-sm text-[#344054]">
+                  {valueBullets.map((item) => (
                     <li key={item} className="flex items-start gap-2">
-                      <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-[#e10613]" />
+                      <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-[#d90413]" />
                       <span>{item}</span>
                     </li>
                   ))}
                 </ul>
 
                 <Button
-                  onClick={() => openOrder("usb128_card_buy")}
+                  onClick={() => openOrder("usb128_product_card_buy")}
                   className="btn-primary-glow mt-4 h-11 w-full text-sm font-black"
                 >
-                  {isSpanish ? "Quiero mi USB ahora" : "I want my USB now"}
+                  {isSpanish ? "Asegurar mi USB" : "Secure my USB"}
                 </Button>
               </div>
             </div>
+          </div>
+
+          <div className="mt-6 grid gap-3 sm:grid-cols-3">
+            {socialStats.map((stat) => (
+              <div key={stat.label} className="rounded-2xl border border-white/25 bg-black/25 px-4 py-3">
+                <p className="text-2xl font-black text-white">{stat.value}</p>
+                <p className="text-xs uppercase tracking-[0.08em] text-white/80">{stat.label}</p>
+              </div>
+            ))}
           </div>
         </div>
       </section>
 
       <section className="py-10 md:py-14">
         <div className="container mx-auto max-w-6xl px-4">
-          <div className="grid gap-4 md:grid-cols-3">
-            {[
-              {
-                icon: MessageCircle,
-                title: isSpanish ? "Comunidad real" : "Real community",
-                desc: isSpanish
-                  ? "+7,000 DJs latinos ya están en el grupo"
-                  : "+7,000 Latino DJs are already in the group",
-              },
-              {
-                icon: Usb,
-                title: isSpanish ? "Catálogo organizado" : "Organized catalog",
-                desc: isSpanish
-                  ? "Lo encuentras por género en segundos"
-                  : "Find tracks by genre in seconds",
-              },
-              {
-                icon: Truck,
-                title: isSpanish ? "Entrega física" : "Physical delivery",
-                desc: isSpanish
-                  ? "USB Samsung BAR Plus con envío USA"
-                  : "Samsung BAR Plus USB with USA shipping",
-              },
-            ].map((item) => (
-              <article
-                key={item.title}
-                className="rounded-2xl border border-[#d8dde5] bg-white p-5 shadow-[0_10px_24px_rgba(10,20,40,0.08)]"
-              >
-                <item.icon className="h-5 w-5 text-[#e10613]" />
-                <h2 className="mt-3 text-xl font-black text-[#111827]">{item.title}</h2>
-                <p className="mt-1 text-sm text-[#4b5563]">{item.desc}</p>
-              </article>
-            ))}
-          </div>
-        </div>
-      </section>
+          <div className="rounded-3xl border border-[#d8dee8] bg-white p-6 shadow-[0_12px_30px_rgba(10,20,40,0.08)] md:p-8">
+            <p className="text-center text-xs font-bold uppercase tracking-[0.12em] text-[#d90413]">
+              {isSpanish ? "Oferta clara" : "Clear offer"}
+            </p>
+            <h2 className="mt-2 text-center text-3xl font-black leading-tight text-[#111827] md:text-4xl">
+              {isSpanish
+                ? "Elige la opción con mejor retorno para ti"
+                : "Choose the option with the best return for you"}
+            </h2>
 
-      <section className="py-10 md:py-16">
-        <div className="container mx-auto max-w-6xl px-4">
-          <div className="rounded-3xl border border-[#d8dde5] bg-white p-6 shadow-[0_14px_34px_rgba(10,20,40,0.08)] md:p-8">
-            <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-              <div>
-                <p className="text-xs font-bold uppercase tracking-[0.12em] text-[#e10613]">
-                  {isSpanish ? "Cómo funciona" : "How it works"}
+            <div className="mt-6 grid gap-4 lg:grid-cols-3">
+              <article className="rounded-2xl border border-[#dce2ec] bg-[#f9fbff] p-5">
+                <p className="text-xs font-bold uppercase tracking-[0.08em] text-[#667085]">
+                  {isSpanish ? "Pack individual" : "Single pack"}
                 </p>
-                <h2 className="mt-2 text-3xl font-black leading-tight text-[#111827] md:text-4xl">
-                  {isSpanish ? "Compra en 3 pasos, sin fricción" : "Buy in 3 steps, friction-free"}
-                </h2>
-              </div>
-
-              <Button
-                asChild
-                variant="outline"
-                className="h-11 border-[#d2d8e2] bg-[#f8fafc] font-bold text-[#111827] hover:bg-[#f2f5fa]"
-              >
-                <Link
-                  to="/gratis"
-                  onClick={() =>
-                    trackEvent("cta_click", {
-                      cta_id: "usb128_howto_join_group",
-                      plan_id: "usb128",
-                      funnel_step: "consideration",
-                    })
-                  }
+                <p className="mt-2 text-3xl font-black text-[#111827]">$35 USD</p>
+                <p className="mt-2 text-sm text-[#4b5563]">
+                  {isSpanish ? "3,000 canciones · descarga digital" : "3,000 songs · digital download"}
+                </p>
+                <Button
+                  asChild
+                  variant="outline"
+                  className="mt-4 h-10 w-full border-[#cfd7e3] bg-white font-bold"
                 >
-                  {isSpanish ? "Primero quiero entrar gratis al grupo" : "I want to join the free group first"}
-                </Link>
-              </Button>
-            </div>
+                  <Link to="/explorer" onClick={() => trackCta("usb128_compare_pack_demos")}> 
+                    {isSpanish ? "Ver demos" : "See demos"}
+                  </Link>
+                </Button>
+              </article>
 
-            <div className="mt-7 grid gap-4 md:grid-cols-3">
-              {[
-                {
-                  n: "01",
-                  title: isSpanish ? "Deja tus datos" : "Leave your details",
-                  desc: isSpanish
-                    ? "Nombre, email y WhatsApp para confirmar pedido y soporte."
-                    : "Name, email, and WhatsApp for order confirmation and support.",
-                },
-                {
-                  n: "02",
-                  title: isSpanish ? "Checkout seguro" : "Secure checkout",
-                  desc: isSpanish
-                    ? "Pagas con Stripe o PayPal. Klarna/Afterpay disponibles según país."
-                    : "Pay with Stripe or PayPal. Klarna/Afterpay available by country.",
-                },
-                {
-                  n: "03",
-                  title: isSpanish ? "Recibes y tocas" : "Receive and play",
-                  desc: isSpanish
-                    ? "Te enviamos tracking y quedas listo para tus próximos eventos."
-                    : "You get tracking and stay ready for upcoming events.",
-                },
-              ].map((step) => (
-                <article key={step.n} className="rounded-2xl border border-[#e3e8ef] bg-[#f9fbff] p-5">
-                  <p className="text-sm font-black text-[#e10613]">{step.n}</p>
-                  <h3 className="mt-2 text-xl font-black text-[#111827]">{step.title}</h3>
-                  <p className="mt-2 text-sm text-[#4b5563]">{step.desc}</p>
-                </article>
-              ))}
+              <article className="rounded-2xl border border-[#dce2ec] bg-[#f9fbff] p-5">
+                <p className="text-xs font-bold uppercase tracking-[0.08em] text-[#667085]">
+                  {isSpanish ? "Membresía" : "Membership"}
+                </p>
+                <p className="mt-2 text-3xl font-black text-[#111827]">$19.50/mes</p>
+                <p className="mt-2 text-sm text-[#4b5563]">
+                  {isSpanish
+                    ? "Actualización constante · ideal para DJs activos"
+                    : "Continuous updates · ideal for active DJs"}
+                </p>
+                <Button
+                  asChild
+                  variant="outline"
+                  className="mt-4 h-10 w-full border-[#cfd7e3] bg-white font-bold"
+                >
+                  <Link to="/plan" onClick={() => trackCta("usb128_compare_membership")}> 
+                    {isSpanish ? "Ver membresía" : "See membership"}
+                  </Link>
+                </Button>
+              </article>
+
+              <article className="rounded-2xl border-2 border-[#d90413] bg-white p-5 shadow-[0_14px_28px_rgba(217,4,19,0.2)]">
+                <div className="flex items-center justify-between gap-2">
+                  <p className="text-xs font-bold uppercase tracking-[0.08em] text-[#d90413]">USB 128 GB</p>
+                  <Badge className="bg-[#d90413] px-2 py-0.5 text-[10px] font-bold uppercase tracking-[0.08em] text-white">
+                    {isSpanish ? "Top" : "Top"}
+                  </Badge>
+                </div>
+                <p className="mt-2 text-3xl font-black text-[#d90413]">$147 USD</p>
+                <p className="mt-2 text-sm text-[#4b5563]">
+                  {isSpanish
+                    ? "10,000+ canciones · física · plug and play"
+                    : "10,000+ songs · physical · plug and play"}
+                </p>
+                <Button
+                  onClick={() => openOrder("usb128_compare_usb_buy")}
+                  className="btn-primary-glow mt-4 h-10 w-full font-black"
+                >
+                  {isSpanish ? "Comprar USB" : "Buy USB"}
+                </Button>
+              </article>
             </div>
           </div>
         </div>
@@ -711,82 +746,91 @@ export default function Usb128() {
 
       <section className="py-10 md:py-16">
         <div className="container mx-auto max-w-6xl px-4">
-          <div className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
-            <article className="rounded-3xl border border-[#d8dde5] bg-white p-6 shadow-[0_14px_34px_rgba(10,20,40,0.08)] md:p-8">
-              <p className="text-xs font-bold uppercase tracking-[0.12em] text-[#e10613]">
-                {isSpanish ? "Comparación honesta" : "Honest comparison"}
+          <div className="grid gap-6 lg:grid-cols-[1.05fr_0.95fr]">
+            <article className="rounded-3xl border border-[#d8dee8] bg-white p-6 shadow-[0_14px_34px_rgba(10,20,40,0.08)] md:p-8">
+              <p className="text-xs font-bold uppercase tracking-[0.12em] text-[#d90413]">
+                {isSpanish ? "Cómo funciona" : "How it works"}
               </p>
               <h2 className="mt-2 text-3xl font-black text-[#111827] md:text-4xl">
-                {isSpanish ? "Lo que ganas con la USB vs alternativas" : "What you get with USB vs alternatives"}
+                {isSpanish ? "Compra en 3 pasos, sin fricción" : "Buy in 3 steps, friction-free"}
               </h2>
 
-              <div className="mt-6 overflow-hidden rounded-2xl border border-[#e1e6ee]">
-                <div className="grid grid-cols-[1.2fr_1fr_1fr] bg-[#111827] px-4 py-3 text-xs font-bold uppercase tracking-[0.07em] text-white">
-                  <span>{isSpanish ? "Criterio" : "Criteria"}</span>
-                  <span className="text-center">USB 128</span>
-                  <span className="text-center">YouTube/DIY</span>
-                </div>
-
+              <div className="mt-6 grid gap-3">
                 {[
                   {
-                    label: isSpanish ? "Organización por género" : "Genre organization",
-                    left: isSpanish ? "Sí, lista para DJ" : "Yes, DJ-ready",
-                    right: isSpanish ? "Manual" : "Manual",
+                    title: isSpanish ? "1. Deja tus datos" : "1. Share your details",
+                    desc: isSpanish
+                      ? "Nombre, email y WhatsApp para confirmar pedido y soporte."
+                      : "Name, email, and WhatsApp for order confirmation and support.",
                   },
                   {
-                    label: isSpanish ? "Calidad de audio" : "Audio quality",
-                    left: "MP3 320 kbps",
-                    right: isSpanish ? "Variable" : "Variable",
+                    title: isSpanish ? "2. Checkout seguro" : "2. Secure checkout",
+                    desc: isSpanish
+                      ? "Pagas con Stripe o PayPal, y si aplica en cuotas."
+                      : "Pay with Stripe or PayPal, and if available in installments.",
                   },
                   {
-                    label: isSpanish ? "Compatibilidad DJ" : "DJ compatibility",
-                    left: "Serato / VDJ / Rekordbox",
-                    right: isSpanish ? "No optimizada" : "Not optimized",
+                    title: isSpanish ? "3. Recibes y tocas" : "3. Receive and play",
+                    desc: isSpanish
+                      ? "Te enviamos seguimiento y quedas listo para tus eventos."
+                      : "You get tracking and stay ready for your gigs.",
                   },
-                  {
-                    label: isSpanish ? "Tiempo de preparación" : "Prep time",
-                    left: isSpanish ? "Rápido" : "Fast",
-                    right: isSpanish ? "Horas" : "Hours",
-                  },
-                  {
-                    label: isSpanish ? "Soporte en español" : "Spanish support",
-                    left: isSpanish ? "Sí" : "Yes",
-                    right: isSpanish ? "No" : "No",
-                  },
-                ].map((row, idx) => (
-                  <div
-                    key={row.label}
-                    className={`grid grid-cols-[1.2fr_1fr_1fr] px-4 py-3 text-sm ${
-                      idx % 2 === 0 ? "bg-white" : "bg-[#f8fafc]"
-                    }`}
-                  >
-                    <span className="font-semibold text-[#1f2937]">{row.label}</span>
-                    <span className="text-center font-semibold text-[#b10010]">{row.left}</span>
-                    <span className="text-center text-[#6b7280]">{row.right}</span>
+                ].map((step) => (
+                  <div key={step.title} className="rounded-2xl border border-[#e3e8ef] bg-[#f9fbff] p-4">
+                    <p className="text-sm font-black text-[#111827]">{step.title}</p>
+                    <p className="mt-1 text-sm text-[#4b5563]">{step.desc}</p>
                   </div>
                 ))}
               </div>
+
+              <div className="mt-6 flex flex-col gap-3 sm:flex-row">
+                <Button
+                  onClick={() => openOrder("usb128_how_buy")}
+                  className="btn-primary-glow h-11 px-6 text-sm font-black"
+                >
+                  {isSpanish ? "Continuar compra" : "Continue purchase"}
+                </Button>
+
+                <Button
+                  asChild
+                  variant="outline"
+                  className="h-11 border-[#cfd7e3] bg-white px-6 text-sm font-bold"
+                >
+                  <Link
+                    to="/gratis"
+                    onClick={() => trackCta("usb128_how_group", "awareness")}
+                  >
+                    {isSpanish ? "Entrar primero al grupo gratis" : "Join free group first"}
+                  </Link>
+                </Button>
+              </div>
             </article>
 
-            <article className="rounded-3xl border border-[#d8dde5] bg-white p-6 shadow-[0_14px_34px_rgba(10,20,40,0.08)] md:p-8">
-              <p className="text-xs font-bold uppercase tracking-[0.12em] text-[#e10613]">
+            <article className="rounded-3xl border border-[#151924] bg-[#0f131b] p-6 text-white shadow-[0_18px_40px_rgba(0,0,0,0.32)] md:p-8">
+              <p className="text-xs font-bold uppercase tracking-[0.12em] text-[#ff8d97]">
                 {isSpanish ? "Prueba social" : "Social proof"}
               </p>
-              <h2 className="mt-2 text-3xl font-black text-[#111827]">
+              <h2 className="mt-2 text-3xl font-black leading-tight md:text-4xl">
                 {isSpanish ? "DJs reales, resultados reales" : "Real DJs, real outcomes"}
               </h2>
 
               <div className="mt-5 grid gap-3">
                 {testimonials.map((item) => (
-                  <blockquote
-                    key={item.who}
-                    className="rounded-2xl border border-[#e2e8f0] bg-[#f9fbff] p-4"
-                  >
-                    <p className="text-sm text-[#1f2937]">“{item.quote}”</p>
-                    <footer className="mt-2 text-xs font-bold uppercase tracking-[0.07em] text-[#b10010]">
+                  <blockquote key={item.who} className="rounded-2xl border border-white/15 bg-white/5 p-4">
+                    <p className="text-sm text-white/90">“{item.quote}”</p>
+                    <footer className="mt-2 text-xs font-bold uppercase tracking-[0.07em] text-[#ff5a66]">
                       {item.who}
                     </footer>
                   </blockquote>
+                ))}
+              </div>
+
+              <div className="mt-5 grid grid-cols-3 gap-2">
+                {socialStats.map((stat) => (
+                  <div key={stat.label} className="rounded-xl border border-white/12 bg-white/5 p-2 text-center">
+                    <p className="text-lg font-black text-white">{stat.value}</p>
+                    <p className="text-[10px] uppercase tracking-[0.07em] text-white/70">{stat.label}</p>
+                  </div>
                 ))}
               </div>
 
@@ -794,7 +838,7 @@ export default function Usb128() {
                 onClick={() => openOrder("usb128_social_buy")}
                 className="btn-primary-glow mt-6 h-11 w-full text-sm font-black"
               >
-                {isSpanish ? "Asegurar mi USB" : "Secure my USB"}
+                {isSpanish ? "Comprar ahora" : "Buy now"}
               </Button>
             </article>
           </div>
@@ -803,14 +847,14 @@ export default function Usb128() {
 
       <section className="py-10 md:py-16">
         <div className="container mx-auto max-w-4xl px-4">
-          <div className="rounded-3xl border border-[#d8dde5] bg-white p-6 shadow-[0_14px_34px_rgba(10,20,40,0.08)] md:p-8">
+          <div className="rounded-3xl border border-[#d8dee8] bg-white p-6 shadow-[0_14px_34px_rgba(10,20,40,0.08)] md:p-8">
             <h2 className="text-center text-3xl font-black text-[#111827] md:text-4xl">
               {isSpanish ? "Preguntas frecuentes" : "Frequently asked questions"}
             </h2>
-            <p className="mt-2 text-center text-sm text-[#6b7280]">
+            <p className="mt-2 text-center text-sm text-[#667085]">
               {isSpanish
-                ? "Respuestas directas basadas en dudas reales de compra."
-                : "Direct answers based on real purchase questions."}
+                ? "Respuestas directas a objeciones reales antes de pagar."
+                : "Direct answers to real objections before checkout."}
             </p>
 
             <Accordion type="single" collapsible className="mt-6 w-full">
@@ -835,23 +879,23 @@ export default function Usb128() {
         </div>
       </section>
 
-      <section className="pb-28 pt-6 md:pb-16">
+      <section className="pb-28 pt-4 md:pb-16">
         <div className="container mx-auto max-w-4xl px-4">
-          <div className="rounded-3xl border border-[#121212] bg-[#0d0f14] p-6 text-white shadow-[0_20px_45px_rgba(0,0,0,0.35)] md:p-8">
+          <div className="rounded-3xl border border-[#141823] bg-[#0c1018] p-6 text-white shadow-[0_20px_45px_rgba(0,0,0,0.35)] md:p-8">
             <div className="grid gap-6 md:grid-cols-[1.1fr_0.9fr] md:items-center">
               <div>
-                <p className="text-xs font-bold uppercase tracking-[0.12em] text-[#ff7a84]">
-                  {isSpanish ? "Oferta USB 128" : "USB 128 offer"}
+                <p className="text-xs font-bold uppercase tracking-[0.12em] text-[#ff8d97]">
+                  {isSpanish ? "Cierre" : "Final step"}
                 </p>
                 <h2 className="mt-2 text-3xl font-black leading-tight md:text-4xl">
                   {isSpanish
                     ? "¿Listo para dejar de buscar música en 5 pools?"
-                    : "Ready to stop searching across 5 pools?"}
+                    : "Ready to stop searching in 5 different pools?"}
                 </h2>
                 <p className="mt-3 text-sm text-white/80">
                   {isSpanish
-                    ? "Pago único, envío gratis en USA y soporte en español por WhatsApp."
-                    : "One-time payment, free USA shipping, and Spanish WhatsApp support."}
+                    ? "Oferta USB 128GB: $147 USD, envío gratis USA y soporte en español."
+                    : "USB 128GB offer: $147 USD, free USA shipping, and Spanish support."}
                 </p>
               </div>
 
@@ -860,12 +904,12 @@ export default function Usb128() {
                   onClick={() => openOrder("usb128_final_buy")}
                   className="btn-primary-glow h-12 w-full text-base font-black"
                 >
-                  {isSpanish ? "Comprar ahora por $147" : "Buy now for $147"}
+                  {isSpanish ? "Comprar USB por $147" : "Buy USB for $147"}
                 </Button>
                 <p className="mt-3 text-center text-xs text-white/70">
                   {isSpanish
-                    ? "Al continuar aceptas recibir confirmaciones de pedido y soporte."
-                    : "By continuing, you agree to receive order confirmations and support messages."}
+                    ? "Al continuar aceptas mensajes de confirmación y soporte de tu pedido."
+                    : "By continuing, you accept order confirmation and support messages."}
                 </p>
               </div>
             </div>
@@ -873,31 +917,25 @@ export default function Usb128() {
         </div>
       </section>
 
-      <div className="fixed inset-x-0 bottom-0 z-40 border-t border-[#240306] bg-[#ffffffee] p-3 backdrop-blur md:hidden">
+      <div className="fixed inset-x-0 bottom-0 z-40 border-t border-[#2b0206] bg-[#ffffffee] p-3 backdrop-blur md:hidden">
         <div className="mx-auto flex max-w-md items-center gap-2">
           <Button
             onClick={() => openOrder("usb128_mobile_sticky_buy")}
             className="btn-primary-glow h-11 flex-1 text-sm font-black"
           >
-            <Zap className="mr-2 h-4 w-4" />
+            <Zap className="mr-1.5 h-4 w-4" />
             {isSpanish ? "Comprar USB $147" : "Buy USB $147"}
           </Button>
           <Button
             asChild
             variant="outline"
-            className="h-11 border-[#cfd6df] bg-white px-3"
+            className="h-11 border-[#cdd6e1] bg-white px-3 text-xs font-bold"
           >
             <Link
               to="/explorer"
-              onClick={() =>
-                trackEvent("cta_click", {
-                  cta_id: "usb128_mobile_sticky_demos",
-                  plan_id: "usb128",
-                  funnel_step: "consideration",
-                })
-              }
+              onClick={() => trackCta("usb128_mobile_sticky_demos")}
             >
-              <Package className="h-4 w-4" />
+              {isSpanish ? "Demos" : "Demos"}
             </Link>
           </Button>
         </div>
@@ -906,13 +944,13 @@ export default function Usb128() {
       <Footer />
 
       <Dialog open={isOrderOpen} onOpenChange={(open) => !isSubmitting && setIsOrderOpen(open)}>
-        <DialogContent className="border border-[#d9dfe8] bg-white p-0 sm:max-w-lg">
+        <DialogContent className="border border-[#d8dee8] bg-white p-0 sm:max-w-lg">
           <DialogHeader className="sr-only">
             <DialogTitle>{isSpanish ? "Finalizar pedido" : "Complete order"}</DialogTitle>
             <DialogDescription>
               {isSpanish
-                ? "Déjanos tus datos para confirmar el pedido y enviarte al checkout."
-                : "Leave your details to confirm your order and continue to checkout."}
+                ? "Déjanos tus datos para confirmar tu pedido y enviarte al checkout."
+                : "Share your details to confirm your order and continue to checkout."}
             </DialogDescription>
           </DialogHeader>
 
@@ -920,10 +958,10 @@ export default function Usb128() {
             <h3 className="text-3xl font-black text-[#111827]">
               {isSpanish ? "Finalizar pedido" : "Complete order"}
             </h3>
-            <p className="mt-2 text-sm text-[#6b7280]">
+            <p className="mt-2 text-sm text-[#667085]">
               {isSpanish
-                ? "Solo pedimos lo esencial para confirmación, tracking y soporte en español."
-                : "We only ask for essentials for confirmation, tracking, and Spanish support."}
+                ? "Solo pedimos datos esenciales para confirmación, tracking y soporte."
+                : "We only ask for essentials for confirmation, tracking, and support."}
             </p>
 
             <form className="mt-6 space-y-4" onSubmit={onSubmit}>
@@ -986,12 +1024,16 @@ export default function Usb128() {
                 )}
                 <p className="text-xs text-[#667085]">
                   {isSpanish
-                    ? "Envío gratis solo dentro de Estados Unidos para esta oferta USB."
-                    : "Free shipping for this USB offer applies only within the United States."}
+                    ? "Envío gratis aplica en Estados Unidos para esta oferta USB."
+                    : "Free shipping applies in the United States for this USB offer."}
                 </p>
               </div>
 
-              <Button type="submit" className="btn-primary-glow h-12 w-full text-base font-black" disabled={isSubmitting}>
+              <Button
+                type="submit"
+                className="btn-primary-glow h-12 w-full text-base font-black"
+                disabled={isSubmitting}
+              >
                 {isSubmitting ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -1002,15 +1044,15 @@ export default function Usb128() {
                 )}
               </Button>
 
-              <p className="text-center text-xs text-[#6b7280]">
+              <p className="text-center text-xs text-[#667085]">
                 {isSpanish
-                  ? "Al continuar, aceptas mensajes de confirmación y soporte sobre tu pedido."
-                  : "By continuing, you accept confirmation and support messages about your order."}
+                  ? "Al continuar aceptas mensajes de confirmación y soporte de tu pedido."
+                  : "By continuing, you accept confirmation and support messages for your order."}
               </p>
-              <p className="text-center text-xs text-[#6b7280]">
+              <p className="text-center text-xs text-[#667085]">
                 {isSpanish
-                  ? "Si ya no quieres mensajes promocionales, puedes solicitar baja (STOP/BAJA) en cualquier momento."
-                  : "If you no longer want promotional messages, you can opt out anytime (STOP/BAJA)."}
+                  ? "Si no quieres mensajes promocionales, puedes solicitar baja (STOP/BAJA) en cualquier momento."
+                  : "If you don't want promotional messages, you can opt out anytime (STOP/BAJA)."}
               </p>
             </form>
           </div>
