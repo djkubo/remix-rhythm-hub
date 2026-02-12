@@ -76,6 +76,14 @@ Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and 
   - `process-email-queue`: background worker for transactional emails (payment confirmation, shipping updates) using Brevo.
     - Configure secrets: `BREVO_API_KEY` (recommended) or `BREVO_SMTP_KEY` (fallback), `BREVO_SENDER_EMAIL`, `BREVO_SENDER_NAME`, `EMAIL_WORKER_TOKEN`.
     - Run via scheduler/cron with header `x-email-worker-token: <EMAIL_WORKER_TOKEN>` and body `{"limit":25}`.
+  - `shippo-webhook`: receives Shippo shipping events (`track_updated` / `transaction_updated`) and syncs lead shipping status.
+    - Configure security secrets:
+      - `SHIPPO_WEBHOOK_TOKEN` (required unless `SHIPPO_WEBHOOK_REQUIRE_AUTH=false`)
+      - `SHIPPO_HMAC_SECRET` (optional but recommended for signature verification)
+      - `SHIPPO_HMAC_TOLERANCE_SECONDS` (optional, default `600`)
+    - Shippo webhook URL format:
+      - `https://<YOUR_PROJECT_REF>.supabase.co/functions/v1/shippo-webhook?token=<SHIPPO_WEBHOOK_TOKEN>`
+    - Recommended Shippo events: `track_updated` (primary), `transaction_updated` (secondary fallback).
 - After publishing/deploying, you can verify `sync-manychat` is public by opening:
   - `https://<YOUR_PROJECT_REF>.supabase.co/functions/v1/sync-manychat`
   - Expected response: `{"ok":true,"function":"sync-manychat"}` (if you see `{"error":"Unauthorized"}`, the function is still deployed with JWT verification enabled).
