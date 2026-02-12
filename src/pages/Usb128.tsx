@@ -1101,11 +1101,11 @@ export default function Usb128() {
                 {isSpanish
                   ? "Confirmación y seguimiento se envían por email."
                   : "Confirmation and tracking are sent by email."}{" "}
-                <Link to="/privacy" className="font-semibold text-[#d90413] underline underline-offset-2">
+                <Link to="/privacy_policy" className="font-semibold text-[#d90413] underline underline-offset-2">
                   {isSpanish ? "Privacidad" : "Privacy"}
                 </Link>{" "}
                 ·{" "}
-                <Link to="/terms" className="font-semibold text-[#d90413] underline underline-offset-2">
+                <Link to="/terms_and_conditions" className="font-semibold text-[#d90413] underline underline-offset-2">
                   {isSpanish ? "Términos" : "Terms"}
                 </Link>
               </p>
