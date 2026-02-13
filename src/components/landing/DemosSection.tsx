@@ -32,12 +32,12 @@ export default function DemosSection() {
   );
 
   return (
-    <section id="demos" className="bg-zinc-950 px-4 pb-12 pt-10 md:pb-16 md:pt-14">
+    <section id="demos" className="bg-[#070707] px-4 pb-12 pt-10 md:pb-16 md:pt-14">
       <div className="mx-auto max-w-6xl">
-        <h2 className="text-center text-3xl font-bold text-white md:text-4xl">
+        <h2 className="text-center text-3xl font-bold text-[#EFEFEF] md:text-4xl">
           ¿Quieres escuchar antes de pagar? Dale play.
         </h2>
-        <p className="mb-8 mt-3 text-center text-zinc-400">
+        <p className="mb-8 mt-3 text-center text-[#5E5E5E]">
           Sin registro. Sin tarjeta. Comprueba la calidad MP3 320kbps.
         </p>
 
@@ -52,8 +52,8 @@ export default function DemosSection() {
                 className={[
                   "shrink-0 rounded-full border px-4 py-2 text-sm font-semibold transition-colors",
                   active
-                    ? "border-[#25D366] bg-[#25D366] text-black"
-                    : "border-zinc-800 bg-zinc-900 text-white hover:bg-zinc-800",
+                    ? "border-[#AA0202] bg-[#AA0202] text-[#EFEFEF]"
+                    : "border-[#5E5E5E] bg-[#111111] text-[#EFEFEF] hover:bg-[#070707]",
                 ].join(" ")}
               >
                 {genre}
@@ -75,15 +75,17 @@ export default function DemosSection() {
                   src: track.src,
                 })
               }
-              className="flex w-full items-center gap-3 rounded-xl bg-zinc-900/50 p-3 text-left hover:bg-zinc-800"
+              className="flex w-full items-center gap-3 rounded-xl bg-[#111111] p-3 text-left hover:bg-[#070707]"
             >
-              <span className="inline-flex h-11 w-11 items-center justify-center rounded-full bg-zinc-950 text-white">
+              <span className="inline-flex h-11 w-11 items-center justify-center rounded-full bg-[#070707] text-[#EFEFEF]">
                 <PlayCircle className="h-6 w-6" />
               </span>
               <span className="min-w-0 flex-1">
-                <span className="block truncate text-sm font-semibold text-white">{track.title}</span>
+                <span className="block truncate text-sm font-semibold text-[#EFEFEF]">
+                  {track.title}
+                </span>
               </span>
-              <span className="shrink-0 rounded-full border border-zinc-800 bg-zinc-950 px-2.5 py-1 text-xs font-semibold text-white">
+              <span className="shrink-0 rounded-full border border-[#5E5E5E] bg-[#070707] px-2.5 py-1 text-xs font-semibold text-[#EFEFEF]">
                 320kbps
               </span>
             </button>
@@ -93,4 +95,3 @@ export default function DemosSection() {
     </section>
   );
 }
-

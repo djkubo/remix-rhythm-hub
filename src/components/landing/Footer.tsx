@@ -10,14 +10,14 @@ type FooterProps = {
 export default function Footer({ whatsappJoinUrl, onCtaClick }: FooterProps) {
   return (
     <footer>
-      <div className="border-t border-zinc-800 bg-zinc-900/30 px-4 py-16 text-center">
-        <h2 className="mx-auto max-w-2xl text-3xl font-bold text-white md:text-4xl">
+      <div className="border-t border-[#5E5E5E] bg-[#111111]/30 px-4 py-16 text-center">
+        <h2 className="mx-auto max-w-2xl font-bebas text-4xl uppercase text-[#EFEFEF] md:text-5xl">
           ¿Listo para llegar a tu próximo evento sin estrés?
         </h2>
         <div className="mx-auto mt-8 max-w-md">
           <Button
             asChild
-            className="min-h-[56px] w-full bg-[#25D366] px-6 font-bold text-black shadow-lg hover:bg-[#1EBE5D]"
+            className="min-h-[56px] w-full bg-[#AA0202] px-6 font-bebas text-2xl uppercase tracking-wide text-[#EFEFEF] shadow-lg hover:bg-[#8A0101]"
             onClick={onCtaClick}
           >
             <a href={whatsappJoinUrl} target="_blank" rel="noopener noreferrer">
@@ -28,18 +28,18 @@ export default function Footer({ whatsappJoinUrl, onCtaClick }: FooterProps) {
         </div>
       </div>
 
-      <div className="border-t border-zinc-900 bg-zinc-950 py-8 text-center">
-        <p className="text-sm text-zinc-400">
+      <div className="border-t border-[#111111] bg-[#070707] py-8 text-center">
+        <p className="font-sans text-sm text-[#5E5E5E]">
           © 2026 Video Remixes Pack, LLC. Todos los derechos reservados.
         </p>
-        <nav className="mt-4 flex justify-center gap-4 text-xs text-zinc-500">
-          <Link to="/terms_and_conditions" className="hover:text-zinc-200">
+        <nav className="mt-4 flex justify-center gap-4 font-sans text-xs text-[#5E5E5E]">
+          <Link to="/terms_and_conditions" className="hover:text-[#EFEFEF]">
             Términos y Condiciones
           </Link>
-          <Link to="/privacy_policy" className="hover:text-zinc-200">
+          <Link to="/privacy_policy" className="hover:text-[#EFEFEF]">
             Política de Privacidad
           </Link>
-          <Link to="/help" className="hover:text-zinc-200">
+          <Link to="/help" className="hover:text-[#EFEFEF]">
             Soporte
           </Link>
         </nav>
@@ -47,4 +47,3 @@ export default function Footer({ whatsappJoinUrl, onCtaClick }: FooterProps) {
     </footer>
   );
 }
-

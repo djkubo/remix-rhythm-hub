@@ -26,7 +26,7 @@ const WhatsAppChat = ({ name, text, time, groupName, emoji, delay }: WhatsAppCha
         <div className="w-9 h-9 rounded-full bg-[#DFE5E7] dark:bg-[#6B7C85] flex items-center justify-center">
           <span className="text-base">{emoji}</span>
         </div>
-        <div className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-[#25D366] rounded-full border-2 border-[#008069] dark:border-[#1F2C33]" />
+        <div className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-[#AA0202] rounded-full border-2 border-[#008069] dark:border-[#1F2C33]" />
       </div>
       
       {/* Info */}
@@ -65,7 +65,7 @@ const WhatsAppChat = ({ name, text, time, groupName, emoji, delay }: WhatsAppCha
           
           {/* Bubble */}
           <div className="relative bg-[#DCF8C6] dark:bg-[#025C4C] rounded-lg rounded-tl-none px-3 py-2 shadow-sm">
-            <p className="text-xs font-semibold text-[#25D366] dark:text-[#34B7F1] mb-1">
+            <p className="text-xs font-semibold text-[#AA0202] dark:text-[#34B7F1] mb-1">
               {name}
             </p>
             <p className="text-sm text-[#111B21] dark:text-[#E9EDEF] leading-relaxed pr-12">

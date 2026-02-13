@@ -13,16 +13,16 @@ const MESSAGES: Message[] = [
 
 export default function SocialProofSection() {
   return (
-    <section className="bg-zinc-950 px-4 pb-12 pt-10 md:pb-16 md:pt-14">
+    <section className="bg-[#070707] px-4 pb-12 pt-10 md:pb-16 md:pt-14">
       <div className="mx-auto max-w-6xl">
-        <h2 className="text-center text-3xl font-bold text-white md:text-4xl">
+        <h2 className="text-center font-bebas text-4xl uppercase text-[#EFEFEF] md:text-5xl">
           DJs reales. Resultados reales.
         </h2>
-        <p className="mb-10 mt-3 text-center text-zinc-400">
+        <p className="mb-10 mt-3 text-center font-sans text-[#5E5E5E]">
           Cero inventos. Mensajes reales de DJs que ya descargan y mezclan nuestra música.
         </p>
 
-        <div className="relative mx-auto max-w-md space-y-4 rounded-2xl border border-zinc-800 bg-[#0B141A] p-4 shadow-2xl sm:p-6">
+        <div className="relative mx-auto max-w-md space-y-4 rounded-2xl border border-[#5E5E5E] bg-[#0B141A] p-4 shadow-2xl sm:p-6">
           {MESSAGES.map((msg) => (
             <div
               key={msg.id}
@@ -35,7 +35,7 @@ export default function SocialProofSection() {
 
               <p className="text-sm leading-relaxed">{msg.text}</p>
 
-              <div className="mt-1 text-right text-[10px] text-zinc-500">
+              <div className="mt-1 text-right text-[10px] text-[#5E5E5E]">
                 14:23 <CheckCheck className="ml-1 inline-block h-3 w-3 text-[#53BDEB]" />
               </div>
             </div>
@@ -45,4 +45,3 @@ export default function SocialProofSection() {
     </section>
   );
 }
-

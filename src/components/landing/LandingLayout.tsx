@@ -5,7 +5,7 @@ type LandingLayoutProps = PropsWithChildren;
 
 export default function LandingLayout({ children }: LandingLayoutProps) {
   return (
-    <main className="min-h-screen bg-zinc-950 pb-[calc(env(safe-area-inset-bottom)+8rem)] text-white">
+    <main className="min-h-screen bg-[#070707] pb-[calc(env(safe-area-inset-bottom)+8rem)] text-[#EFEFEF]">
       {children}
       <PersistentBottomPlayer />
     </main>
