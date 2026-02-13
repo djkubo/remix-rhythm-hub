@@ -11,10 +11,7 @@ import { useAnalytics } from "@/hooks/useAnalytics";
 import { useDataLayer } from "@/hooks/useDataLayer";
 import { useEngagementTracking } from "@/hooks/useEngagementTracking";
 
-const WHATSAPP_JOIN_URL =
-  "https://wa.me/1XXXXXXXXXX?text=Hola,%20Gustavo.%20Quiero%20unirme%20al%20grupo%20de%20DJs%20gratis";
-const WHATSAPP_TRIAL_URL =
-  "https://wa.me/1XXXXXXXXXX?text=INICIAR%20PRUEBA%20DE%207%20D%C3%8DAS%20%28100GB%29";
+const PLAN_URL = "https://videoremixespacks.com/plan";
 
 export default function Index() {
   const { trackEvent } = useAnalytics();
@@ -39,21 +36,21 @@ export default function Index() {
   return (
     <LandingLayout>
       <HeroCommunitySection
-        whatsappGroupUrl={WHATSAPP_TRIAL_URL}
+        whatsappGroupUrl={PLAN_URL}
         onPrimaryCtaClick={() =>
-          trackCta("INICIAR PRUEBA DE 7 DÍAS (100GB)", "hero_start_trial_7_days", WHATSAPP_TRIAL_URL)
+          trackCta("INICIAR PRUEBA DE 7 DÍAS (100GB)", "hero_go_plan", PLAN_URL)
         }
         onSecondaryCtaClick={() => trackCta("VER DEMOS Y PRECIOS", "hero_scroll_demos_pricing", "#demos")}
       />
       <HowItWorksSection />
       <DemosSection />
-      <PricingSection />
+      <PricingSection checkoutUrl={PLAN_URL} />
       <SocialProofSection />
       <FaqSection />
       <Footer
-        whatsappJoinUrl={WHATSAPP_TRIAL_URL}
+        whatsappJoinUrl={PLAN_URL}
         onCtaClick={() =>
-          trackCta("INICIAR MI PRUEBA DE 7 DÍAS", "footer_start_trial_7_days", WHATSAPP_TRIAL_URL)
+          trackCta("INICIAR MI PRUEBA DE 7 DÍAS", "footer_go_plan", PLAN_URL)
         }
       />
     </LandingLayout>

@@ -1,7 +1,11 @@
 import { CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-export default function PricingSection() {
+type PricingSectionProps = {
+  checkoutUrl: string;
+};
+
+export default function PricingSection({ checkoutUrl }: PricingSectionProps) {
   return (
     <section className="bg-[#070707] px-4 pb-16">
       <div className="mx-auto max-w-6xl">
@@ -34,10 +38,13 @@ export default function PricingSection() {
 
             <div className="mt-6">
               <Button
+                asChild
                 variant="outline"
                 className="min-h-[56px] w-full border-[#AA0202] bg-transparent font-bebas text-xl uppercase tracking-wide text-[#EFEFEF] hover:bg-[#AA0202]/15 hover:text-[#EFEFEF]"
               >
-                INICIAR PRUEBA GRATIS
+                <a href={checkoutUrl} target="_blank" rel="noopener noreferrer">
+                  INICIAR PRUEBA GRATIS
+                </a>
               </Button>
               <p className="mt-3 text-center font-sans text-xs text-[#5E5E5E]">
                 Requiere tarjeta como filtro de calidad. $0 cobrados hoy.
@@ -68,10 +75,13 @@ export default function PricingSection() {
 
             <div className="mt-6">
               <Button
+                asChild
                 variant="outline"
                 className="min-h-[56px] w-full border-[#AA0202] bg-transparent font-bebas text-xl uppercase tracking-wide text-[#EFEFEF] hover:bg-[#AA0202]/15 hover:text-[#EFEFEF]"
               >
-                ELEGIR PLAN MENSUAL
+                <a href={checkoutUrl} target="_blank" rel="noopener noreferrer">
+                  ELEGIR PLAN MENSUAL
+                </a>
               </Button>
             </div>
           </article>
@@ -105,8 +115,13 @@ export default function PricingSection() {
             </ul>
 
             <div className="mt-6">
-              <Button className="min-h-[56px] w-full bg-[#AA0202] font-bebas text-2xl uppercase tracking-wide text-[#EFEFEF] hover:bg-[#8A0101]">
-                HAZTE ELITE
+              <Button
+                asChild
+                className="min-h-[56px] w-full bg-[#AA0202] font-bebas text-2xl uppercase tracking-wide text-[#EFEFEF] hover:bg-[#8A0101]"
+              >
+                <a href={checkoutUrl} target="_blank" rel="noopener noreferrer">
+                  HAZTE ELITE
+                </a>
               </Button>
               <p className="mt-3 text-center font-sans text-xs text-[#5E5E5E]">
                 Ahorras $225 en comparación al plan mensual.
