@@ -136,13 +136,13 @@ export default function Usb128ThankYou() {
             animate={{ scale: 1 }}
             transition={{ type: "spring", damping: 15, stiffness: 200, delay: 0.15 }}
             className={`inline-flex items-center justify-center w-24 h-24 rounded-full mb-6 ${
-              shippingBlocked ? "bg-red-500/10" : "bg-green-500/10"
+              shippingBlocked ? "bg-red-500/10" : "bg-[#AA0202]/10"
             }`}
           >
             {shippingBlocked ? (
               <AlertTriangle className="w-12 h-12 text-red-500" />
             ) : (
-              <CheckCircle2 className="w-12 h-12 text-green-500" />
+              <CheckCircle2 className="w-12 h-12 text-[#AA0202]" />
             )}
           </motion.div>
 

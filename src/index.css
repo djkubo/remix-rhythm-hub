@@ -119,73 +119,21 @@
     @apply relative isolate overflow-hidden;
   }
 
-  .brand-frame::before,
-  .brand-frame::after {
-    content: "";
-    position: fixed;
-    top: 0;
-    bottom: 0;
-    width: 10px;
-    pointer-events: none;
-    z-index: 30;
-  }
-
-  .brand-frame::before {
-    left: 0;
-    background: linear-gradient(to right, #050505 0%, #170102 52%, transparent 100%);
-  }
-
-  .brand-frame::after {
-    right: 0;
-    background: linear-gradient(to left, #5a0008 0%, #210003 52%, transparent 100%);
-  }
-
-  @media (min-width: 768px) {
-    .brand-frame::before,
-    .brand-frame::after {
-      width: 24px;
-    }
-  }
-
   /* === GLASS MORPHISM - Theme aware === */
   .glass-card {
-    @apply relative overflow-hidden rounded-2xl bg-card border border-border/50;
-    backdrop-filter: blur(24px);
-  }
-
-  /* Mobile-optimized glass: reduce blur intensity to prevent jank */
-  @media (max-width: 768px) {
-    .glass-card {
-      backdrop-filter: blur(16px);
-    }
-  }
-
-  :root.dark .glass-card {
-    background: linear-gradient(180deg, hsl(0 0% 8% / 0.85) 0%, hsl(0 0% 4% / 0.92) 100%);
-    border-color: hsl(0 0% 22% / 0.5);
-  }
-
-  :root.light .glass-card {
-    background: hsl(var(--card));
-    border-color: hsl(var(--border) / 0.95);
-    box-shadow: 0 12px 26px hsl(220 30% 12% / 0.1), 0 1px 2px hsl(220 20% 12% / 0.05);
-    backdrop-filter: none;
+    @apply relative overflow-hidden rounded-2xl border;
+    background: #111111;
+    border-color: #5E5E5E;
   }
 
   .glass-card-hover {
     @apply glass-card transition-all duration-300;
   }
 
-  :root.dark .glass-card-hover:hover {
-    border-color: hsl(1 99% 40% / 0.5);
-    box-shadow: 0 0 50px hsl(1 99% 34% / 0.15);
-    transform: translateY(-3px);
-  }
-
-  :root.light .glass-card-hover:hover {
-    border-color: hsl(var(--primary) / 0.48);
-    box-shadow: 0 14px 34px hsl(220 30% 12% / 0.12), 0 6px 16px hsl(var(--primary) / 0.14);
-    transform: translateY(-3px);
+  .glass-card-hover:hover {
+    border-color: #AA0202;
+    box-shadow: 0 0 50px rgba(170, 2, 2, 0.15);
+    transform: translateY(-2px);
   }
 
   /* === GLOW EFFECTS - Theme aware === */

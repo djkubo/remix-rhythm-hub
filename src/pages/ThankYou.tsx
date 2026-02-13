@@ -40,9 +40,9 @@ export default function ThankYou() {
               stiffness: 200,
               delay: 0.2 
             }}
-            className="inline-flex items-center justify-center w-24 h-24 rounded-full bg-green-500/10 mb-6"
+            className="mb-6 inline-flex h-24 w-24 items-center justify-center rounded-full bg-[#AA0202]/10"
           >
-            <CheckCircle2 className="w-12 h-12 text-green-500" />
+            <CheckCircle2 className="h-12 w-12 text-[#AA0202]" />
           </motion.div>
 
           {/* Title */}
@@ -65,7 +65,7 @@ export default function ThankYou() {
             className="bg-gradient-to-br from-primary/5 to-primary/10 border border-primary/20 rounded-xl p-6 mb-8"
           >
             <div className="flex items-center justify-center gap-3 mb-4">
-              <MessageCircle className="w-6 h-6 text-green-500" />
+              <MessageCircle className="h-6 w-6 text-[#AA0202]" />
               <span className="font-semibold">
                 {language === "es" ? "Revisa tu WhatsApp" : "Check your WhatsApp"}
               </span>

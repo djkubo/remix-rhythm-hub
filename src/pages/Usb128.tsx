@@ -549,14 +549,14 @@ export default function Usb128() {
   );
 
   return (
-    <main className="min-h-screen bg-[#edf1f5] text-[#0f172a] dark:bg-background dark:text-foreground">
-      <section className="relative overflow-hidden bg-[#090b0f]">
+    <main className="brand-frame min-h-screen bg-[#070707] text-[#EFEFEF]">
+      <section className="relative overflow-hidden bg-[#070707]">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_14%_20%,rgba(170,2,2,0.45),transparent_52%),radial-gradient(circle_at_80%_15%,rgba(170,2,2,0.25),transparent_44%),linear-gradient(130deg,#140003_0%,#5e0008_35%,#9c020d_60%,#AA0202_100%)]" />
 
         <div className="relative container mx-auto max-w-6xl px-4 pb-12 pt-8 md:pb-16 md:pt-12">
           <div className="grid gap-8 lg:grid-cols-[1.1fr_0.9fr] lg:items-start">
             <div>
-              <Badge className="border border-white/35 bg-black/20 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.11em] text-white">
+              <Badge className="border border-[#5E5E5E] bg-[#111111]/50 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.11em] text-[#EFEFEF]">
                 <ShieldCheck className="mr-2 h-3.5 w-3.5" />
                 {isSpanish ? "USB física · envío gratis USA" : "Physical USB · free USA shipping"}
               </Badge>
@@ -581,7 +581,7 @@ export default function Usb128() {
                 ].map((pill) => (
                   <span
                     key={pill}
-                    className="rounded-full border border-white/35 bg-black/25 px-4 py-1.5 text-xs font-semibold text-white"
+                    className="rounded-full border border-[#5E5E5E] bg-[#111111]/50 px-4 py-1.5 text-xs font-semibold text-[#EFEFEF]"
                   >
                     {pill}
                   </span>
@@ -600,7 +600,7 @@ export default function Usb128() {
                 <Button
                   asChild
                   variant="outline"
-                  className="h-12 border-white/45 bg-white/10 px-8 text-base font-bold text-white hover:bg-white/20"
+                  className="h-12 border-[#5E5E5E] bg-[#111111]/25 px-8 text-base font-bold text-[#EFEFEF] hover:bg-[#111111]/45"
                 >
                   <Link
                     to="/explorer"
@@ -628,7 +628,7 @@ export default function Usb128() {
                 {paymentBadges.map((label) => (
                   <Badge
                     key={label}
-                    className="border border-white/35 bg-white/10 px-3 py-1 text-[11px] text-white"
+                    className="border border-[#5E5E5E] bg-[#111111]/40 px-3 py-1 text-[11px] text-[#EFEFEF]"
                   >
                     <CreditCard className="mr-1.5 h-3 w-3" />
                     {label}
@@ -637,8 +637,8 @@ export default function Usb128() {
               </div>
             </div>
 
-            <div className="rounded-3xl border border-white/25 bg-white p-4 text-[#111827] shadow-[0_24px_52px_rgba(0,0,0,0.35)] md:p-5">
-              <div className="overflow-hidden rounded-2xl border border-[#d7dbe2] bg-[#eef1f4] p-2">
+            <div className="rounded-3xl border border-[#5E5E5E] bg-[#111111] p-4 text-[#EFEFEF] shadow-[0_24px_52px_rgba(0,0,0,0.35)] md:p-5">
+              <div className="overflow-hidden rounded-2xl border border-[#5E5E5E] bg-[#070707] p-2">
                 <img
                   src={usbSamsungBarPlus}
                   alt="Samsung BAR Plus 128GB"
@@ -647,12 +647,12 @@ export default function Usb128() {
                 />
               </div>
 
-              <div className="mt-4 rounded-2xl border border-[#e0e5ec] bg-[#f9fbff] p-4">
+              <div className="mt-4 rounded-2xl border border-[#5E5E5E] bg-[#070707] p-4">
                 <div className="flex items-start justify-between gap-3">
                   <div>
-                    <p className="text-xs font-bold uppercase tracking-[0.1em] text-[#6b7280]">USB 128 GB</p>
+                    <p className="text-xs font-bold uppercase tracking-[0.1em] text-[#5E5E5E]">USB 128 GB</p>
                     <p className="mt-1 text-3xl font-black text-[#AA0202]">$147 USD</p>
-                    <p className="text-xs text-[#5f6b7a]">
+                    <p className="text-xs text-[#5E5E5E]">
                       {isSpanish
                         ? "Envío gratis en USA · pago único"
                         : "Free shipping in USA · one-time payment"}
@@ -664,7 +664,7 @@ export default function Usb128() {
                   </Badge>
                 </div>
 
-                <ul className="mt-4 space-y-2 text-sm text-[#344054]">
+                <ul className="mt-4 space-y-2 text-sm text-[#EFEFEF]">
                   {valueBullets.map((item) => (
                     <li key={item} className="flex items-start gap-2">
                       <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-[#AA0202]" />
@@ -696,29 +696,29 @@ export default function Usb128() {
 
       <section className="py-10 md:py-14">
         <div className="container mx-auto max-w-6xl px-4">
-          <div className="rounded-3xl border border-[#d8dee8] bg-white p-6 shadow-[0_12px_30px_rgba(10,20,40,0.08)] md:p-8">
+          <div className="rounded-3xl border border-[#5E5E5E] bg-[#111111] p-6 shadow-[0_12px_30px_rgba(0,0,0,0.45)] md:p-8">
             <p className="text-center text-xs font-bold uppercase tracking-[0.12em] text-[#AA0202]">
               {isSpanish ? "Oferta clara" : "Clear offer"}
             </p>
-            <h2 className="mt-2 text-center text-3xl font-black leading-tight text-[#111827] md:text-4xl">
+            <h2 className="mt-2 text-center text-3xl font-black leading-tight text-[#EFEFEF] md:text-4xl">
               {isSpanish
                 ? "Elige la opción con mejor retorno para ti"
                 : "Choose the option with the best return for you"}
             </h2>
 
             <div className="mt-6 grid gap-4 lg:grid-cols-3">
-              <article className="rounded-2xl border border-[#dce2ec] bg-[#f9fbff] p-5">
-                <p className="text-xs font-bold uppercase tracking-[0.08em] text-[#667085]">
+              <article className="rounded-2xl border border-[#5E5E5E] bg-[#070707] p-5">
+                <p className="text-xs font-bold uppercase tracking-[0.08em] text-[#5E5E5E]">
                   {isSpanish ? "Pack individual" : "Single pack"}
                 </p>
-                <p className="mt-2 text-3xl font-black text-[#111827]">$35 USD</p>
-                <p className="mt-2 text-sm text-[#4b5563]">
+                <p className="mt-2 text-3xl font-black text-[#EFEFEF]">$35 USD</p>
+                <p className="mt-2 text-sm text-[#5E5E5E]">
                   {isSpanish ? "3,000 canciones · descarga digital" : "3,000 songs · digital download"}
                 </p>
                 <Button
                   asChild
                   variant="outline"
-                  className="mt-4 h-10 w-full border-[#cfd7e3] bg-white font-bold"
+                  className="mt-4 h-10 w-full border-[#AA0202] bg-transparent font-bold text-[#EFEFEF] hover:bg-[#AA0202]/15 hover:text-[#EFEFEF]"
                 >
                   <Link to="/explorer" onClick={() => trackCta("usb128_compare_pack_demos")}> 
                     {isSpanish ? "Ver demos" : "See demos"}
@@ -726,12 +726,12 @@ export default function Usb128() {
                 </Button>
               </article>
 
-              <article className="rounded-2xl border border-[#dce2ec] bg-[#f9fbff] p-5">
-                <p className="text-xs font-bold uppercase tracking-[0.08em] text-[#667085]">
+              <article className="rounded-2xl border border-[#5E5E5E] bg-[#070707] p-5">
+                <p className="text-xs font-bold uppercase tracking-[0.08em] text-[#5E5E5E]">
                   {isSpanish ? "Membresía" : "Membership"}
                 </p>
-                <p className="mt-2 text-3xl font-black text-[#111827]">$19.50/mes</p>
-                <p className="mt-2 text-sm text-[#4b5563]">
+                <p className="mt-2 text-3xl font-black text-[#EFEFEF]">$19.50/mes</p>
+                <p className="mt-2 text-sm text-[#5E5E5E]">
                   {isSpanish
                     ? "Actualización constante · ideal para DJs activos"
                     : "Continuous updates · ideal for active DJs"}
@@ -739,7 +739,7 @@ export default function Usb128() {
                 <Button
                   asChild
                   variant="outline"
-                  className="mt-4 h-10 w-full border-[#cfd7e3] bg-white font-bold"
+                  className="mt-4 h-10 w-full border-[#AA0202] bg-transparent font-bold text-[#EFEFEF] hover:bg-[#AA0202]/15 hover:text-[#EFEFEF]"
                 >
                   <Link to="/plan" onClick={() => trackCta("usb128_compare_membership")}> 
                     {isSpanish ? "Ver membresía" : "See membership"}
@@ -747,7 +747,7 @@ export default function Usb128() {
                 </Button>
               </article>
 
-              <article className="rounded-2xl border-2 border-[#AA0202] bg-white p-5 shadow-[0_14px_28px_rgba(170,2,2,0.2)]">
+              <article className="rounded-2xl border-2 border-[#AA0202] bg-[#070707] p-5 shadow-[0_14px_28px_rgba(170,2,2,0.18)]">
                 <div className="flex items-center justify-between gap-2">
                   <p className="text-xs font-bold uppercase tracking-[0.08em] text-[#AA0202]">USB 128 GB</p>
                   <Badge className="bg-[#AA0202] px-2 py-0.5 text-[10px] font-bold uppercase tracking-[0.08em] text-white">
@@ -755,7 +755,7 @@ export default function Usb128() {
                   </Badge>
                 </div>
                 <p className="mt-2 text-3xl font-black text-[#AA0202]">$147 USD</p>
-                <p className="mt-2 text-sm text-[#4b5563]">
+                <p className="mt-2 text-sm text-[#5E5E5E]">
                   {isSpanish
                     ? "10,000+ canciones · física · plug and play"
                     : "10,000+ songs · physical · plug and play"}
@@ -775,11 +775,11 @@ export default function Usb128() {
       <section className="py-10 md:py-16">
         <div className="container mx-auto max-w-6xl px-4">
           <div className="grid gap-6 lg:grid-cols-[1.05fr_0.95fr]">
-            <article className="rounded-3xl border border-[#d8dee8] bg-white p-6 shadow-[0_14px_34px_rgba(10,20,40,0.08)] md:p-8">
+            <article className="rounded-3xl border border-[#5E5E5E] bg-[#111111] p-6 shadow-[0_14px_34px_rgba(0,0,0,0.45)] md:p-8">
               <p className="text-xs font-bold uppercase tracking-[0.12em] text-[#AA0202]">
                 {isSpanish ? "Cómo funciona" : "How it works"}
               </p>
-              <h2 className="mt-2 text-3xl font-black text-[#111827] md:text-4xl">
+              <h2 className="mt-2 text-3xl font-black text-[#EFEFEF] md:text-4xl">
                 {isSpanish ? "Compra en 3 pasos, sin fricción" : "Buy in 3 steps, friction-free"}
               </h2>
 
@@ -804,9 +804,9 @@ export default function Usb128() {
                       : "You get tracking and stay ready for your gigs.",
                   },
                 ].map((step) => (
-                  <div key={step.title} className="rounded-2xl border border-[#e3e8ef] bg-[#f9fbff] p-4">
-                    <p className="text-sm font-black text-[#111827]">{step.title}</p>
-                    <p className="mt-1 text-sm text-[#4b5563]">{step.desc}</p>
+                  <div key={step.title} className="rounded-2xl border border-[#5E5E5E] bg-[#070707] p-4">
+                    <p className="text-sm font-black text-[#EFEFEF]">{step.title}</p>
+                    <p className="mt-1 text-sm text-[#5E5E5E]">{step.desc}</p>
                   </div>
                 ))}
               </div>
@@ -822,7 +822,7 @@ export default function Usb128() {
                 <Button
                   asChild
                   variant="outline"
-                  className="h-11 border-[#cfd7e3] bg-white px-6 text-sm font-bold"
+                  className="h-11 border-[#AA0202] bg-transparent px-6 text-sm font-bold text-[#EFEFEF] hover:bg-[#AA0202]/15 hover:text-[#EFEFEF]"
                 >
                   <Link
                     to="/gratis"
@@ -834,8 +834,8 @@ export default function Usb128() {
               </div>
             </article>
 
-            <article className="rounded-3xl border border-[#151924] bg-[#0f131b] p-6 text-white shadow-[0_18px_40px_rgba(0,0,0,0.32)] md:p-8">
-              <p className="text-xs font-bold uppercase tracking-[0.12em] text-[#ff5a66]">
+            <article className="rounded-3xl border border-[#5E5E5E] bg-[#111111] p-6 text-[#EFEFEF] shadow-[0_18px_40px_rgba(0,0,0,0.45)] md:p-8">
+              <p className="text-xs font-bold uppercase tracking-[0.12em] text-[#AA0202]">
                 {isSpanish ? "Prueba social" : "Social proof"}
               </p>
               <h2 className="mt-2 text-3xl font-black leading-tight md:text-4xl">
@@ -844,9 +844,9 @@ export default function Usb128() {
 
               <div className="mt-5 grid gap-3">
                 {testimonials.map((item) => (
-                  <blockquote key={item.who} className="rounded-2xl border border-white/15 bg-white/5 p-4">
-                    <p className="text-sm text-white/90">“{item.quote}”</p>
-                    <footer className="mt-2 text-xs font-bold uppercase tracking-[0.07em] text-[#ff5a66]">
+                  <blockquote key={item.who} className="rounded-2xl border border-[#5E5E5E] bg-[#070707] p-4">
+                    <p className="text-sm text-[#EFEFEF]">“{item.quote}”</p>
+                    <footer className="mt-2 text-xs font-bold uppercase tracking-[0.07em] text-[#AA0202]">
                       {item.who}
                     </footer>
                   </blockquote>
@@ -855,9 +855,9 @@ export default function Usb128() {
 
               <div className="mt-5 grid grid-cols-3 gap-2">
                 {socialStats.map((stat) => (
-                  <div key={stat.label} className="rounded-xl border border-white/12 bg-white/5 p-2 text-center">
-                    <p className="text-lg font-black text-white">{stat.value}</p>
-                    <p className="text-[10px] uppercase tracking-[0.07em] text-white/70">{stat.label}</p>
+                  <div key={stat.label} className="rounded-xl border border-[#5E5E5E] bg-[#070707] p-2 text-center">
+                    <p className="text-lg font-black text-[#EFEFEF]">{stat.value}</p>
+                    <p className="text-[10px] uppercase tracking-[0.07em] text-[#5E5E5E]">{stat.label}</p>
                   </div>
                 ))}
               </div>
@@ -875,11 +875,11 @@ export default function Usb128() {
 
       <section className="py-10 md:py-16">
         <div className="container mx-auto max-w-4xl px-4">
-          <div className="rounded-3xl border border-[#d8dee8] bg-white p-6 shadow-[0_14px_34px_rgba(10,20,40,0.08)] md:p-8">
-            <h2 className="text-center text-3xl font-black text-[#111827] md:text-4xl">
+          <div className="rounded-3xl border border-[#5E5E5E] bg-[#111111] p-6 shadow-[0_14px_34px_rgba(0,0,0,0.45)] md:p-8">
+            <h2 className="text-center text-3xl font-black text-[#EFEFEF] md:text-4xl">
               {isSpanish ? "Preguntas frecuentes" : "Frequently asked questions"}
             </h2>
-            <p className="mt-2 text-center text-sm text-[#667085]">
+            <p className="mt-2 text-center text-sm text-[#5E5E5E]">
               {isSpanish
                 ? "Respuestas directas a objeciones reales antes de pagar."
                 : "Direct answers to real objections before checkout."}
@@ -909,10 +909,10 @@ export default function Usb128() {
 
       <section className="pb-28 pt-4 md:pb-16">
         <div className="container mx-auto max-w-4xl px-4">
-          <div className="rounded-3xl border border-[#141823] bg-[#0c1018] p-6 text-white shadow-[0_20px_45px_rgba(0,0,0,0.35)] md:p-8">
+          <div className="rounded-3xl border border-[#5E5E5E] bg-[#111111] p-6 text-[#EFEFEF] shadow-[0_20px_45px_rgba(0,0,0,0.45)] md:p-8">
             <div className="grid gap-6 md:grid-cols-[1.1fr_0.9fr] md:items-center">
               <div>
-                <p className="text-xs font-bold uppercase tracking-[0.12em] text-[#ff5a66]">
+                <p className="text-xs font-bold uppercase tracking-[0.12em] text-[#AA0202]">
                   {isSpanish ? "Cierre" : "Final step"}
                 </p>
                 <h2 className="mt-2 text-3xl font-black leading-tight md:text-4xl">
@@ -920,7 +920,7 @@ export default function Usb128() {
                     ? "¿Listo para dejar de buscar música en 5 pools?"
                     : "Ready to stop searching in 5 different pools?"}
                 </h2>
-                <p className="mt-3 text-sm text-white/80">
+                <p className="mt-3 text-sm text-[#5E5E5E]">
                   {isSpanish
                     ? "Oferta USB 128GB: $147 USD, envío gratis USA y soporte en español."
                     : "USB 128GB offer: $147 USD, free USA shipping, and Spanish support."}
@@ -934,7 +934,7 @@ export default function Usb128() {
                 >
                   {isSpanish ? "Comprar USB por $147" : "Buy USB for $147"}
                 </Button>
-                <p className="mt-3 text-center text-xs text-white/70">
+                <p className="mt-3 text-center text-xs text-[#5E5E5E]">
                   {isSpanish
                     ? "Al continuar, te enviaremos confirmación y seguimiento por email."
                     : "By continuing, we’ll send confirmation and tracking by email."}
@@ -945,7 +945,7 @@ export default function Usb128() {
         </div>
       </section>
 
-      <div className="fixed inset-x-0 bottom-0 z-40 border-t border-[#2b0206] bg-[#ffffffee] p-3 backdrop-blur md:hidden">
+      <div className="fixed inset-x-0 bottom-0 z-40 border-t border-[#5E5E5E] bg-[#070707]/95 p-3 backdrop-blur-md md:hidden">
         <div className="mx-auto flex max-w-md items-center gap-2">
           <Button
             onClick={() => openOrder("usb128_mobile_sticky_buy")}
@@ -957,7 +957,7 @@ export default function Usb128() {
           <Button
             asChild
             variant="outline"
-            className="h-11 border-[#cdd6e1] bg-white px-3 text-xs font-bold"
+            className="h-11 border-[#5E5E5E] bg-[#111111] px-3 text-xs font-bold text-[#EFEFEF] hover:bg-[#111111]/80"
           >
             <Link
               to="/explorer"
@@ -972,7 +972,7 @@ export default function Usb128() {
       <Footer />
 
       <Dialog open={isOrderOpen} onOpenChange={(open) => !isSubmitting && setIsOrderOpen(open)}>
-        <DialogContent className="border border-[#d8dee8] bg-white p-0 sm:max-w-lg">
+        <DialogContent className="border border-[#5E5E5E] bg-[#111111] p-0 text-[#EFEFEF] sm:max-w-lg">
           <DialogHeader className="sr-only">
             <DialogTitle>{isSpanish ? "Finalizar pedido" : "Complete order"}</DialogTitle>
             <DialogDescription>
@@ -983,10 +983,10 @@ export default function Usb128() {
           </DialogHeader>
 
           <div className="p-6 md:p-7">
-            <h3 className="text-3xl font-black text-[#111827]">
+            <h3 className="text-3xl font-black text-[#EFEFEF]">
               {isSpanish ? "Finalizar pedido" : "Complete order"}
             </h3>
-            <p className="mt-2 text-sm text-[#667085]">
+            <p className="mt-2 text-sm text-[#5E5E5E]">
               {isSpanish
                 ? "Solo pedimos lo esencial para confirmar tu pedido y enviarte el tracking por email."
                 : "We only ask for essentials to confirm your order and email your tracking."}
@@ -1011,7 +1011,7 @@ export default function Usb128() {
                   aria-invalid={Boolean(formErrors.name)}
                 />
                 {touched.name && formErrors.name && (
-                  <p className="text-xs font-semibold text-[#b10010]">{formErrors.name}</p>
+                  <p className="text-xs font-semibold text-[#AA0202]">{formErrors.name}</p>
                 )}
               </div>
 
@@ -1028,7 +1028,7 @@ export default function Usb128() {
                   aria-invalid={Boolean(formErrors.email)}
                 />
                 {touched.email && formErrors.email && (
-                  <p className="text-xs font-semibold text-[#b10010]">{formErrors.email}</p>
+                  <p className="text-xs font-semibold text-[#AA0202]">{formErrors.email}</p>
                 )}
               </div>
 
@@ -1039,7 +1039,7 @@ export default function Usb128() {
                 <div className="flex items-center gap-2">
                   <Badge
                     variant="outline"
-                    className="h-10 shrink-0 border-[#d1d7e0] bg-[#f8fafc] px-3 text-sm text-[#4b5563]"
+                    className="h-10 shrink-0 border-[#5E5E5E] bg-[#070707] px-3 text-sm text-[#EFEFEF]"
                     title={countryData.country_name}
                   >
                     {countryData.dial_code}
@@ -1056,9 +1056,9 @@ export default function Usb128() {
                   />
                 </div>
                 {touched.phone && formErrors.phone && (
-                  <p className="text-xs font-semibold text-[#b10010]">{formErrors.phone}</p>
+                  <p className="text-xs font-semibold text-[#AA0202]">{formErrors.phone}</p>
                 )}
-                <p className="text-xs text-[#667085]">
+                <p className="text-xs text-[#5E5E5E]">
                   {isSpanish
                     ? "Usaremos WhatsApp solo si hace falta para soporte o confirmar detalles del envío."
                     : "We’ll only use WhatsApp if needed for support or to confirm shipping details."}
@@ -1081,8 +1081,8 @@ export default function Usb128() {
               </Button>
 
               <div className="relative py-1">
-                <div className="absolute inset-x-0 top-1/2 h-px bg-[#e5e7eb]" />
-                <p className="relative mx-auto w-fit bg-white px-3 text-xs font-bold uppercase tracking-[0.12em] text-[#667085]">
+                <div className="absolute inset-x-0 top-1/2 h-px bg-[#5E5E5E]" />
+                <p className="relative mx-auto w-fit bg-[#111111] px-3 text-xs font-bold uppercase tracking-[0.12em] text-[#5E5E5E]">
                   {isSpanish ? "o" : "or"}
                 </p>
               </div>
@@ -1090,14 +1090,14 @@ export default function Usb128() {
               <Button
                 type="button"
                 variant="outline"
-                className="h-12 w-full border-[#cfd7e3] bg-white text-base font-black text-[#111827] hover:bg-[#f8fafc]"
+                className="h-12 w-full border-[#AA0202] bg-transparent text-base font-black text-[#EFEFEF] hover:bg-[#AA0202]/15 hover:text-[#EFEFEF]"
                 disabled={isSubmitting}
                 onClick={() => void startCheckout("paypal")}
               >
                 {isSpanish ? "Pagar con PayPal" : "Pay with PayPal"}
               </Button>
 
-              <p className="text-center text-xs text-[#667085]">
+              <p className="text-center text-xs text-[#5E5E5E]">
                 {isSpanish
                   ? "Confirmación y seguimiento se envían por email."
                   : "Confirmation and tracking are sent by email."}{" "}

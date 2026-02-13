@@ -213,7 +213,7 @@ export default function Login() {
 
             {step === "success" && (
               <div className="mt-8 space-y-4">
-                <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-green-500/15 text-green-600">
+                <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-[#AA0202]/15 text-[#AA0202]">
                   <CheckCircle2 className="h-8 w-8" />
                 </div>
                 <p className="font-semibold text-foreground">

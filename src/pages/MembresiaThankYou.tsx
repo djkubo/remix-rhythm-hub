@@ -105,9 +105,9 @@ export default function MembresiaThankYou() {
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
             transition={{ type: "spring", damping: 15, stiffness: 200, delay: 0.15 }}
-            className="inline-flex items-center justify-center w-24 h-24 rounded-full bg-green-500/10 mb-6"
+            className="mb-6 inline-flex h-24 w-24 items-center justify-center rounded-full bg-[#AA0202]/10"
           >
-            <CheckCircle2 className="w-12 h-12 text-green-500" />
+            <CheckCircle2 className="h-12 w-12 text-[#AA0202]" />
           </motion.div>
 
           <h1 className="text-3xl md:text-4xl font-bold mb-4">
