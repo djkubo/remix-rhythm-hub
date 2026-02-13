@@ -51,8 +51,10 @@ export default function Index() {
       <SocialProofSection />
       <FaqSection />
       <Footer
-        whatsappJoinUrl={WHATSAPP_JOIN_URL}
-        onCtaClick={() => trackCta("QUIERO UNIRME AL GRUPO (GRATIS)", "footer_join_group_free", WHATSAPP_JOIN_URL)}
+        whatsappJoinUrl={WHATSAPP_TRIAL_URL}
+        onCtaClick={() =>
+          trackCta("INICIAR MI PRUEBA DE 7 DÍAS", "footer_start_trial_7_days", WHATSAPP_TRIAL_URL)
+        }
       />
     </LandingLayout>
   );

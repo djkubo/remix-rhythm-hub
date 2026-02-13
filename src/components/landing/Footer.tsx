@@ -22,7 +22,7 @@ export default function Footer({ whatsappJoinUrl, onCtaClick }: FooterProps) {
           >
             <a href={whatsappJoinUrl} target="_blank" rel="noopener noreferrer">
               <MessageCircle />
-              QUIERO UNIRME AL GRUPO (GRATIS)
+              INICIAR MI PRUEBA DE 7 DÍAS
             </a>
           </Button>
         </div>
