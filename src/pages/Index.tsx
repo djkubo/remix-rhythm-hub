@@ -13,6 +13,8 @@ import { useEngagementTracking } from "@/hooks/useEngagementTracking";
 
 const WHATSAPP_JOIN_URL =
   "https://wa.me/1XXXXXXXXXX?text=Hola,%20Gustavo.%20Quiero%20unirme%20al%20grupo%20de%20DJs%20gratis";
+const WHATSAPP_TRIAL_URL =
+  "https://wa.me/1XXXXXXXXXX?text=INICIAR%20PRUEBA%20DE%207%20D%C3%8DAS%20%28100GB%29";
 
 export default function Index() {
   const { trackEvent } = useAnalytics();
@@ -37,9 +39,9 @@ export default function Index() {
   return (
     <LandingLayout>
       <HeroCommunitySection
-        whatsappGroupUrl={WHATSAPP_JOIN_URL}
+        whatsappGroupUrl={WHATSAPP_TRIAL_URL}
         onPrimaryCtaClick={() =>
-          trackCta("QUIERO UNIRME AL GRUPO (GRATIS)", "hero_join_group_free", WHATSAPP_JOIN_URL)
+          trackCta("INICIAR PRUEBA DE 7 DÍAS (100GB)", "hero_start_trial_7_days", WHATSAPP_TRIAL_URL)
         }
         onSecondaryCtaClick={() => trackCta("VER DEMOS Y PRECIOS", "hero_scroll_demos_pricing", "#demos")}
       />

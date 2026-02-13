@@ -17,15 +17,15 @@ export default function HeroCommunitySection({
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_18%,rgba(37,211,102,0.22),transparent_46%),radial-gradient(circle_at_10%_0%,rgba(255,255,255,0.08),transparent_40%)]" />
       <div className="relative mx-auto max-w-3xl text-center">
         <p className="mx-auto inline-flex items-center justify-center rounded-full border border-zinc-800 bg-zinc-900/40 px-3 py-1.5 text-sm font-semibold text-white">
-          ⭐ Únete a +7,000 DJs latinos
+          ⭐ El Hub Definitivo del DJ Latino
         </p>
 
         <h1 className="mt-4 text-4xl font-extrabold tracking-tight text-white md:text-5xl">
-          La música que tu público pide, organizada por género y lista para mezclar.
+          Tu biblioteca de DJ lista en minutos, no en días.
         </h1>
 
         <p className="mt-4 text-lg text-zinc-400">
-          3,000+ canciones nuevas. Calidad MP3 320kbps. Descarga, arrastra a Serato y triunfa.
+          Descarga masiva vía FTP. Centralizamos los éxitos de todos los pools, filtramos la basura y te entregamos +150,000 archivos limpios. Audio, Video y Karaoke sin límites.
         </p>
 
         <div className="mt-8 flex flex-col gap-3 md:flex-row md:justify-center">
@@ -36,7 +36,7 @@ export default function HeroCommunitySection({
           >
             <a href={whatsappGroupUrl} target="_blank" rel="noopener noreferrer">
               <MessageCircle />
-              QUIERO UNIRME AL GRUPO (GRATIS)
+              INICIAR PRUEBA DE 7 DÍAS (100GB)
             </a>
           </Button>
 

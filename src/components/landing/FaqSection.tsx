@@ -13,24 +13,14 @@ type FaqItem = {
 
 const FAQS: FaqItem[] = [
   {
-    id: "faq-1",
-    q: "¿Cuánto cuesta?",
-    a: "Pack Individual: $35 USD (pago único). Membresía: $35 USD/mes (acceso completo). USB 128GB: $147 USD (envío gratis).",
-  },
-  {
-    id: "faq-2",
     q: "¿Cómo hago para descargar?",
-    a: "Al completar tu pago, recibes acceso inmediato a nuestras carpetas privadas en Google Drive. Descarga la carpeta completa por género o canción por canción.",
+    a: "Se acabaron los links lentos de Google Drive. Te damos acceso directo a nuestros servidores premium vía FTP (recomendamos Air Explorer). Seleccionas carpetas enteras de 50GB y se descargan de golpe.",
+    id: "faq-1",
   },
   {
-    id: "faq-3",
-    q: "¿Funciona con Serato o Virtual DJ?",
-    a: "Sí. Son archivos MP3 universales a 320kbps, listos para arrastrar a Serato, Virtual DJ, Rekordbox, Traktor o cualquier software.",
-  },
-  {
-    id: "faq-4",
-    q: "¿Es mensual o pago único?",
-    a: "Tienes las dos opciones. El pack individual de $35 y la USB de $147 son PAGO ÚNICO (tuyos para siempre). La membresía de $35 es MENSUAL y puedes cancelar cuando quieras con un solo clic.",
+    q: "¿Por qué piden tarjeta para la prueba gratis?",
+    a: "Es un filtro de calidad para evitar abusos a nuestros servidores. Si en 7 días no ves el valor, cancelas con un clic en tu panel y no se te cobra un solo centavo. Tienes 100GB para ponernos a prueba.",
+    id: "faq-2",
   },
 ];
 
@@ -59,4 +49,3 @@ export default function FaqSection() {
     </section>
   );
 }
-
