@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import {
   CheckCircle2,
   CreditCard,
@@ -125,7 +125,6 @@ export default function Membresia() {
   const { theme } = useTheme();
   const { toast } = useToast();
   const { trackEvent } = useAnalytics();
-  const navigate = useNavigate();
 
   const [isJoinOpen, setIsJoinOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -183,7 +182,7 @@ export default function Membresia() {
   const useStackedPricingLayout = pricingLayoutAssignment.variant === "A";
 
   const paymentBadges = useMemo(
-    () => ["VISA", "MASTERCARD", "AMEX", "DISCOVER", "PayPal"],
+    () => ["VISA", "MASTERCARD", "AMEX", "DISCOVER"],
     []
   );
 
@@ -365,9 +364,7 @@ export default function Membresia() {
           if (import.meta.env.DEV) console.warn("ManyChat sync threw:", syncErr);
         }
 
-        setIsJoinOpen(false);
-
-        // Try to redirect to Stripe Checkout (if configured). If not, fallback to thank-you.
+        // Try to redirect to Stripe Checkout (required for trial/subscription billing).
         try {
           const { data: checkout, error: checkoutError } = await supabase.functions.invoke(
             "stripe-checkout",
@@ -390,6 +387,7 @@ export default function Membresia() {
               funnel_step: "checkout_handoff",
               experiment_assignments: experimentAssignments,
             });
+            setIsJoinOpen(false);
             window.location.assign(url);
             return;
           }
@@ -412,62 +410,14 @@ export default function Membresia() {
             experiment_assignments: experimentAssignments,
           });
         }
-
-        // Fallback: PayPal redirect (if configured).
-        try {
-          const { data: paypal, error: paypalError } = await supabase.functions.invoke(
-            "paypal-checkout",
-            {
-              body: { action: "create", leadId, product: selectedPlan },
-            }
-          );
-
-          if (paypalError && import.meta.env.DEV) {
-            console.warn("PayPal checkout error:", paypalError);
-          }
-
-          const approveUrl = (paypal as { approveUrl?: unknown } | null)?.approveUrl;
-          if (typeof approveUrl === "string" && approveUrl.length > 0) {
-            trackEvent("checkout_redirect", {
-              cta_id: "membresia_checkout_paypal",
-              plan_id: selectedPlan,
-              provider: "paypal",
-              status: "redirected",
-              funnel_step: "checkout_handoff",
-              experiment_assignments: experimentAssignments,
-            });
-            window.location.assign(approveUrl);
-            return;
-          }
-          trackEvent("checkout_redirect", {
-            cta_id: "membresia_checkout_paypal",
-            plan_id: selectedPlan,
-            provider: "paypal",
-            status: "missing_url",
-            funnel_step: "checkout_handoff",
-            experiment_assignments: experimentAssignments,
-          });
-        } catch (paypalErr) {
-          if (import.meta.env.DEV) console.warn("PayPal invoke threw:", paypalErr);
-          trackEvent("checkout_redirect", {
-            cta_id: "membresia_checkout_paypal",
-            plan_id: selectedPlan,
-            provider: "paypal",
-            status: "error",
-            funnel_step: "checkout_handoff",
-            experiment_assignments: experimentAssignments,
-          });
-        }
-
-        trackEvent("checkout_redirect", {
-          cta_id: "membresia_checkout_internal_fallback",
-          plan_id: selectedPlan,
-          provider: "internal",
-          status: "gracias",
-          funnel_step: "post_checkout",
-          experiment_assignments: experimentAssignments,
+        toast({
+          title: language === "es" ? "No pudimos abrir el checkout" : "Checkout unavailable",
+          description:
+            language === "es"
+              ? "Intenta de nuevo en unos segundos. Si continúa, contáctanos en Soporte."
+              : "Please try again in a few seconds. If it continues, contact Support.",
+          variant: "destructive",
         });
-        navigate(`/membresia/gracias?plan=${encodeURIComponent(selectedPlan)}`);
       } catch (err) {
         console.error("MEMBRESIA lead submit error:", err);
         trackEvent("lead_submit_failed", {
@@ -495,7 +445,6 @@ export default function Membresia() {
       formData,
       isSubmitting,
       language,
-      navigate,
       selectedPlan,
       trackEvent,
       toast,
@@ -724,9 +673,6 @@ export default function Membresia() {
               <p className="mt-2 text-sm font-semibold text-muted-foreground">
                 {PLAN_DETAILS.plan_1tb_mensual.priceLabel}
               </p>
-              <p className="mt-1 text-xs text-muted-foreground">
-                Paga con tarjeta, PayPal o en cuotas al checkout.
-              </p>
 
               <ul className="mt-6 space-y-3 text-sm text-muted-foreground md:text-base">
                 {[
@@ -769,9 +715,6 @@ export default function Membresia() {
               </div>
               <p className="mt-2 text-sm font-semibold text-muted-foreground">
                 {PLAN_DETAILS.plan_2tb_anual.priceLabel}
-              </p>
-              <p className="mt-1 text-xs text-muted-foreground">
-                Paga con tarjeta, PayPal o en cuotas al checkout.
               </p>
 
               <ul className="mt-6 space-y-3 text-sm text-muted-foreground md:text-base">
