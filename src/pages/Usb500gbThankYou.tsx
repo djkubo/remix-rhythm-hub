@@ -223,6 +223,14 @@ export default function Usb500gbThankYou() {
             </div>
           ) : null}
 
+          {paidConfirmed ? (
+            <div className="grid gap-3 mb-8">
+              <Button asChild className="btn-primary-glow h-12 w-full text-base font-bold">
+                <Link to="/plan">Membresía para actualizaciones semanales/mensuales</Link>
+              </Button>
+            </div>
+          ) : null}
+
           <div className="rounded-xl border border-border/70 bg-muted/30 p-6 mb-8 text-left">
             <div className="flex items-center gap-3 mb-3">
               <MessageCircle className="w-6 h-6 text-primary" />

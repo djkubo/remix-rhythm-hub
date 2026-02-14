@@ -18,6 +18,7 @@ export default function MembresiaThankYou() {
 
   const hasStripeSession = Boolean(stripeSessionId);
   const hasPayPalOrder = Boolean(paypalOrderId);
+  const isMonthlyPlan = product === "plan_1tb_mensual";
 
   const [stripeVerifyState, setStripeVerifyState] = useState<
     "idle" | "processing" | "success" | "error"
@@ -139,6 +140,23 @@ export default function MembresiaThankYou() {
                 ? "No encontramos un pago confirmado en esta página. Si aún no pagas, regresa e intenta de nuevo. Si ya pagaste, revisa tu email y vuelve a cargar esta pantalla."
                 : "We couldn’t confirm a payment on this page. If you haven’t paid yet, go back and try again. If you already paid, check your email and refresh this screen."}
           </p>
+
+          {paidConfirmed ? (
+            <div className="grid gap-3 mb-8">
+              {isMonthlyPlan ? (
+                <Button asChild className="btn-primary-glow h-12 w-full text-base font-bold">
+                  <Link to="/anual">Pásate a anual y ahorra</Link>
+                </Button>
+              ) : null}
+              <Button
+                asChild
+                variant={isMonthlyPlan ? "outline" : "default"}
+                className={`${isMonthlyPlan ? "h-12 w-full text-base font-bold" : "btn-primary-glow h-12 w-full text-base font-bold"}`}
+              >
+                <Link to="/usb128">Agrega USB</Link>
+              </Button>
+            </div>
+          ) : null}
 
           <div className="bg-gradient-to-br from-primary/5 to-primary/10 border border-primary/20 rounded-xl p-6 mb-8 text-left">
             <div className="flex items-center gap-3 mb-3">

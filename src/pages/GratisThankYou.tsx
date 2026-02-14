@@ -7,6 +7,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 // Optional: set a WhatsApp invite link here if you want to show it immediately
 // after registration. If empty, the page will instruct the user to check WhatsApp.
 const WHATSAPP_GROUP_URL = "";
+const PLAN_URL = "https://videoremixespacks.com/plan";
 
 export default function GratisThankYou() {
   const { language } = useLanguage();
@@ -53,13 +54,21 @@ export default function GratisThankYou() {
             </p>
           </div>
 
-          {WHATSAPP_GROUP_URL ? (
-            <a href={WHATSAPP_GROUP_URL} target="_blank" rel="noopener noreferrer">
+          <div className="grid gap-3">
+            <a href={PLAN_URL}>
               <Button className="btn-primary-glow h-12 w-full text-base font-bold">
-                {language === "es" ? "Únete al grupo de WhatsApp" : "Join the WhatsApp group"}
+                Ver opciones: Pack $35 / Membresía $35 / USB $147
               </Button>
             </a>
-          ) : null}
+
+            {WHATSAPP_GROUP_URL ? (
+              <a href={WHATSAPP_GROUP_URL} target="_blank" rel="noopener noreferrer">
+                <Button className="btn-primary-glow h-12 w-full text-base font-bold">
+                  {language === "es" ? "Únete al grupo de WhatsApp" : "Join the WhatsApp group"}
+                </Button>
+              </a>
+            ) : null}
+          </div>
 
           <div className="mt-6">
             <Link to="/gratis">

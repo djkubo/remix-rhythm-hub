@@ -138,6 +138,14 @@ export default function AnualThankYou() {
                 : "We couldn’t confirm a payment on this page. If you haven’t paid yet, go back and try again. If you already paid, check your email and refresh this screen."}
           </p>
 
+          {paidConfirmed ? (
+            <div className="grid gap-3 mb-8">
+              <Button asChild className="btn-primary-glow h-12 w-full text-base font-bold">
+                <Link to="/usb128">Agrega USB</Link>
+              </Button>
+            </div>
+          ) : null}
+
           <div className="bg-gradient-to-br from-primary/5 to-primary/10 border border-primary/20 rounded-xl p-6 mb-8 text-left">
             <div className="flex items-center gap-3 mb-3">
               <MessageCircle className="w-6 h-6 text-primary" />
