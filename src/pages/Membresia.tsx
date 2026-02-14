@@ -730,7 +730,8 @@ export default function Membresia() {
 
               <ul className="mt-6 space-y-3 text-sm text-muted-foreground md:text-base">
                 {[
-                  "1 TB Descargas mensual",
+                  "1000 GB cada mes",
+                  "trial 7 días $0",
                   "Acceso completo a remixes exclusivos",
                   "Soporte VIP",
                 ].map((t) => (
@@ -775,7 +776,8 @@ export default function Membresia() {
 
               <ul className="mt-6 space-y-3 text-sm text-muted-foreground md:text-base">
                 {[
-                  "2 TB Descargas mensual",
+                  "2000 GB cada mes",
+                  "trial 7 días $0",
                   "Acceso completo a remixes exclusivos",
                   "Soporte VIP",
                 ].map((t) => (
