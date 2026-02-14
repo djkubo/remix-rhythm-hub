@@ -25,6 +25,7 @@ const PricingSection = () => {
       period: currency.code === "USD" ? t("pricing.monthlyPrice") : `${currency.code} / ${language === "es" ? "mes" : "month"}`,
       badge: null,
       features: [
+        "trial 7 días $0",
         t("pricing.feat1"),
         t("pricing.feat2"),
         t("pricing.feat3"),
@@ -39,6 +40,7 @@ const PricingSection = () => {
       badge: t("pricing.bestValue"),
       equivalentMonthly: 16.25,
       features: [
+        "trial 7 días $0",
         t("pricing.feat4"),
         t("pricing.feat5"),
         t("pricing.feat6"),
