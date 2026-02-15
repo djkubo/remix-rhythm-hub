@@ -528,8 +528,8 @@ export default function Usb128() {
                   {
                     title: isSpanish ? "1. Deja tus datos" : "1. Share your details",
                     desc: isSpanish
-                      ? "Nombre, email y WhatsApp para confirmar pedido y soporte."
-                      : "Name, email, and WhatsApp for order confirmation and support.",
+                      ? "Email y dirección (solo para envío) para confirmar tu pedido y enviarte el tracking."
+                      : "Email and shipping address (for delivery) to confirm your order and send tracking.",
                   },
                   {
                     title: isSpanish ? "2. Checkout seguro" : "2. Secure checkout",
