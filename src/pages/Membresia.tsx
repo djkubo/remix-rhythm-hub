@@ -12,6 +12,7 @@ import {
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useTheme } from "@/contexts/ThemeContext";
 import { Button } from "@/components/ui/button";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import {
   Dialog,
@@ -38,7 +39,7 @@ import { cn } from "@/lib/utils";
 import logoWhite from "@/assets/logo-white.png";
 import logoDark from "@/assets/logo-dark.png";
 import { countryNameFromCode, detectCountryCodeFromTimezone } from "@/lib/country";
-import { createPayPalCheckoutUrl, createStripeCheckoutUrl } from "@/lib/checkout";
+import { createPayPalCheckoutUrl, createStripeCheckoutUrl, type CheckoutProvider } from "@/lib/checkout";
 
 type CountryData = {
   country_code: string;
@@ -130,6 +131,12 @@ export default function Membresia() {
 
   const [isJoinOpen, setIsJoinOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [checkoutError, setCheckoutError] = useState<string | null>(null);
+  const [lastAttempt, setLastAttempt] = useState<{
+    ctaId: string;
+    provider: CheckoutProvider;
+    plan: PlanId;
+  } | null>(null);
 
   const [selectedPlan, setSelectedPlan] = useState<PlanId>("plan_2tb_anual");
 
@@ -259,12 +266,14 @@ export default function Membresia() {
   }, [isJoinOpen]);
 
   const openJoin = useCallback(
-    async (plan?: PlanId, sourceCta: string = "membresia_open_join") => {
+    async (plan?: PlanId, sourceCta: string = "membresia_open_join", isRetry = false) => {
       const nextPlan = plan || selectedPlan;
       if (isSubmitting) return;
       if (plan) setSelectedPlan(plan);
 
       setIsSubmitting(true);
+      setCheckoutError(null);
+      setLastAttempt({ ctaId: sourceCta, provider: "stripe", plan: nextPlan });
       trackEvent("checkout_redirect", {
         cta_id: sourceCta,
         plan_id: nextPlan,
@@ -272,8 +281,10 @@ export default function Membresia() {
         experiment_assignments: experimentAssignments,
         provider: "stripe",
         status: "starting",
+        is_retry: isRetry,
       });
 
+      let redirected = false;
       try {
         const leadId = crypto.randomUUID();
         const url = await createStripeCheckoutUrl({
@@ -283,6 +294,7 @@ export default function Membresia() {
         });
 
         if (url) {
+          redirected = true;
           trackEvent("checkout_redirect", {
             cta_id: sourceCta,
             plan_id: nextPlan,
@@ -290,6 +302,8 @@ export default function Membresia() {
             experiment_assignments: experimentAssignments,
             provider: "stripe",
             status: "redirected",
+            is_retry: isRetry,
+            lead_id: leadId,
           });
           window.location.assign(url);
           return;
@@ -302,7 +316,15 @@ export default function Membresia() {
           experiment_assignments: experimentAssignments,
           provider: "stripe",
           status: "missing_url",
+          is_retry: isRetry,
+          lead_id: leadId,
         });
+
+        setCheckoutError(
+          language === "es"
+            ? "No pudimos abrir el checkout. Reintenta; si continúa, cambia de red o desactiva tu bloqueador de anuncios."
+            : "We couldn't open checkout. Try again; if it continues, switch networks or disable your ad blocker."
+        );
 
         toast({
           title: language === "es" ? "Checkout no disponible" : "Checkout unavailable",
@@ -321,7 +343,14 @@ export default function Membresia() {
           experiment_assignments: experimentAssignments,
           provider: "stripe",
           status: "error",
+          is_retry: isRetry,
+          error_message: err instanceof Error ? err.message : String(err),
         });
+        setCheckoutError(
+          language === "es"
+            ? "Hubo un problema al iniciar el pago. Reintenta; si continúa, cambia de red o desactiva tu bloqueador de anuncios."
+            : "There was a problem starting checkout. Try again; if it continues, switch networks or disable your ad blocker."
+        );
         toast({
           title: language === "es" ? "Error" : "Error",
           description:
@@ -331,19 +360,21 @@ export default function Membresia() {
           variant: "destructive",
         });
       } finally {
-        setIsSubmitting(false);
+        if (!redirected) setIsSubmitting(false);
       }
     },
     [experimentAssignments, isSubmitting, language, selectedPlan, toast, trackEvent]
   );
 
   const openJoinPayPal = useCallback(
-    async (plan?: PlanId, sourceCta: string = "membresia_open_paypal") => {
+    async (plan?: PlanId, sourceCta: string = "membresia_open_paypal", isRetry = false) => {
       const nextPlan = plan || selectedPlan;
       if (isSubmitting) return;
       if (plan) setSelectedPlan(plan);
 
       setIsSubmitting(true);
+      setCheckoutError(null);
+      setLastAttempt({ ctaId: sourceCta, provider: "paypal", plan: nextPlan });
       trackEvent("checkout_redirect", {
         cta_id: sourceCta,
         plan_id: nextPlan,
@@ -351,8 +382,10 @@ export default function Membresia() {
         experiment_assignments: experimentAssignments,
         provider: "paypal",
         status: "starting",
+        is_retry: isRetry,
       });
 
+      let redirected = false;
       try {
         const leadId = crypto.randomUUID();
         const url = await createPayPalCheckoutUrl({
@@ -362,6 +395,7 @@ export default function Membresia() {
         });
 
         if (url) {
+          redirected = true;
           trackEvent("checkout_redirect", {
             cta_id: sourceCta,
             plan_id: nextPlan,
@@ -369,6 +403,8 @@ export default function Membresia() {
             experiment_assignments: experimentAssignments,
             provider: "paypal",
             status: "redirected",
+            is_retry: isRetry,
+            lead_id: leadId,
           });
           window.location.assign(url);
           return;
@@ -381,7 +417,15 @@ export default function Membresia() {
           experiment_assignments: experimentAssignments,
           provider: "paypal",
           status: "missing_url",
+          is_retry: isRetry,
+          lead_id: leadId,
         });
+
+        setCheckoutError(
+          language === "es"
+            ? "No pudimos abrir el checkout. Reintenta; si continúa, cambia de red o desactiva tu bloqueador de anuncios."
+            : "We couldn't open checkout. Try again; if it continues, switch networks or disable your ad blocker."
+        );
 
         toast({
           title: language === "es" ? "Checkout no disponible" : "Checkout unavailable",
@@ -400,7 +444,14 @@ export default function Membresia() {
           experiment_assignments: experimentAssignments,
           provider: "paypal",
           status: "error",
+          is_retry: isRetry,
+          error_message: err instanceof Error ? err.message : String(err),
         });
+        setCheckoutError(
+          language === "es"
+            ? "Hubo un problema al iniciar el pago. Reintenta; si continúa, cambia de red o desactiva tu bloqueador de anuncios."
+            : "There was a problem starting checkout. Try again; if it continues, switch networks or disable your ad blocker."
+        );
         toast({
           title: language === "es" ? "Error" : "Error",
           description:
@@ -410,10 +461,59 @@ export default function Membresia() {
           variant: "destructive",
         });
       } finally {
-        setIsSubmitting(false);
+        if (!redirected) setIsSubmitting(false);
       }
     },
     [experimentAssignments, isSubmitting, language, selectedPlan, toast, trackEvent]
+  );
+
+  const retryCheckout = useCallback(() => {
+    if (!lastAttempt) return;
+    if (lastAttempt.provider === "paypal") {
+      void openJoinPayPal(lastAttempt.plan, lastAttempt.ctaId, true);
+      return;
+    }
+    void openJoin(lastAttempt.plan, lastAttempt.ctaId, true);
+  }, [lastAttempt, openJoin, openJoinPayPal]);
+
+  const renderCheckoutFeedback = useCallback(
+    (ctaId: string) => {
+      if (lastAttempt?.ctaId !== ctaId) return null;
+
+      if (isSubmitting) {
+        return (
+          <p className="mt-3 text-xs text-muted-foreground">
+            {language === "es" ? "Redirigiendo a checkout seguro..." : "Redirecting to secure checkout..."}
+          </p>
+        );
+      }
+
+      if (!checkoutError) return null;
+
+      return (
+        <Alert variant="destructive" className="mt-4">
+          <AlertTitle>{language === "es" ? "No se pudo abrir el checkout" : "Checkout failed"}</AlertTitle>
+          <AlertDescription>
+            <p>{checkoutError}</p>
+            <div className="mt-3 flex flex-col gap-2 sm:flex-row">
+              <Button
+                type="button"
+                variant="outline"
+                className="h-10 border-destructive/40"
+                onClick={retryCheckout}
+                disabled={isSubmitting}
+              >
+                {language === "es" ? "Reintentar" : "Try again"}
+              </Button>
+              <Button asChild type="button" variant="ghost" className="h-10" disabled={isSubmitting}>
+                <Link to="/help">{language === "es" ? "Contactar soporte" : "Contact support"}</Link>
+              </Button>
+            </div>
+          </AlertDescription>
+        </Alert>
+      );
+    },
+    [checkoutError, isSubmitting, language, lastAttempt?.ctaId, retryCheckout]
   );
 
   const handlePlanClick = useCallback(
@@ -730,35 +830,47 @@ export default function Membresia() {
                     Quiero escuchar los demos
                   </Link>
                 </Button>
-                <div className="grid gap-3">
-                  <Button
-                    className="btn-primary-glow h-12 text-base font-black"
-                    disabled={isSubmitting}
-                    onClick={() => void openJoin(selectedPlan, "membresia_hero_adquiere")}
-                  >
-                    <Zap className="mr-2 h-5 w-5" />
-                    {language === "es" ? "Pagar con tarjeta" : "Pay with card"}
-                  </Button>
-                  <Button
-                    variant="outline"
-                    className="h-12 text-base font-black"
-                    disabled={isSubmitting}
-                    onClick={() => void openJoinPayPal(selectedPlan, "membresia_hero_paypal")}
-                  >
-                    {isSubmitting ? (
-                      <>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        {language === "es" ? "Abriendo..." : "Opening..."}
-                      </>
-                    ) : (
-                      <>
-                        <CreditCard className="mr-2 h-4 w-4 text-primary" />
-                        {language === "es" ? "Pagar con PayPal" : "Pay with PayPal"}
-                      </>
-                    )}
-                  </Button>
-                </div>
-              </div>
+	                <div className="grid gap-3">
+	                  <Button
+	                    className="btn-primary-glow h-12 text-base font-black"
+	                    disabled={isSubmitting}
+	                    onClick={() => void openJoin(selectedPlan, "membresia_hero_adquiere")}
+	                  >
+	                    {isSubmitting && lastAttempt?.ctaId === "membresia_hero_adquiere" ? (
+	                      <>
+	                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+	                        {language === "es" ? "Cargando checkout seguro..." : "Loading secure checkout..."}
+	                      </>
+	                    ) : (
+	                      <>
+	                        <Zap className="mr-2 h-5 w-5" />
+	                        {language === "es" ? "Pagar con tarjeta" : "Pay with card"}
+	                      </>
+	                    )}
+	                  </Button>
+	                  <Button
+	                    variant="outline"
+	                    className="h-12 text-base font-black"
+	                    disabled={isSubmitting}
+	                    onClick={() => void openJoinPayPal(selectedPlan, "membresia_hero_paypal")}
+	                  >
+	                    {isSubmitting && lastAttempt?.ctaId === "membresia_hero_paypal" ? (
+	                      <>
+	                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+	                        {language === "es" ? "Cargando PayPal..." : "Loading PayPal..."}
+	                      </>
+	                    ) : (
+	                      <>
+	                        <CreditCard className="mr-2 h-4 w-4 text-primary" />
+	                        {language === "es" ? "Pagar con PayPal" : "Pay with PayPal"}
+	                      </>
+	                    )}
+	                  </Button>
+
+                    {renderCheckoutFeedback("membresia_hero_adquiere")}
+                    {renderCheckoutFeedback("membresia_hero_paypal")}
+	                </div>
+	              </div>
 
               <p className="mt-4 flex items-center justify-center gap-2 text-xs text-muted-foreground">
                 <Lock className="h-4 w-4 text-primary" />
@@ -839,38 +951,51 @@ export default function Membresia() {
               ))}
             </div>
 
-            <div className="mt-10 flex justify-center">
-              <div className="grid w-full max-w-2xl gap-3 sm:grid-cols-2">
-                <Button
-                  onClick={() => void openJoin(selectedPlan, "membresia_socialproof_adquiere")}
-                  disabled={isSubmitting}
-                  className="btn-primary-glow h-12 w-full text-base font-black md:h-14 md:text-lg"
-                >
-                  {language === "es" ? "Tarjeta" : "Card"}
-                </Button>
-                <Button
-                  onClick={() => void openJoinPayPal(selectedPlan, "membresia_socialproof_paypal")}
-                  disabled={isSubmitting}
-                  variant="outline"
-                  className="h-12 w-full text-base font-black md:h-14 md:text-lg"
-                >
-                  {isSubmitting ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      {language === "es" ? "Abriendo..." : "Opening..."}
-                    </>
-                  ) : (
-                    <>
-                      <CreditCard className="mr-2 h-4 w-4 text-primary" />
-                      PayPal
-                    </>
-                  )}
-                </Button>
+	            <div className="mt-10 flex justify-center">
+	              <div className="grid w-full max-w-2xl gap-3 sm:grid-cols-2">
+	                <Button
+	                  onClick={() => void openJoin(selectedPlan, "membresia_socialproof_adquiere")}
+	                  disabled={isSubmitting}
+	                  className="btn-primary-glow h-12 w-full text-base font-black md:h-14 md:text-lg"
+	                >
+	                  {isSubmitting && lastAttempt?.ctaId === "membresia_socialproof_adquiere" ? (
+	                    <>
+	                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+	                      {language === "es" ? "Cargando checkout seguro..." : "Loading secure checkout..."}
+	                    </>
+	                  ) : (
+	                    language === "es" ? "Tarjeta" : "Card"
+	                  )}
+	                </Button>
+	                <Button
+	                  onClick={() => void openJoinPayPal(selectedPlan, "membresia_socialproof_paypal")}
+	                  disabled={isSubmitting}
+	                  variant="outline"
+	                  className="h-12 w-full text-base font-black md:h-14 md:text-lg"
+	                >
+	                  {isSubmitting && lastAttempt?.ctaId === "membresia_socialproof_paypal" ? (
+	                    <>
+	                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+	                      {language === "es" ? "Cargando PayPal..." : "Loading PayPal..."}
+	                    </>
+	                  ) : (
+	                    <>
+	                      <CreditCard className="mr-2 h-4 w-4 text-primary" />
+	                      PayPal
+	                    </>
+	                  )}
+	                </Button>
+	              </div>
+	            </div>
+              <div className="mt-4 flex justify-center">
+                <div className="w-full max-w-2xl">
+                  {renderCheckoutFeedback("membresia_socialproof_adquiere")}
+                  {renderCheckoutFeedback("membresia_socialproof_paypal")}
+                </div>
               </div>
-            </div>
-          </div>
-        </div>
-      </section>
+	          </div>
+	        </div>
+	      </section>
 
       {/* Plans */}
       <section className="relative py-14 md:py-20">
@@ -922,34 +1047,44 @@ export default function Membresia() {
                 ))}
               </ul>
 
-	              <div className="mt-8 grid gap-3 sm:grid-cols-2">
-	                <Button
-	                  onClick={() => handlePlanClick("plan_1tb_mensual", "membresia_plan_1tb")}
-	                  disabled={isSubmitting}
-	                  className="btn-primary-glow h-12 w-full text-base font-black"
-	                >
-	                  {language === "es" ? "Tarjeta" : "Card"}
-	                </Button>
-	                <Button
-	                  onClick={() => void openJoinPayPal("plan_1tb_mensual", "membresia_plan_1tb_paypal")}
-	                  disabled={isSubmitting}
-	                  variant="outline"
-	                  className="h-12 w-full text-base font-black"
-	                >
-	                  {isSubmitting ? (
-	                    <>
-	                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-	                      {language === "es" ? "Abriendo..." : "Opening..."}
-	                    </>
-	                  ) : (
-	                    <>
-	                      <CreditCard className="mr-2 h-4 w-4 text-primary" />
-	                      PayPal
-	                    </>
-	                  )}
-	                </Button>
-	              </div>
-            </div>
+		              <div className="mt-8 grid gap-3 sm:grid-cols-2">
+		                <Button
+		                  onClick={() => handlePlanClick("plan_1tb_mensual", "membresia_plan_1tb")}
+		                  disabled={isSubmitting}
+		                  className="btn-primary-glow h-12 w-full text-base font-black"
+		                >
+		                  {isSubmitting && lastAttempt?.ctaId === "membresia_plan_1tb" ? (
+		                    <>
+		                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+		                      {language === "es" ? "Cargando checkout seguro..." : "Loading secure checkout..."}
+		                    </>
+		                  ) : (
+		                    language === "es" ? "Tarjeta" : "Card"
+		                  )}
+		                </Button>
+		                <Button
+		                  onClick={() => void openJoinPayPal("plan_1tb_mensual", "membresia_plan_1tb_paypal")}
+		                  disabled={isSubmitting}
+		                  variant="outline"
+		                  className="h-12 w-full text-base font-black"
+		                >
+		                  {isSubmitting && lastAttempt?.ctaId === "membresia_plan_1tb_paypal" ? (
+		                    <>
+		                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+		                      {language === "es" ? "Cargando PayPal..." : "Loading PayPal..."}
+		                    </>
+		                  ) : (
+		                    <>
+		                      <CreditCard className="mr-2 h-4 w-4 text-primary" />
+		                      PayPal
+		                    </>
+		                  )}
+		                </Button>
+		              </div>
+
+                  {renderCheckoutFeedback("membresia_plan_1tb")}
+                  {renderCheckoutFeedback("membresia_plan_1tb_paypal")}
+	            </div>
 
             {/* Plan 2TB */}
             <div
@@ -984,36 +1119,46 @@ export default function Membresia() {
                 ))}
               </ul>
 
-	              <div className="mt-8 grid gap-3 sm:grid-cols-2">
-	                <Button
-	                  onClick={() => handlePlanClick("plan_2tb_anual", "membresia_plan_2tb")}
-	                  disabled={isSubmitting}
-	                  className="btn-primary-glow h-12 w-full text-base font-black"
-	                >
-	                  {language === "es" ? "Tarjeta" : "Card"}
-	                </Button>
-	                <Button
-	                  onClick={() => void openJoinPayPal("plan_2tb_anual", "membresia_plan_2tb_paypal")}
-	                  disabled={isSubmitting}
-	                  variant="outline"
-	                  className="h-12 w-full text-base font-black"
-	                >
-	                  {isSubmitting ? (
-	                    <>
-	                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-	                      {language === "es" ? "Abriendo..." : "Opening..."}
-	                    </>
-	                  ) : (
-	                    <>
-	                      <CreditCard className="mr-2 h-4 w-4 text-primary" />
-	                      PayPal
-	                    </>
-	                  )}
-	                </Button>
-	              </div>
+		              <div className="mt-8 grid gap-3 sm:grid-cols-2">
+		                <Button
+		                  onClick={() => handlePlanClick("plan_2tb_anual", "membresia_plan_2tb")}
+		                  disabled={isSubmitting}
+		                  className="btn-primary-glow h-12 w-full text-base font-black"
+		                >
+		                  {isSubmitting && lastAttempt?.ctaId === "membresia_plan_2tb" ? (
+		                    <>
+		                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+		                      {language === "es" ? "Cargando checkout seguro..." : "Loading secure checkout..."}
+		                    </>
+		                  ) : (
+		                    language === "es" ? "Tarjeta" : "Card"
+		                  )}
+		                </Button>
+		                <Button
+		                  onClick={() => void openJoinPayPal("plan_2tb_anual", "membresia_plan_2tb_paypal")}
+		                  disabled={isSubmitting}
+		                  variant="outline"
+		                  className="h-12 w-full text-base font-black"
+		                >
+		                  {isSubmitting && lastAttempt?.ctaId === "membresia_plan_2tb_paypal" ? (
+		                    <>
+		                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+		                      {language === "es" ? "Cargando PayPal..." : "Loading PayPal..."}
+		                    </>
+		                  ) : (
+		                    <>
+		                      <CreditCard className="mr-2 h-4 w-4 text-primary" />
+		                      PayPal
+		                    </>
+		                  )}
+		                </Button>
+		              </div>
 
-	                <div className="mt-4 flex flex-wrap items-center gap-2">
-	                  {paymentBadges.map((label) => (
+                  {renderCheckoutFeedback("membresia_plan_2tb")}
+                  {renderCheckoutFeedback("membresia_plan_2tb_paypal")}
+	
+		                <div className="mt-4 flex flex-wrap items-center gap-2">
+		                  {paymentBadges.map((label) => (
 	                    <Badge
                       key={label}
                       variant="outline"
@@ -1074,37 +1219,50 @@ export default function Membresia() {
             </Accordion>
           </div>
 
-          <div className="mt-10 flex justify-center">
-            <div className="grid w-full max-w-2xl gap-3 sm:grid-cols-2">
-              <Button
-                onClick={() => void openJoin(selectedPlan, "membresia_faq_adquiere")}
-                disabled={isSubmitting}
-                className="btn-primary-glow h-12 w-full text-base font-black md:h-14 md:text-lg"
-              >
-                {language === "es" ? "Tarjeta" : "Card"}
-              </Button>
-              <Button
-                onClick={() => void openJoinPayPal(selectedPlan, "membresia_faq_paypal")}
-                disabled={isSubmitting}
-                variant="outline"
-                className="h-12 w-full text-base font-black md:h-14 md:text-lg"
-              >
-                {isSubmitting ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    {language === "es" ? "Abriendo..." : "Opening..."}
-                  </>
-                ) : (
-                  <>
-                    <CreditCard className="mr-2 h-4 w-4 text-primary" />
-                    PayPal
-                  </>
-                )}
-              </Button>
+	          <div className="mt-10 flex justify-center">
+	            <div className="grid w-full max-w-2xl gap-3 sm:grid-cols-2">
+	              <Button
+	                onClick={() => void openJoin(selectedPlan, "membresia_faq_adquiere")}
+	                disabled={isSubmitting}
+	                className="btn-primary-glow h-12 w-full text-base font-black md:h-14 md:text-lg"
+	              >
+	                {isSubmitting && lastAttempt?.ctaId === "membresia_faq_adquiere" ? (
+	                  <>
+	                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+	                    {language === "es" ? "Cargando checkout seguro..." : "Loading secure checkout..."}
+	                  </>
+	                ) : (
+	                  language === "es" ? "Tarjeta" : "Card"
+	                )}
+	              </Button>
+	              <Button
+	                onClick={() => void openJoinPayPal(selectedPlan, "membresia_faq_paypal")}
+	                disabled={isSubmitting}
+	                variant="outline"
+	                className="h-12 w-full text-base font-black md:h-14 md:text-lg"
+	              >
+	                {isSubmitting && lastAttempt?.ctaId === "membresia_faq_paypal" ? (
+	                  <>
+	                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+	                    {language === "es" ? "Cargando PayPal..." : "Loading PayPal..."}
+	                  </>
+	                ) : (
+	                  <>
+	                    <CreditCard className="mr-2 h-4 w-4 text-primary" />
+	                    PayPal
+	                  </>
+	                )}
+	              </Button>
+	            </div>
+	          </div>
+            <div className="mt-4 flex justify-center">
+              <div className="w-full max-w-2xl">
+                {renderCheckoutFeedback("membresia_faq_adquiere")}
+                {renderCheckoutFeedback("membresia_faq_paypal")}
+              </div>
             </div>
-          </div>
-        </div>
-      </section>
+	        </div>
+	      </section>
 
       {/* Footer */}
       <section className="relative pb-20 pt-6 md:pb-28">

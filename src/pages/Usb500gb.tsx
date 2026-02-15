@@ -15,6 +15,7 @@ import SettingsToggle from "@/components/SettingsToggle";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useTheme } from "@/contexts/ThemeContext";
 import { Button } from "@/components/ui/button";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import {
   Dialog,
@@ -27,6 +28,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { supabase } from "@/integrations/supabase/client";
+import { useAnalytics } from "@/hooks/useAnalytics";
 import { useToast } from "@/hooks/use-toast";
 import logoWhite from "@/assets/logo-white.png";
 import logoDark from "@/assets/logo-dark.png";
@@ -85,10 +87,13 @@ export default function Usb500gb() {
   const { language } = useLanguage();
   const { theme } = useTheme();
   const { toast } = useToast();
+  const { trackEvent } = useAnalytics();
   const navigate = useNavigate();
 
   const [isOrderOpen, setIsOrderOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [checkoutError, setCheckoutError] = useState<string | null>(null);
+  const [lastAttempt, setLastAttempt] = useState<{ ctaId: string; prefer: CheckoutProvider } | null>(null);
 
   const [countryData, setCountryData] = useState<CountryData>({
     country_code: "US",
@@ -127,13 +132,25 @@ export default function Usb500gb() {
   }, [language]);
 
   const startExpressCheckout = useCallback(
-    async (prefer?: CheckoutProvider) => {
+    async (ctaId: string, prefer: CheckoutProvider, isRetry = false) => {
       if (isSubmitting) return;
       setIsSubmitting(true);
+      setCheckoutError(null);
+      setLastAttempt({ ctaId, prefer });
 
+      trackEvent("checkout_redirect", {
+        cta_id: ctaId,
+        plan_id: "usb_500gb",
+        provider: prefer,
+        status: "starting",
+        funnel_step: "checkout_handoff",
+        is_retry: isRetry,
+      });
+
+      let redirected = false;
       try {
         const leadId = crypto.randomUUID();
-        const { url } = await createBestCheckoutUrl({
+        const { provider, url } = await createBestCheckoutUrl({
           leadId,
           product: "usb_500gb",
           sourcePage: window.location.pathname,
@@ -141,9 +158,35 @@ export default function Usb500gb() {
         });
 
         if (url) {
+          redirected = true;
+          trackEvent("checkout_redirect", {
+            cta_id: ctaId,
+            plan_id: "usb_500gb",
+            provider: provider || prefer,
+            status: "redirected",
+            funnel_step: "checkout_handoff",
+            is_retry: isRetry,
+            lead_id: leadId,
+          });
           window.location.assign(url);
           return;
         }
+
+        trackEvent("checkout_redirect", {
+          cta_id: ctaId,
+          plan_id: "usb_500gb",
+          provider: prefer,
+          status: "missing_url",
+          funnel_step: "checkout_handoff",
+          is_retry: isRetry,
+          lead_id: leadId,
+        });
+
+        setCheckoutError(
+          language === "es"
+            ? "No pudimos abrir el checkout. Reintenta; si continúa, cambia de red o desactiva tu bloqueador de anuncios."
+            : "We couldn't open checkout. Try again; if it continues, switch networks or disable your ad blocker."
+        );
 
         toast({
           title: language === "es" ? "Checkout no disponible" : "Checkout unavailable",
@@ -155,6 +198,21 @@ export default function Usb500gb() {
         });
       } catch (err) {
         console.error("USB500GB checkout error:", err);
+        trackEvent("checkout_redirect", {
+          cta_id: ctaId,
+          plan_id: "usb_500gb",
+          provider: prefer,
+          status: "error",
+          funnel_step: "checkout_handoff",
+          is_retry: isRetry,
+          error_message: err instanceof Error ? err.message : String(err),
+        });
+
+        setCheckoutError(
+          language === "es"
+            ? "Hubo un problema al iniciar el pago. Reintenta; si continúa, cambia de red o desactiva tu bloqueador de anuncios."
+            : "There was a problem starting checkout. Try again; if it continues, switch networks or disable your ad blocker."
+        );
         toast({
           title: language === "es" ? "Error" : "Error",
           description:
@@ -164,19 +222,76 @@ export default function Usb500gb() {
           variant: "destructive",
         });
       } finally {
-        setIsSubmitting(false);
+        if (!redirected) setIsSubmitting(false);
       }
     },
-    [isSubmitting, language, toast]
+    [isSubmitting, language, toast, trackEvent]
   );
 
-  const openOrder = useCallback(() => {
-    void startExpressCheckout("stripe");
-  }, [startExpressCheckout]);
+  const openOrder = useCallback(
+    (ctaId: string) => {
+      void startExpressCheckout(ctaId, "stripe");
+    },
+    [startExpressCheckout]
+  );
 
-  const openOrderPayPal = useCallback(() => {
-    void startExpressCheckout("paypal");
-  }, [startExpressCheckout]);
+  const openOrderPayPal = useCallback(
+    (ctaId: string) => {
+      void startExpressCheckout(ctaId, "paypal");
+    },
+    [startExpressCheckout]
+  );
+
+  const retryCheckout = useCallback(() => {
+    if (!lastAttempt) return;
+    void startExpressCheckout(lastAttempt.ctaId, lastAttempt.prefer, true);
+  }, [lastAttempt, startExpressCheckout]);
+
+  const renderCheckoutFeedback = useCallback(
+    (ctaId: string) => {
+      if (lastAttempt?.ctaId !== ctaId) return null;
+
+      if (isSubmitting) {
+        return (
+          <p className="mt-3 text-xs text-muted-foreground">
+            {language === "es" ? "Redirigiendo a checkout seguro..." : "Redirecting to secure checkout..."}
+          </p>
+        );
+      }
+
+      if (!checkoutError) return null;
+
+      return (
+        <Alert variant="destructive" className="mt-4">
+          <AlertTitle>{language === "es" ? "No se pudo abrir el checkout" : "Checkout failed"}</AlertTitle>
+          <AlertDescription>
+            <p>{checkoutError}</p>
+            <div className="mt-3 flex flex-col gap-2 sm:flex-row">
+              <Button
+                type="button"
+                variant="outline"
+                className="h-10 border-destructive/40"
+                onClick={retryCheckout}
+                disabled={isSubmitting}
+              >
+                {language === "es" ? "Reintentar" : "Try again"}
+              </Button>
+              <Button
+                type="button"
+                variant="ghost"
+                className="h-10"
+                onClick={() => navigate("/help")}
+                disabled={isSubmitting}
+              >
+                {language === "es" ? "Contactar soporte" : "Contact support"}
+              </Button>
+            </div>
+          </AlertDescription>
+        </Alert>
+      );
+    },
+    [checkoutError, isSubmitting, language, lastAttempt?.ctaId, navigate, retryCheckout]
+  );
 
   const onSubmit = useCallback(
     async (e: React.FormEvent) => {
@@ -429,39 +544,51 @@ export default function Usb500gb() {
                 reggaetón, bachata, salsa, dembow, corridos y mucho más.
               </p>
 
-	              <div className="mt-7">
-	                <Button
-	                  onClick={openOrder}
-	                  disabled={isSubmitting}
-	                  className="btn-primary-glow h-12 w-full text-base font-black md:w-auto md:px-10"
-	                >
-	                  <span className="flex w-full flex-col items-center leading-tight">
-	                    <span>👉 ¡QUIERO MI USB AHORA! 👈</span>
-	                    <span className="text-xs font-semibold opacity-90">📦 Stock limitado.</span>
-	                  </span>
-	                </Button>
-	                <Button
-	                  onClick={openOrderPayPal}
-	                  disabled={isSubmitting}
-	                  variant="outline"
-	                  className="mt-3 h-12 w-full text-base font-black md:w-auto md:px-10"
-	                >
-	                  {isSubmitting ? (
-	                    <>
-	                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-	                      {language === "es" ? "Abriendo..." : "Opening..."}
-	                    </>
-	                  ) : (
-	                    <>
-	                      <CreditCard className="mr-2 h-4 w-4 text-primary" />
-	                      {language === "es" ? "Pagar con PayPal" : "Pay with PayPal"}
-	                    </>
-	                  )}
-	                </Button>
+		              <div className="mt-7">
+		                <Button
+		                  onClick={() => openOrder("usb500gb_hero_stripe")}
+		                  disabled={isSubmitting}
+		                  className="btn-primary-glow h-12 w-full text-base font-black md:w-auto md:px-10"
+		                >
+		                  {isSubmitting && lastAttempt?.ctaId === "usb500gb_hero_stripe" ? (
+		                    <>
+		                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+		                      {language === "es"
+		                        ? "Cargando checkout seguro..."
+		                        : "Loading secure checkout..."}
+		                    </>
+		                  ) : (
+		                    <span className="flex w-full flex-col items-center leading-tight">
+		                      <span>👉 ¡QUIERO MI USB AHORA! 👈</span>
+		                      <span className="text-xs font-semibold opacity-90">📦 Stock limitado.</span>
+		                    </span>
+		                  )}
+		                </Button>
+		                <Button
+		                  onClick={() => openOrderPayPal("usb500gb_hero_paypal")}
+		                  disabled={isSubmitting}
+		                  variant="outline"
+		                  className="mt-3 h-12 w-full text-base font-black md:w-auto md:px-10"
+		                >
+		                  {isSubmitting ? (
+		                    <>
+		                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+		                      {language === "es" ? "Cargando PayPal..." : "Loading PayPal..."}
+		                    </>
+		                  ) : (
+		                    <>
+		                      <CreditCard className="mr-2 h-4 w-4 text-primary" />
+		                      {language === "es" ? "Pagar con PayPal" : "Pay with PayPal"}
+		                    </>
+		                  )}
+		                </Button>
 
-	                <div className="mt-4 flex flex-wrap items-center gap-2">
-	                  {paymentBadges.map((label) => (
-	                    <Badge
+                    {renderCheckoutFeedback("usb500gb_hero_stripe")}
+                    {renderCheckoutFeedback("usb500gb_hero_paypal")}
+	
+		                <div className="mt-4 flex flex-wrap items-center gap-2">
+		                  {paymentBadges.map((label) => (
+		                    <Badge
                       key={label}
                       variant="outline"
                       className="border-border/60 bg-card/40 px-3 py-1 text-[11px] text-muted-foreground"
@@ -591,17 +718,28 @@ export default function Usb500gb() {
             <p className="font-display text-3xl font-black md:text-4xl">
               Menos estrés, más ingresos y mayor prestigio en cada presentación.
             </p>
-            <div className="mt-6 flex justify-center">
-              <Button
-                onClick={openOrder}
-                className="btn-primary-glow h-12 w-full max-w-xl text-base font-black"
-              >
-                ¡ORDENA TU USB AHORA MISMO! 🚀 Tu música, tu éxito
-              </Button>
-            </div>
-            <p className="mt-4 text-sm text-muted-foreground">
-              Recibe en casa la USB más completa y organizada para DJs latinos en USA.
-            </p>
+	            <div className="mt-6 flex justify-center">
+	              <Button
+	                onClick={() => openOrder("usb500gb_mid_stripe")}
+	                disabled={isSubmitting}
+	                className="btn-primary-glow h-12 w-full max-w-xl text-base font-black"
+	              >
+	                {isSubmitting && lastAttempt?.ctaId === "usb500gb_mid_stripe" ? (
+	                  <>
+	                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+	                    {language === "es"
+	                      ? "Cargando checkout seguro..."
+	                      : "Loading secure checkout..."}
+	                  </>
+	                ) : (
+	                  "¡ORDENA TU USB AHORA MISMO! 🚀 Tu música, tu éxito"
+	                )}
+	              </Button>
+	            </div>
+              {renderCheckoutFeedback("usb500gb_mid_stripe")}
+	            <p className="mt-4 text-sm text-muted-foreground">
+	              Recibe en casa la USB más completa y organizada para DJs latinos en USA.
+	            </p>
           </div>
         </div>
       </section>
@@ -634,17 +772,28 @@ export default function Usb500gb() {
               ))}
             </ul>
 
-            <div className="mt-10 flex justify-center">
-              <Button
-                onClick={openOrder}
-                className="btn-primary-glow h-12 w-full max-w-xl text-base font-black"
-              >
-                ¡ORDENA TU USB AHORA MISMO! No pierdas más tiempo buscando música
-              </Button>
-            </div>
-            <p className="mt-4 text-center text-sm text-muted-foreground">
-              Obtén la colección definitiva y haz que cada evento sea inolvidable.
-            </p>
+	            <div className="mt-10 flex justify-center">
+	              <Button
+	                onClick={() => openOrder("usb500gb_bonus_stripe")}
+	                disabled={isSubmitting}
+	                className="btn-primary-glow h-12 w-full max-w-xl text-base font-black"
+	              >
+	                {isSubmitting && lastAttempt?.ctaId === "usb500gb_bonus_stripe" ? (
+	                  <>
+	                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+	                    {language === "es"
+	                      ? "Cargando checkout seguro..."
+	                      : "Loading secure checkout..."}
+	                  </>
+	                ) : (
+	                  "¡ORDENA TU USB AHORA MISMO! No pierdas más tiempo buscando música"
+	                )}
+	              </Button>
+	            </div>
+              {renderCheckoutFeedback("usb500gb_bonus_stripe")}
+	            <p className="mt-4 text-center text-sm text-muted-foreground">
+	              Obtén la colección definitiva y haz que cada evento sea inolvidable.
+	            </p>
           </div>
         </div>
       </section>
@@ -689,16 +838,27 @@ export default function Usb500gb() {
             ))}
           </div>
 
-          <div className="mt-10 flex justify-center">
-            <Button
-              onClick={openOrder}
-              className="btn-primary-glow h-12 w-full max-w-xl text-base font-black"
-            >
-              ¡ORDENA TU USB AHORA MISMO! No pierdas más tiempo buscando música
-            </Button>
-          </div>
-        </div>
-      </section>
+	          <div className="mt-10 flex justify-center">
+	            <Button
+	              onClick={() => openOrder("usb500gb_testimonials_stripe")}
+	              disabled={isSubmitting}
+	              className="btn-primary-glow h-12 w-full max-w-xl text-base font-black"
+	            >
+	              {isSubmitting && lastAttempt?.ctaId === "usb500gb_testimonials_stripe" ? (
+	                <>
+	                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+	                  {language === "es"
+	                    ? "Cargando checkout seguro..."
+	                    : "Loading secure checkout..."}
+	                </>
+	              ) : (
+	                "¡ORDENA TU USB AHORA MISMO! No pierdas más tiempo buscando música"
+	              )}
+	            </Button>
+	          </div>
+            {renderCheckoutFeedback("usb500gb_testimonials_stripe")}
+	        </div>
+	      </section>
 
       {/* Guarantee */}
       <section className="relative py-14 md:py-20">
@@ -725,17 +885,28 @@ export default function Usb500gb() {
               </li>
             </ul>
 
-            <div className="mt-10 flex justify-center">
-              <Button
-                onClick={openOrder}
-                className="btn-primary-glow h-12 w-full max-w-xl text-base font-black"
-              >
-                ¡ORDENA TU USB AHORA MISMO! No pierdas más tiempo buscando música
-              </Button>
-            </div>
-          </div>
-        </div>
-      </section>
+	            <div className="mt-10 flex justify-center">
+	              <Button
+	                onClick={() => openOrder("usb500gb_guarantee_stripe")}
+	                disabled={isSubmitting}
+	                className="btn-primary-glow h-12 w-full max-w-xl text-base font-black"
+	              >
+	                {isSubmitting && lastAttempt?.ctaId === "usb500gb_guarantee_stripe" ? (
+	                  <>
+	                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+	                    {language === "es"
+	                      ? "Cargando checkout seguro..."
+	                      : "Loading secure checkout..."}
+	                  </>
+	                ) : (
+	                  "¡ORDENA TU USB AHORA MISMO! No pierdas más tiempo buscando música"
+	                )}
+	              </Button>
+	            </div>
+              {renderCheckoutFeedback("usb500gb_guarantee_stripe")}
+	          </div>
+	        </div>
+	      </section>
 
       {/* Special offer */}
       <section className="relative pb-20 pt-6 md:pb-28">
@@ -758,20 +929,31 @@ export default function Usb500gb() {
               Pero hoy tienes todo esto por un precio increíble:
             </p>
 
-            <div className="mt-8 flex justify-center">
-              <Button
-                onClick={openOrder}
-                className="btn-primary-glow h-14 w-full max-w-2xl text-base font-black md:text-lg"
-              >
-                <span className="flex w-full flex-col items-center leading-tight">
-                  <span>ORDENA YA - POR $197</span>
-                  <span className="text-xs font-semibold opacity-90">
-                    ⚠️ Atención: Unidades limitadas disponibles, no te quedes sin la tuya.
-                  </span>
-                </span>
-              </Button>
-            </div>
-          </div>
+	            <div className="mt-8 flex justify-center">
+	              <Button
+	                onClick={() => openOrder("usb500gb_offer_stripe")}
+	                disabled={isSubmitting}
+	                className="btn-primary-glow h-14 w-full max-w-2xl text-base font-black md:text-lg"
+	              >
+	                {isSubmitting && lastAttempt?.ctaId === "usb500gb_offer_stripe" ? (
+	                  <>
+	                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+	                    {language === "es"
+	                      ? "Cargando checkout seguro..."
+	                      : "Loading secure checkout..."}
+	                  </>
+	                ) : (
+	                  <span className="flex w-full flex-col items-center leading-tight">
+	                    <span>ORDENA YA - POR $197</span>
+	                    <span className="text-xs font-semibold opacity-90">
+	                      ⚠️ Atención: Unidades limitadas disponibles, no te quedes sin la tuya.
+	                    </span>
+	                  </span>
+	                )}
+	              </Button>
+	            </div>
+              {renderCheckoutFeedback("usb500gb_offer_stripe")}
+	          </div>
 
           <p className="mt-10 text-center text-xs text-muted-foreground">
             Copyrights 2025 |Gustavo Garcia™ | Terms &amp; Conditions

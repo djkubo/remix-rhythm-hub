@@ -14,6 +14,7 @@ import SettingsToggle from "@/components/SettingsToggle";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useTheme } from "@/contexts/ThemeContext";
 import { Button } from "@/components/ui/button";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import {
   Dialog,
@@ -32,11 +33,12 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { supabase } from "@/integrations/supabase/client";
+import { useAnalytics } from "@/hooks/useAnalytics";
 import { useToast } from "@/hooks/use-toast";
 import logoWhite from "@/assets/logo-white.png";
 import logoDark from "@/assets/logo-dark.png";
 import { countryNameFromCode, detectCountryCodeFromTimezone } from "@/lib/country";
-import { createBestCheckoutUrl } from "@/lib/checkout";
+import { createBestCheckoutUrl, type CheckoutProvider } from "@/lib/checkout";
 
 type CountryData = {
   country_code: string;
@@ -90,10 +92,13 @@ export default function Anual() {
   const { language } = useLanguage();
   const { theme } = useTheme();
   const { toast } = useToast();
+  const { trackEvent } = useAnalytics();
   const navigate = useNavigate();
 
   const [isJoinOpen, setIsJoinOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [checkoutError, setCheckoutError] = useState<string | null>(null);
+  const [lastAttempt, setLastAttempt] = useState<{ ctaId: string; prefer: CheckoutProvider } | null>(null);
 
   const [countryData, setCountryData] = useState<CountryData>({
     country_code: "US",
@@ -133,13 +138,25 @@ export default function Anual() {
   }, [language]);
 
   const startExpressCheckout = useCallback(
-    async (prefer?: "stripe" | "paypal") => {
+    async (ctaId: string, prefer: CheckoutProvider, isRetry = false) => {
       if (isSubmitting) return;
       setIsSubmitting(true);
+      setCheckoutError(null);
+      setLastAttempt({ ctaId, prefer });
 
+      trackEvent("checkout_redirect", {
+        cta_id: ctaId,
+        plan_id: "anual",
+        provider: prefer,
+        status: "starting",
+        funnel_step: "checkout_handoff",
+        is_retry: isRetry,
+      });
+
+      let redirected = false;
       try {
         const leadId = crypto.randomUUID();
-        const { url } = await createBestCheckoutUrl({
+        const { provider, url } = await createBestCheckoutUrl({
           leadId,
           product: "anual",
           sourcePage: window.location.pathname,
@@ -147,9 +164,35 @@ export default function Anual() {
         });
 
         if (url) {
+          redirected = true;
+          trackEvent("checkout_redirect", {
+            cta_id: ctaId,
+            plan_id: "anual",
+            provider: provider || prefer,
+            status: "redirected",
+            funnel_step: "checkout_handoff",
+            is_retry: isRetry,
+            lead_id: leadId,
+          });
           window.location.assign(url);
           return;
         }
+
+        trackEvent("checkout_redirect", {
+          cta_id: ctaId,
+          plan_id: "anual",
+          provider: prefer,
+          status: "missing_url",
+          funnel_step: "checkout_handoff",
+          is_retry: isRetry,
+          lead_id: leadId,
+        });
+
+        setCheckoutError(
+          language === "es"
+            ? "No pudimos abrir el checkout. Reintenta; si continúa, cambia de red o desactiva tu bloqueador de anuncios."
+            : "We couldn't open checkout. Try again; if it continues, switch networks or disable your ad blocker."
+        );
 
         toast({
           title: language === "es" ? "Checkout no disponible" : "Checkout unavailable",
@@ -161,6 +204,21 @@ export default function Anual() {
         });
       } catch (err) {
         console.error("ANUAL checkout error:", err);
+        trackEvent("checkout_redirect", {
+          cta_id: ctaId,
+          plan_id: "anual",
+          provider: prefer,
+          status: "error",
+          funnel_step: "checkout_handoff",
+          is_retry: isRetry,
+          error_message: err instanceof Error ? err.message : String(err),
+        });
+
+        setCheckoutError(
+          language === "es"
+            ? "Hubo un problema al iniciar el pago. Reintenta; si continúa, cambia de red o desactiva tu bloqueador de anuncios."
+            : "There was a problem starting checkout. Try again; if it continues, switch networks or disable your ad blocker."
+        );
         toast({
           title: language === "es" ? "Error" : "Error",
           description:
@@ -170,19 +228,76 @@ export default function Anual() {
           variant: "destructive",
         });
       } finally {
-        setIsSubmitting(false);
+        if (!redirected) setIsSubmitting(false);
       }
     },
-    [isSubmitting, language, toast]
+    [isSubmitting, language, toast, trackEvent]
   );
 
-  const openJoin = useCallback(() => {
-    void startExpressCheckout("stripe");
-  }, [startExpressCheckout]);
+  const openJoin = useCallback(
+    (ctaId: string) => {
+      void startExpressCheckout(ctaId, "stripe");
+    },
+    [startExpressCheckout]
+  );
 
-  const openJoinPayPal = useCallback(() => {
-    void startExpressCheckout("paypal");
-  }, [startExpressCheckout]);
+  const openJoinPayPal = useCallback(
+    (ctaId: string) => {
+      void startExpressCheckout(ctaId, "paypal");
+    },
+    [startExpressCheckout]
+  );
+
+  const retryCheckout = useCallback(() => {
+    if (!lastAttempt) return;
+    void startExpressCheckout(lastAttempt.ctaId, lastAttempt.prefer, true);
+  }, [lastAttempt, startExpressCheckout]);
+
+  const renderCheckoutFeedback = useCallback(
+    (ctaId: string) => {
+      if (lastAttempt?.ctaId !== ctaId) return null;
+
+      if (isSubmitting) {
+        return (
+          <p className="mt-3 text-xs text-muted-foreground">
+            {language === "es" ? "Redirigiendo a checkout seguro..." : "Redirecting to secure checkout..."}
+          </p>
+        );
+      }
+
+      if (!checkoutError) return null;
+
+      return (
+        <Alert variant="destructive" className="mt-4">
+          <AlertTitle>{language === "es" ? "No se pudo abrir el checkout" : "Checkout failed"}</AlertTitle>
+          <AlertDescription>
+            <p>{checkoutError}</p>
+            <div className="mt-3 flex flex-col gap-2 sm:flex-row">
+              <Button
+                type="button"
+                variant="outline"
+                className="h-10 border-destructive/40"
+                onClick={retryCheckout}
+                disabled={isSubmitting}
+              >
+                {language === "es" ? "Reintentar" : "Try again"}
+              </Button>
+              <Button
+                type="button"
+                variant="ghost"
+                className="h-10"
+                onClick={() => navigate("/help")}
+                disabled={isSubmitting}
+              >
+                {language === "es" ? "Contactar soporte" : "Contact support"}
+              </Button>
+            </div>
+          </AlertDescription>
+        </Alert>
+      );
+    },
+    [checkoutError, isSubmitting, language, lastAttempt?.ctaId, navigate, retryCheckout]
+  );
 
   const onSubmit = useCallback(
     async (e: React.FormEvent) => {
@@ -433,41 +548,51 @@ export default function Anual() {
                 </div>
               </div>
 
-	              <div className="mt-8">
-	                <Button
-	                  onClick={openJoin}
-	                  disabled={isSubmitting}
-	                  className="btn-primary-glow h-12 w-full text-base font-black md:h-14 md:text-lg"
-	                >
-	                  <span className="flex w-full flex-col items-center leading-tight">
-	                    <span>Acceder ahora</span>
-	                    <span className="text-xs font-semibold opacity-90">
-	                      Aprovecha el precio especial de $195 USD
-	                    </span>
-	                  </span>
-	                </Button>
-	                <Button
-	                  onClick={openJoinPayPal}
-	                  disabled={isSubmitting}
-	                  variant="outline"
-	                  className="mt-3 h-12 w-full text-base font-black md:h-14 md:text-lg"
-	                >
-	                  {isSubmitting ? (
-	                    <>
-	                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-	                      {language === "es" ? "Abriendo..." : "Opening..."}
-	                    </>
-	                  ) : (
-	                    <>
-	                      <CreditCard className="mr-2 h-4 w-4 text-primary" />
-	                      {language === "es" ? "Pagar con PayPal" : "Pay with PayPal"}
-	                    </>
-	                  )}
-	                </Button>
+		              <div className="mt-8">
+		                <Button
+		                  onClick={() => openJoin("anual_hero_stripe")}
+		                  disabled={isSubmitting}
+		                  className="btn-primary-glow h-12 w-full text-base font-black md:h-14 md:text-lg"
+		                >
+		                  {isSubmitting && lastAttempt?.ctaId === "anual_hero_stripe" ? (
+		                    <>
+		                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+		                      {language === "es" ? "Cargando checkout seguro..." : "Loading secure checkout..."}
+		                    </>
+		                  ) : (
+		                    <span className="flex w-full flex-col items-center leading-tight">
+		                      <span>Acceder ahora</span>
+		                      <span className="text-xs font-semibold opacity-90">
+		                        Aprovecha el precio especial de $195 USD
+		                      </span>
+		                    </span>
+		                  )}
+		                </Button>
+		                <Button
+		                  onClick={() => openJoinPayPal("anual_hero_paypal")}
+		                  disabled={isSubmitting}
+		                  variant="outline"
+		                  className="mt-3 h-12 w-full text-base font-black md:h-14 md:text-lg"
+		                >
+		                  {isSubmitting ? (
+		                    <>
+		                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+		                      {language === "es" ? "Cargando PayPal..." : "Loading PayPal..."}
+		                    </>
+		                  ) : (
+		                    <>
+		                      <CreditCard className="mr-2 h-4 w-4 text-primary" />
+		                      {language === "es" ? "Pagar con PayPal" : "Pay with PayPal"}
+		                    </>
+		                  )}
+		                </Button>
 
-	                <div className="mt-4 flex flex-wrap items-center gap-2">
-	                  {paymentBadges.map((label) => (
-	                    <Badge
+                    {renderCheckoutFeedback("anual_hero_stripe")}
+                    {renderCheckoutFeedback("anual_hero_paypal")}
+	
+		                <div className="mt-4 flex flex-wrap items-center gap-2">
+		                  {paymentBadges.map((label) => (
+		                    <Badge
                       key={label}
                       variant="outline"
                       className="border-border/60 bg-card/40 px-3 py-1 text-[11px] text-muted-foreground"
@@ -574,23 +699,32 @@ export default function Anual() {
                 </p>
               </div>
 
-              <div className="mt-8">
-                <Button
-                  onClick={openJoin}
-                  className="btn-primary-glow h-12 w-full text-base font-black md:h-14 md:text-lg"
-                >
-                  <span className="flex w-full flex-col items-center leading-tight">
-                    <span>Quiero un año de música ilimitada</span>
-                    <span className="text-xs font-semibold opacity-90">
-                      Menos de $16.25 USD por mes
-                    </span>
-                  </span>
-                </Button>
-                <p className="mt-4 flex items-center justify-center gap-2 text-xs text-muted-foreground">
-                  <Lock className="h-4 w-4 text-primary" />
-                  Tu información está 100% segura con nosotros
-                </p>
-              </div>
+	              <div className="mt-8">
+	                <Button
+	                  onClick={() => openJoin("anual_offer_stripe")}
+	                  disabled={isSubmitting}
+	                  className="btn-primary-glow h-12 w-full text-base font-black md:h-14 md:text-lg"
+	                >
+	                  {isSubmitting && lastAttempt?.ctaId === "anual_offer_stripe" ? (
+	                    <>
+	                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+	                      {language === "es" ? "Cargando checkout seguro..." : "Loading secure checkout..."}
+	                    </>
+	                  ) : (
+	                    <span className="flex w-full flex-col items-center leading-tight">
+	                      <span>Quiero un año de música ilimitada</span>
+	                      <span className="text-xs font-semibold opacity-90">
+	                        Menos de $16.25 USD por mes
+	                      </span>
+	                    </span>
+	                  )}
+	                </Button>
+                  {renderCheckoutFeedback("anual_offer_stripe")}
+	                <p className="mt-4 flex items-center justify-center gap-2 text-xs text-muted-foreground">
+	                  <Lock className="h-4 w-4 text-primary" />
+	                  Tu información está 100% segura con nosotros
+	                </p>
+	              </div>
             </div>
           </div>
         </div>
@@ -672,23 +806,32 @@ export default function Anual() {
               Remix Packs. Aprovecha la oferta hoy.
             </p>
 
-            <div className="mt-10 flex justify-center">
-              <Button
-                onClick={openJoin}
-                className="btn-primary-glow h-12 w-full max-w-2xl text-base font-black md:h-14 md:text-lg"
-              >
-                <span className="flex w-full flex-col items-center leading-tight">
-                  <span>Sí, quiero música ilimitada por un año</span>
-                  <span className="text-xs font-semibold opacity-90">
-                    Quiero aprovechar el precio especial de $195 USD
-                  </span>
-                </span>
-              </Button>
-            </div>
-            <p className="mt-4 flex items-center justify-center gap-2 text-xs text-muted-foreground">
-              <Lock className="h-4 w-4 text-primary" />
-              Tu información está 100% segura con nosotros
-            </p>
+	            <div className="mt-10 flex justify-center">
+	              <Button
+	                onClick={() => openJoin("anual_bonus_stripe")}
+	                disabled={isSubmitting}
+	                className="btn-primary-glow h-12 w-full max-w-2xl text-base font-black md:h-14 md:text-lg"
+	              >
+	                {isSubmitting && lastAttempt?.ctaId === "anual_bonus_stripe" ? (
+	                  <>
+	                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+	                    {language === "es" ? "Cargando checkout seguro..." : "Loading secure checkout..."}
+	                  </>
+	                ) : (
+	                  <span className="flex w-full flex-col items-center leading-tight">
+	                    <span>Sí, quiero música ilimitada por un año</span>
+	                    <span className="text-xs font-semibold opacity-90">
+	                      Quiero aprovechar el precio especial de $195 USD
+	                    </span>
+	                  </span>
+	                )}
+	              </Button>
+	            </div>
+              {renderCheckoutFeedback("anual_bonus_stripe")}
+	            <p className="mt-4 flex items-center justify-center gap-2 text-xs text-muted-foreground">
+	              <Lock className="h-4 w-4 text-primary" />
+	              Tu información está 100% segura con nosotros
+	            </p>
           </div>
         </div>
       </section>
@@ -740,23 +883,32 @@ export default function Anual() {
             ))}
           </div>
 
-          <div className="mt-10 flex justify-center">
-            <Button
-              onClick={openJoin}
-              className="btn-primary-glow h-12 w-full max-w-2xl text-base font-black md:h-14 md:text-lg"
-            >
-              <span className="flex w-full flex-col items-center leading-tight">
-                <span>Sí, quiero acceso a la membresía anual</span>
-                <span className="text-xs font-semibold opacity-90">
-                  Quiero aprovechar el precio especial de $195 USD
-                </span>
-              </span>
-            </Button>
-          </div>
-          <p className="mt-4 flex items-center justify-center gap-2 text-xs text-muted-foreground">
-            <Lock className="h-4 w-4 text-primary" />
-            Tu información está 100% segura con nosotros
-          </p>
+	          <div className="mt-10 flex justify-center">
+	            <Button
+	              onClick={() => openJoin("anual_reviews_stripe")}
+	              disabled={isSubmitting}
+	              className="btn-primary-glow h-12 w-full max-w-2xl text-base font-black md:h-14 md:text-lg"
+	            >
+	              {isSubmitting && lastAttempt?.ctaId === "anual_reviews_stripe" ? (
+	                <>
+	                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+	                  {language === "es" ? "Cargando checkout seguro..." : "Loading secure checkout..."}
+	                </>
+	              ) : (
+	                <span className="flex w-full flex-col items-center leading-tight">
+	                  <span>Sí, quiero acceso a la membresía anual</span>
+	                  <span className="text-xs font-semibold opacity-90">
+	                    Quiero aprovechar el precio especial de $195 USD
+	                  </span>
+	                </span>
+	              )}
+	            </Button>
+	          </div>
+            {renderCheckoutFeedback("anual_reviews_stripe")}
+	          <p className="mt-4 flex items-center justify-center gap-2 text-xs text-muted-foreground">
+	            <Lock className="h-4 w-4 text-primary" />
+	            Tu información está 100% segura con nosotros
+	          </p>
         </div>
       </section>
 
@@ -856,23 +1008,32 @@ export default function Anual() {
             </Accordion>
           </div>
 
-          <div className="mt-10 flex justify-center">
-            <Button
-              onClick={openJoin}
-              className="btn-primary-glow h-12 w-full max-w-2xl text-base font-black md:h-14 md:text-lg"
-            >
-              <span className="flex w-full flex-col items-center leading-tight">
-                <span>Acceder a la membresía anual</span>
-                <span className="text-xs font-semibold opacity-90">
-                  Quiero aprovechar el precio especial de $195 USD
-                </span>
-              </span>
-            </Button>
-          </div>
-          <p className="mt-4 flex items-center justify-center gap-2 text-xs text-muted-foreground">
-            <Lock className="h-4 w-4 text-primary" />
-            Tu información está 100% segura con nosotros
-          </p>
+	          <div className="mt-10 flex justify-center">
+	            <Button
+	              onClick={() => openJoin("anual_faq_stripe")}
+	              disabled={isSubmitting}
+	              className="btn-primary-glow h-12 w-full max-w-2xl text-base font-black md:h-14 md:text-lg"
+	            >
+	              {isSubmitting && lastAttempt?.ctaId === "anual_faq_stripe" ? (
+	                <>
+	                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+	                  {language === "es" ? "Cargando checkout seguro..." : "Loading secure checkout..."}
+	                </>
+	              ) : (
+	                <span className="flex w-full flex-col items-center leading-tight">
+	                  <span>Acceder a la membresía anual</span>
+	                  <span className="text-xs font-semibold opacity-90">
+	                    Quiero aprovechar el precio especial de $195 USD
+	                  </span>
+	                </span>
+	              )}
+	            </Button>
+	          </div>
+            {renderCheckoutFeedback("anual_faq_stripe")}
+	          <p className="mt-4 flex items-center justify-center gap-2 text-xs text-muted-foreground">
+	            <Lock className="h-4 w-4 text-primary" />
+	            Tu información está 100% segura con nosotros
+	          </p>
         </div>
       </section>
 
@@ -911,23 +1072,32 @@ export default function Anual() {
                 <p>Adquiere hoy tu membresía anual y olvídate de buscar música, videos y karaoke por UN AÑO!</p>
               </div>
 
-              <div className="mt-8 flex justify-center">
-                <Button
-                  onClick={openJoin}
-                  className="btn-primary-glow h-12 w-full max-w-2xl text-base font-black md:h-14 md:text-lg"
-                >
-                  <span className="flex w-full flex-col items-center leading-tight">
-                    <span>Acceder a la membresía anual</span>
-                    <span className="text-xs font-semibold opacity-90">
-                      Quiero aprovechar el precio especial de $195 USD
-                    </span>
-                  </span>
-                </Button>
-              </div>
-              <p className="mt-4 flex items-center justify-center gap-2 text-xs text-muted-foreground">
-                <Lock className="h-4 w-4 text-primary" />
-                Tu información está 100% segura con nosotros
-              </p>
+	              <div className="mt-8 flex justify-center">
+	                <Button
+	                  onClick={() => openJoin("anual_calculator_stripe")}
+	                  disabled={isSubmitting}
+	                  className="btn-primary-glow h-12 w-full max-w-2xl text-base font-black md:h-14 md:text-lg"
+	                >
+	                  {isSubmitting && lastAttempt?.ctaId === "anual_calculator_stripe" ? (
+	                    <>
+	                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+	                      {language === "es" ? "Cargando checkout seguro..." : "Loading secure checkout..."}
+	                    </>
+	                  ) : (
+	                    <span className="flex w-full flex-col items-center leading-tight">
+	                      <span>Acceder a la membresía anual</span>
+	                      <span className="text-xs font-semibold opacity-90">
+	                        Quiero aprovechar el precio especial de $195 USD
+	                      </span>
+	                    </span>
+	                  )}
+	                </Button>
+	              </div>
+                {renderCheckoutFeedback("anual_calculator_stripe")}
+	              <p className="mt-4 flex items-center justify-center gap-2 text-xs text-muted-foreground">
+	                <Lock className="h-4 w-4 text-primary" />
+	                Tu información está 100% segura con nosotros
+	              </p>
             </div>
 
             <div className="mt-10">
@@ -936,16 +1106,25 @@ export default function Anual() {
               </p>
             </div>
 
-            <div className="mt-10 flex flex-col items-center gap-3 text-center">
-              <Button
-                onClick={openJoin}
-                className="btn-primary-glow h-12 w-full max-w-2xl text-base font-black md:h-14 md:text-lg"
-              >
-                Registrarme ahora
-              </Button>
-              <p className="text-xs text-muted-foreground">
-                Video Remixes Packs © 2024. Derechos Reservados
-              </p>
+	            <div className="mt-10 flex flex-col items-center gap-3 text-center">
+	              <Button
+	                onClick={() => openJoin("anual_register_stripe")}
+	                disabled={isSubmitting}
+	                className="btn-primary-glow h-12 w-full max-w-2xl text-base font-black md:h-14 md:text-lg"
+	              >
+	                {isSubmitting && lastAttempt?.ctaId === "anual_register_stripe" ? (
+	                  <>
+	                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+	                    {language === "es" ? "Cargando checkout seguro..." : "Loading secure checkout..."}
+	                  </>
+	                ) : (
+	                  "Registrarme ahora"
+	                )}
+	              </Button>
+                {renderCheckoutFeedback("anual_register_stripe")}
+	              <p className="text-xs text-muted-foreground">
+	                Video Remixes Packs © 2024. Derechos Reservados
+	              </p>
               <p className="text-xs text-muted-foreground">
                 Política de Privacidad | Términos y Condiciones
               </p>
