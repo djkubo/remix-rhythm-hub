@@ -479,14 +479,8 @@ Deno.serve(async (req) => {
     const productKey = product as ProductKey;
     const cfg = PRODUCTS[productKey];
 
-    // This function uses PayPal Orders (one-time CAPTURE). Subscription billing + trials
+    // NOTE: This function uses PayPal Orders (one-time CAPTURE). Subscription billing + trials
     // require PayPal Subscriptions, which we don't implement here.
-    if (productKey === "plan_1tb_mensual" || productKey === "plan_2tb_anual") {
-      return new Response(JSON.stringify({ error: "PayPal subscriptions are not supported for this plan" }), {
-        status: 400,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
 
     const amountFromEnv = cfg.envAmountKey
       ? parseAmountCents(Deno.env.get(cfg.envAmountKey))
@@ -624,14 +618,6 @@ Deno.serve(async (req) => {
 
     const parsedProduct =
       referenceId && referenceId in PRODUCTS ? (referenceId as ProductKey) : null;
-
-    // Safety: prevent capturing one-time Orders for subscription plan keys.
-    if (parsedProduct === "plan_1tb_mensual" || parsedProduct === "plan_2tb_anual") {
-      return new Response(JSON.stringify({ error: "PayPal subscriptions are not supported for this plan" }), {
-        status: 400,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
 
     if (!parsedProduct) {
       return new Response(JSON.stringify({ error: "Invalid product" }), {

@@ -20,7 +20,7 @@ import HlsVideo from "@/components/HlsVideo";
 import djEditsPoster from "@/assets/dj-edits-poster.jpg";
 import logoWhite from "@/assets/logo-white.png";
 import logoDark from "@/assets/logo-dark.png";
-import { createBestCheckoutUrl } from "@/lib/checkout";
+import { createBestCheckoutUrl, type CheckoutProvider } from "@/lib/checkout";
 
 const PREVIEW_HLS_URL =
   "https://content.apisystem.tech/hls/medias/kIG3EUjfgGLoNW0QsJLS/media/transcoded_videos/cts-824a03253a87c3fb_,360,480,720,1080,p.mp4.urlset/master.m3u8";
@@ -42,7 +42,7 @@ export default function DjEdits() {
     document.title = "DJ Edits | Aprende a crear DJ edits desde cero";
   }, []);
 
-  const startCheckout = useCallback(async () => {
+  const startCheckout = useCallback(async (prefer: CheckoutProvider) => {
     if (isSubmitting) return;
     setIsSubmitting(true);
 
@@ -52,6 +52,7 @@ export default function DjEdits() {
         leadId,
         product: "djedits",
         sourcePage: window.location.pathname,
+        prefer,
       });
 
       if (url) {
@@ -120,12 +121,12 @@ export default function DjEdits() {
                 resultados reales desde el <strong>PRIMER DIA</strong>.
               </p>
 
-              <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-                <Button
-                  onClick={startCheckout}
-                  disabled={isSubmitting}
-                  className="btn-primary-glow h-12 flex-1 text-base font-black"
-                >
+	              <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+	                <Button
+	                  onClick={() => void startCheckout("stripe")}
+	                  disabled={isSubmitting}
+	                  className="btn-primary-glow h-12 flex-1 text-base font-black"
+	                >
                   {isSubmitting ? (
                     <>
                       <Loader2 className="mr-2 h-5 w-5 animate-spin" />
@@ -137,11 +138,29 @@ export default function DjEdits() {
                       Empezar ahora
                     </>
                   )}
-                </Button>
-                <Button
-                  variant="outline"
-                  className="h-12 flex-1 text-base font-black"
-                  onClick={() => navigate("/")}
+	                </Button>
+	                <Button
+	                  variant="outline"
+	                  onClick={() => void startCheckout("paypal")}
+	                  disabled={isSubmitting}
+	                  className="h-12 flex-1 text-base font-black"
+	                >
+	                  {isSubmitting ? (
+	                    <>
+	                      <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+	                      {language === "es" ? "Abriendo..." : "Opening..."}
+	                    </>
+	                  ) : (
+	                    <>
+	                      <CreditCard className="mr-2 h-5 w-5 text-primary" />
+	                      {language === "es" ? "Pagar con PayPal" : "Pay with PayPal"}
+	                    </>
+	                  )}
+	                </Button>
+	                <Button
+	                  variant="outline"
+	                  className="h-12 flex-1 text-base font-black"
+	                  onClick={() => navigate("/")}
                 >
                   <Headphones className="mr-2 h-5 w-5 text-primary" />
                   Ver VRP
@@ -264,24 +283,44 @@ export default function DjEdits() {
               *Oferta Por Tiempo Limitado*
             </p>
 
-            <div className="mt-8 flex flex-col items-center gap-3">
-              <Button
-                onClick={startCheckout}
-                disabled={isSubmitting}
-                className="btn-primary-glow h-12 w-full max-w-md text-base font-black"
-              >
-                {isSubmitting ? (
-                  <>
-                    <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                    {language === "es" ? "Abriendo checkout..." : "Opening checkout..."}
-                  </>
-                ) : (
-                  <>
-                    <Sparkles className="mr-2 h-5 w-5" />
-                    CLICK AQUI
-                  </>
-                )}
-              </Button>
+	            <div className="mt-8 flex flex-col items-center gap-3">
+	              <div className="grid w-full max-w-md gap-3 sm:grid-cols-2">
+	                <Button
+	                  onClick={() => void startCheckout("stripe")}
+	                  disabled={isSubmitting}
+	                  className="btn-primary-glow h-12 w-full text-base font-black"
+	                >
+	                {isSubmitting ? (
+	                  <>
+	                    <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+	                    {language === "es" ? "Abriendo checkout..." : "Opening checkout..."}
+	                  </>
+	                ) : (
+	                  <>
+	                    <Sparkles className="mr-2 h-5 w-5" />
+	                    CLICK AQUI
+	                  </>
+	                )}
+	                </Button>
+	                <Button
+	                  variant="outline"
+	                  onClick={() => void startCheckout("paypal")}
+	                  disabled={isSubmitting}
+	                  className="h-12 w-full text-base font-black"
+	                >
+	                  {isSubmitting ? (
+	                    <>
+	                      <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+	                      {language === "es" ? "Abriendo..." : "Opening..."}
+	                    </>
+	                  ) : (
+	                    <>
+	                      <CreditCard className="mr-2 h-5 w-5 text-primary" />
+	                      {language === "es" ? "PayPal" : "PayPal"}
+	                    </>
+	                  )}
+	                </Button>
+	              </div>
 
               <div className="mt-4 flex flex-wrap items-center justify-center gap-2">
                 {paymentBadges.map((label) => (

@@ -31,7 +31,7 @@ import { useToast } from "@/hooks/use-toast";
 import logoWhite from "@/assets/logo-white.png";
 import logoDark from "@/assets/logo-dark.png";
 import { countryNameFromCode, detectCountryCodeFromTimezone } from "@/lib/country";
-import { createBestCheckoutUrl } from "@/lib/checkout";
+import { createBestCheckoutUrl, type CheckoutProvider } from "@/lib/checkout";
 
 type CountryData = {
   country_code: string;
@@ -126,45 +126,57 @@ export default function Usb500gb() {
     });
   }, [language]);
 
-  const openOrder = useCallback(async () => {
-    if (isSubmitting) return;
-    setIsSubmitting(true);
+  const startExpressCheckout = useCallback(
+    async (prefer?: CheckoutProvider) => {
+      if (isSubmitting) return;
+      setIsSubmitting(true);
 
-    try {
-      const leadId = crypto.randomUUID();
-      const { url } = await createBestCheckoutUrl({
-        leadId,
-        product: "usb_500gb",
-        sourcePage: window.location.pathname,
-      });
+      try {
+        const leadId = crypto.randomUUID();
+        const { url } = await createBestCheckoutUrl({
+          leadId,
+          product: "usb_500gb",
+          sourcePage: window.location.pathname,
+          prefer,
+        });
 
-      if (url) {
-        window.location.assign(url);
-        return;
+        if (url) {
+          window.location.assign(url);
+          return;
+        }
+
+        toast({
+          title: language === "es" ? "Checkout no disponible" : "Checkout unavailable",
+          description:
+            language === "es"
+              ? "Intenta de nuevo en unos segundos. Si continúa, contáctanos en Soporte."
+              : "Please try again in a few seconds. If it continues, contact Support.",
+          variant: "destructive",
+        });
+      } catch (err) {
+        console.error("USB500GB checkout error:", err);
+        toast({
+          title: language === "es" ? "Error" : "Error",
+          description:
+            language === "es"
+              ? "Hubo un problema al iniciar el pago. Intenta de nuevo."
+              : "There was a problem starting checkout. Please try again.",
+          variant: "destructive",
+        });
+      } finally {
+        setIsSubmitting(false);
       }
+    },
+    [isSubmitting, language, toast]
+  );
 
-      toast({
-        title: language === "es" ? "Checkout no disponible" : "Checkout unavailable",
-        description:
-          language === "es"
-            ? "Intenta de nuevo en unos segundos. Si continúa, contáctanos en Soporte."
-            : "Please try again in a few seconds. If it continues, contact Support.",
-        variant: "destructive",
-      });
-    } catch (err) {
-      console.error("USB500GB checkout error:", err);
-      toast({
-        title: language === "es" ? "Error" : "Error",
-        description:
-          language === "es"
-            ? "Hubo un problema al iniciar el pago. Intenta de nuevo."
-            : "There was a problem starting checkout. Please try again.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsSubmitting(false);
-    }
-  }, [isSubmitting, language, toast]);
+  const openOrder = useCallback(() => {
+    void startExpressCheckout("stripe");
+  }, [startExpressCheckout]);
+
+  const openOrderPayPal = useCallback(() => {
+    void startExpressCheckout("paypal");
+  }, [startExpressCheckout]);
 
   const onSubmit = useCallback(
     async (e: React.FormEvent) => {
@@ -417,20 +429,39 @@ export default function Usb500gb() {
                 reggaetón, bachata, salsa, dembow, corridos y mucho más.
               </p>
 
-              <div className="mt-7">
-                <Button
-                  onClick={openOrder}
-                  className="btn-primary-glow h-12 w-full text-base font-black md:w-auto md:px-10"
-                >
-                  <span className="flex w-full flex-col items-center leading-tight">
-                    <span>👉 ¡QUIERO MI USB AHORA! 👈</span>
-                    <span className="text-xs font-semibold opacity-90">📦 Stock limitado.</span>
-                  </span>
-                </Button>
+	              <div className="mt-7">
+	                <Button
+	                  onClick={openOrder}
+	                  disabled={isSubmitting}
+	                  className="btn-primary-glow h-12 w-full text-base font-black md:w-auto md:px-10"
+	                >
+	                  <span className="flex w-full flex-col items-center leading-tight">
+	                    <span>👉 ¡QUIERO MI USB AHORA! 👈</span>
+	                    <span className="text-xs font-semibold opacity-90">📦 Stock limitado.</span>
+	                  </span>
+	                </Button>
+	                <Button
+	                  onClick={openOrderPayPal}
+	                  disabled={isSubmitting}
+	                  variant="outline"
+	                  className="mt-3 h-12 w-full text-base font-black md:w-auto md:px-10"
+	                >
+	                  {isSubmitting ? (
+	                    <>
+	                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+	                      {language === "es" ? "Abriendo..." : "Opening..."}
+	                    </>
+	                  ) : (
+	                    <>
+	                      <CreditCard className="mr-2 h-4 w-4 text-primary" />
+	                      {language === "es" ? "Pagar con PayPal" : "Pay with PayPal"}
+	                    </>
+	                  )}
+	                </Button>
 
-                <div className="mt-4 flex flex-wrap items-center gap-2">
-                  {paymentBadges.map((label) => (
-                    <Badge
+	                <div className="mt-4 flex flex-wrap items-center gap-2">
+	                  {paymentBadges.map((label) => (
+	                    <Badge
                       key={label}
                       variant="outline"
                       className="border-border/60 bg-card/40 px-3 py-1 text-[11px] text-muted-foreground"

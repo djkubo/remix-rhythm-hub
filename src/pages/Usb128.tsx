@@ -35,7 +35,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { countryNameFromCode, detectCountryCodeFromTimezone } from "@/lib/country";
-import { createBestCheckoutUrl } from "@/lib/checkout";
+import { createBestCheckoutUrl, type CheckoutProvider } from "@/lib/checkout";
 import usbSamsungBarPlus from "@/assets/usb128-samsung-bar-plus.jpg";
 
 type CountryData = {
@@ -294,7 +294,7 @@ export default function Usb128() {
   );
 
   const startExpressCheckout = useCallback(
-    async (ctaId: string) => {
+    async (ctaId: string, prefer?: CheckoutProvider) => {
       if (isSubmitting) return;
       setIsSubmitting(true);
 
@@ -312,6 +312,7 @@ export default function Usb128() {
           leadId,
           product: "usb128",
           sourcePage: window.location.pathname,
+          prefer,
         });
 
         if (url) {
@@ -368,6 +369,14 @@ export default function Usb128() {
     (ctaId: string) => {
       trackCta(ctaId, "checkout_handoff");
       void startExpressCheckout(ctaId);
+    },
+    [startExpressCheckout, trackCta]
+  );
+
+  const openOrderPayPal = useCallback(
+    (ctaId: string) => {
+      trackCta(ctaId, "checkout_handoff");
+      void startExpressCheckout(ctaId, "paypal");
     },
     [startExpressCheckout, trackCta]
   );
@@ -695,10 +704,29 @@ export default function Usb128() {
                 <Button
                   id={BUY_ANCHOR_ID}
                   onClick={() => openOrder("usb128_hero_buy")}
+                  disabled={isSubmitting}
                   className="btn-primary-glow h-12 px-8 text-base font-black"
                 >
                   {isSpanish ? "Comprar USB 128GB" : "Buy USB 128GB"}
                   <ArrowRight className="ml-2 h-4 w-4" />
+                </Button>
+                <Button
+                  onClick={() => openOrderPayPal("usb128_hero_buy_paypal")}
+                  disabled={isSubmitting}
+                  variant="outline"
+                  className="h-12 px-8 text-base font-black"
+                >
+                  {isSubmitting ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      {isSpanish ? "Abriendo..." : "Opening..."}
+                    </>
+                  ) : (
+                    <>
+                      <CreditCard className="mr-2 h-4 w-4 text-primary" />
+                      {isSpanish ? "Pagar con PayPal" : "Pay with PayPal"}
+                    </>
+                  )}
                 </Button>
               </div>
 
@@ -761,12 +789,33 @@ export default function Usb128() {
                   </li>
                 </ul>
 
-                <Button
-                  onClick={() => openOrder("usb128_product_card_buy")}
-                  className="btn-primary-glow mt-4 h-11 w-full text-sm font-black"
-                >
-                  {isSpanish ? "Asegurar mi USB" : "Secure my USB"}
-                </Button>
+                <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                  <Button
+                    onClick={() => openOrder("usb128_product_card_buy")}
+                    disabled={isSubmitting}
+                    className="btn-primary-glow h-11 w-full text-sm font-black"
+                  >
+                    {isSpanish ? "Asegurar mi USB" : "Secure my USB"}
+                  </Button>
+                  <Button
+                    onClick={() => openOrderPayPal("usb128_product_card_buy_paypal")}
+                    disabled={isSubmitting}
+                    variant="outline"
+                    className="h-11 w-full text-sm font-black"
+                  >
+                    {isSubmitting ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        {isSpanish ? "Abriendo..." : "Opening..."}
+                      </>
+                    ) : (
+                      <>
+                        <CreditCard className="mr-2 h-4 w-4 text-primary" />
+                        {isSpanish ? "PayPal" : "PayPal"}
+                      </>
+                    )}
+                  </Button>
+                </div>
               </div>
             </div>
           </div>
