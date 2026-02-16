@@ -62,6 +62,7 @@ interface Lead {
   country_name: string | null;
   tags?: string[] | null;
   source: string | null;
+  intent_plan?: string | null;
   created_at: string;
   manychat_synced: boolean | null;
   manychat_subscriber_id?: string | null;
@@ -103,13 +104,92 @@ interface SourceBreakdown {
   campaigns: BreakdownItem[];
 }
 
+type LeadBucket = "paid" | "pending" | "test";
+type SalesFilter = "all" | "paid" | "pending" | "test";
+
+interface EnrichedLead {
+  lead: Lead;
+  bucket: LeadBucket;
+  productKey: string;
+  productLabel: string;
+  isPlaceholderEmail: boolean;
+}
+
+const PRODUCT_LABELS: Record<string, string> = {
+  usb128: "USB 128 GB",
+  usb_500gb: "USB 500 GB",
+  anual: "Plan anual",
+  djedits: "Curso DJ Edits",
+  plan_1tb_mensual: "Membresía 1 TB mensual",
+  plan_1tb_trimestral: "Membresía 1 TB trimestral",
+  plan_2tb_anual: "Membresía 2 TB anual",
+  membresia: "Membresía",
+  gratis: "Gratis",
+  unknown: "Sin definir",
+};
+
+const TEST_SOURCE_MARKERS = new Set(["smoke_test", "qa_test"]);
+const TEST_TAG_MARKERS = new Set(["smoke_test", "qa_test"]);
+const TEST_TEXT_MARKERS = ["smoke test", "qa test", "test checkout", "test usb", "codex.test+"];
+
+function normalizeText(value: unknown): string {
+  return String(value ?? "").toLowerCase().trim();
+}
+
+function getLeadTags(tags: string[] | null | undefined): string[] {
+  return Array.isArray(tags) ? tags : [];
+}
+
+function isPlaceholderLeadEmail(email: string | null | undefined): boolean {
+  const normalized = normalizeText(email);
+  if (!normalized) return true;
+  if (normalized === "pending") return true;
+  if (normalized.endsWith("@example.invalid")) return true;
+  return normalized.startsWith("pending+");
+}
+
+function inferLeadProductKey(lead: Lead): string {
+  const tags = getLeadTags(lead.tags).map(normalizeText);
+  const candidates = [lead.intent_plan, lead.source, ...tags].map(normalizeText);
+
+  for (const candidate of candidates) {
+    if (!candidate) continue;
+    if (PRODUCT_LABELS[candidate]) return candidate;
+  }
+
+  if (normalizeText(lead.source) === "membresia") return "membresia";
+  if (normalizeText(lead.source).includes("usb")) return "usb128";
+  return normalizeText(lead.source) || "unknown";
+}
+
+function isTestLead(lead: Lead): boolean {
+  const source = normalizeText(lead.source);
+  if (TEST_SOURCE_MARKERS.has(source)) return true;
+
+  const tags = getLeadTags(lead.tags).map(normalizeText);
+  if (tags.some((tag) => TEST_TAG_MARKERS.has(tag))) return true;
+
+  const name = normalizeText(lead.name);
+  const email = normalizeText(lead.email);
+  const haystack = `${name} | ${email}`;
+  return TEST_TEXT_MARKERS.some((marker) => haystack.includes(marker));
+}
+
+function getLeadBucket(lead: Lead): LeadBucket {
+  if (isTestLead(lead)) return "test";
+  if (lead.paid_at) return "paid";
+  return "pending";
+}
+
 export default function AdminDashboard() {
   const { t, language } = useLanguage();
   const dateLocale = language === "es" ? es : enUS;
   const { toast } = useToast();
   
   const [dateRange, setDateRange] = useState("7");
-  const [activeTab, setActiveTab] = useState<"overview" | "sources" | "leads" | "events">("overview");
+  const [activeTab, setActiveTab] = useState<"sales" | "overview" | "sources" | "leads" | "events">("sales");
+  const [salesFilter, setSalesFilter] = useState<SalesFilter>("paid");
+  const [salesSearch, setSalesSearch] = useState("");
   const [leadSearch, setLeadSearch] = useState("");
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
   const [resyncingLeadId, setResyncingLeadId] = useState<string | null>(null);
@@ -262,6 +342,20 @@ export default function AdminDashboard() {
     );
   };
 
+  const renderLeadBucket = (bucket: LeadBucket) => {
+    if (bucket === "paid") {
+      return (
+        <Badge className="bg-green-600 hover:bg-green-600">
+          {language === "es" ? "VENTA REAL" : "REAL SALE"}
+        </Badge>
+      );
+    }
+    if (bucket === "test") {
+      return <Badge variant="secondary">{language === "es" ? "TEST" : "TEST"}</Badge>;
+    }
+    return <Badge variant="outline">{language === "es" ? "PENDIENTE" : "PENDING"}</Badge>;
+  };
+
   // Fetch leads
   const {
     data: leads,
@@ -284,11 +378,8 @@ export default function AdminDashboard() {
   });
 
   const filteredLeads = useMemo(() => {
-    const normalize = (value: unknown): string =>
-      String(value ?? "").toLowerCase().trim();
-
     if (!leads?.length) return [];
-    const q = normalize(leadSearch);
+    const q = normalizeText(leadSearch);
     if (!q) return leads;
 
     return leads.filter((lead) => {
@@ -298,15 +389,82 @@ export default function AdminDashboard() {
         lead.phone,
         lead.country_name || "",
         lead.source || "",
+        lead.intent_plan || "",
         (lead.tags || []).join(" "),
         lead.payment_provider || "",
         lead.shipping_status || "",
         lead.shipping_tracking_number || "",
-      ].map(normalize).join(" | ");
+      ].map(normalizeText).join(" | ");
 
       return hay.includes(q);
     });
   }, [leadSearch, leads]);
+
+  const enrichedLeads = useMemo<EnrichedLead[]>(() => {
+    if (!leads?.length) return [];
+    return leads.map((lead) => {
+      const productKey = inferLeadProductKey(lead);
+      const productLabel =
+        PRODUCT_LABELS[productKey] ||
+        (language === "es" ? "Sin definir" : "Unmapped");
+      return {
+        lead,
+        bucket: getLeadBucket(lead),
+        productKey,
+        productLabel,
+        isPlaceholderEmail: isPlaceholderLeadEmail(lead.email),
+      };
+    });
+  }, [language, leads]);
+
+  const salesMetrics = useMemo(() => {
+    const paid = enrichedLeads.filter((item) => item.bucket === "paid").length;
+    const pending = enrichedLeads.filter((item) => item.bucket === "pending").length;
+    const tests = enrichedLeads.filter((item) => item.bucket === "test").length;
+    const pendingNoContact = enrichedLeads.filter(
+      (item) =>
+        item.bucket === "pending" &&
+        item.isPlaceholderEmail &&
+        !normalizeText(item.lead.phone),
+    ).length;
+    const paidWithoutManyChat = enrichedLeads.filter(
+      (item) => item.bucket === "paid" && !item.lead.manychat_synced,
+    ).length;
+
+    return { paid, pending, tests, pendingNoContact, paidWithoutManyChat };
+  }, [enrichedLeads]);
+
+  const filteredSalesLeads = useMemo(() => {
+    const q = normalizeText(salesSearch);
+
+    return enrichedLeads.filter((item) => {
+      const matchesFilter =
+        salesFilter === "all" ||
+        (salesFilter === "paid" && item.bucket === "paid") ||
+        (salesFilter === "pending" && item.bucket === "pending") ||
+        (salesFilter === "test" && item.bucket === "test");
+
+      if (!matchesFilter) return false;
+      if (!q) return true;
+
+      const hay = [
+        item.lead.name,
+        item.lead.email,
+        item.lead.phone,
+        item.lead.country_name || "",
+        item.lead.source || "",
+        item.lead.intent_plan || "",
+        (item.lead.tags || []).join(" "),
+        item.lead.payment_provider || "",
+        item.lead.payment_id || "",
+        item.productKey,
+        item.productLabel,
+        item.bucket,
+      ].map(normalizeText).join(" | ");
+
+      return hay.includes(q);
+    });
+  }, [enrichedLeads, salesFilter, salesSearch]);
 
   // Fetch analytics summary via RPC (optimized - no raw data download)
   const {
@@ -483,6 +641,59 @@ export default function AdminDashboard() {
     a.click();
   };
 
+  const exportSalesCSV = () => {
+    if (!filteredSalesLeads.length) return;
+
+    const headers = [
+      language === "es" ? "Tipo" : "Type",
+      language === "es" ? "Estado" : "Status",
+      language === "es" ? "Producto" : "Product",
+      t("admin.dashboard.name"),
+      t("admin.dashboard.email"),
+      t("admin.dashboard.phone"),
+      language === "es" ? "Proveedor de pago" : "Payment provider",
+      language === "es" ? "ID de pago" : "Payment ID",
+      language === "es" ? "Fecha de pago" : "Paid at",
+      t("admin.dashboard.date"),
+      "Lead ID",
+    ];
+
+    const rows = filteredSalesLeads.map((item) => [
+      item.bucket,
+      item.lead.paid_at ? "paid" : "pending",
+      item.productKey,
+      item.lead.name,
+      item.lead.email,
+      item.lead.phone,
+      item.lead.payment_provider || "",
+      item.lead.payment_id || "",
+      item.lead.paid_at ? format(new Date(item.lead.paid_at), "yyyy-MM-dd HH:mm") : "",
+      format(new Date(item.lead.created_at), "yyyy-MM-dd HH:mm"),
+      item.lead.id,
+    ]);
+
+    const sanitizeForSpreadsheet = (value: string): string => {
+      return /^[=+\-@]/.test(value) ? `'${value}` : value;
+    };
+
+    const toCsvCell = (value: unknown): string => {
+      const str = sanitizeForSpreadsheet(String(value ?? ""));
+      const escaped = str.replace(/"/g, '""');
+      const needsQuotes = /[",\n\r]/.test(escaped);
+      return needsQuotes ? `"${escaped}"` : escaped;
+    };
+
+    const csv = [headers, ...rows]
+      .map((row) => row.map(toCsvCell).join(","))
+      .join("\r\n");
+    const blob = new Blob([csv], { type: "text/csv" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `sales-${format(new Date(), "yyyy-MM-dd")}.csv`;
+    a.click();
+  };
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -515,9 +726,16 @@ export default function AdminDashboard() {
       {/* Tabs */}
       <div className="flex gap-2 border-b overflow-x-auto">
         {[
+          { id: "sales", label: language === "es" ? "Ventas" : "Sales" },
           { id: "overview", label: t("admin.dashboard.tabOverview") },
           { id: "sources", label: t("admin.dashboard.tabSources") },
-          { id: "leads", label: `${t("admin.dashboard.tabLeads")} (${leads?.length || 0})` },
+          {
+            id: "leads",
+            label:
+              language === "es"
+                ? `Leads (avanzado) (${leads?.length || 0})`
+                : `Leads (advanced) (${leads?.length || 0})`,
+          },
           { id: "events", label: t("admin.dashboard.tabEvents") },
         ].map((tab) => (
           <button
@@ -533,6 +751,244 @@ export default function AdminDashboard() {
           </button>
         ))}
       </div>
+
+      {/* Sales Tab */}
+      {activeTab === "sales" && (
+        <div className="space-y-4">
+          <Card className="border-primary/30 bg-card/60">
+            <CardContent className="pt-6 space-y-3">
+              <p className="font-semibold">
+                {language === "es" ? "Vista rápida de órdenes" : "Quick order view"}
+              </p>
+              <p className="text-sm text-muted-foreground">
+                {language === "es"
+                  ? "Aquí separamos ventas reales, pendientes y tests para que no se mezcle todo."
+                  : "This separates real sales, pending checkouts, and tests so data is clearer."}
+              </p>
+              <div className="flex flex-wrap items-center gap-2 text-xs">
+                {renderLeadBucket("paid")}
+                <span className="text-muted-foreground">
+                  {language === "es" ? "Pago confirmado" : "Payment confirmed"}
+                </span>
+                {renderLeadBucket("pending")}
+                <span className="text-muted-foreground">
+                  {language === "es" ? "Checkout iniciado sin pago" : "Checkout started, no payment yet"}
+                </span>
+                {renderLeadBucket("test")}
+                <span className="text-muted-foreground">
+                  {language === "es" ? "Pruebas internas" : "Internal tests"}
+                </span>
+              </div>
+            </CardContent>
+          </Card>
+
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between pb-2">
+                <CardTitle className="text-sm font-medium text-muted-foreground">
+                  {language === "es" ? "Ventas reales" : "Real sales"}
+                </CardTitle>
+                <TrendingUp className="w-4 h-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold text-green-500">{salesMetrics.paid}</div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between pb-2">
+                <CardTitle className="text-sm font-medium text-muted-foreground">
+                  {language === "es" ? "Pendientes" : "Pending"}
+                </CardTitle>
+                <Clock className="w-4 h-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{salesMetrics.pending}</div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between pb-2">
+                <CardTitle className="text-sm font-medium text-muted-foreground">
+                  {language === "es" ? "Tests detectados" : "Tests detected"}
+                </CardTitle>
+                <Filter className="w-4 h-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{salesMetrics.tests}</div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between pb-2">
+                <CardTitle className="text-sm font-medium text-muted-foreground">
+                  {language === "es" ? "Sincronizar ManyChat" : "Need ManyChat sync"}
+                </CardTitle>
+                <Users className="w-4 h-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{salesMetrics.paidWithoutManyChat}</div>
+              </CardContent>
+            </Card>
+          </div>
+
+          <div className="flex flex-wrap gap-2">
+            {[
+              {
+                id: "paid",
+                label: language === "es" ? "Solo ventas" : "Paid only",
+                count: salesMetrics.paid,
+              },
+              {
+                id: "pending",
+                label: language === "es" ? "Solo pendientes" : "Pending only",
+                count: salesMetrics.pending,
+              },
+              {
+                id: "test",
+                label: language === "es" ? "Solo tests" : "Tests only",
+                count: salesMetrics.tests,
+              },
+              {
+                id: "all",
+                label: language === "es" ? "Todo" : "All",
+                count: enrichedLeads.length,
+              },
+            ].map((option) => (
+              <Button
+                key={option.id}
+                variant={salesFilter === option.id ? "default" : "outline"}
+                size="sm"
+                onClick={() => setSalesFilter(option.id as SalesFilter)}
+              >
+                {option.label} ({option.count})
+              </Button>
+            ))}
+          </div>
+
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+            <p className="text-sm text-muted-foreground">
+              {language === "es"
+                ? `Mostrando ${filteredSalesLeads.length} registros`
+                : `Showing ${filteredSalesLeads.length} records`}
+            </p>
+            <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+              <Input
+                value={salesSearch}
+                onChange={(e) => setSalesSearch(e.target.value)}
+                placeholder={language === "es" ? "Buscar en ventas..." : "Search sales..."}
+                className="w-full sm:w-72"
+              />
+              <Button variant="outline" onClick={exportSalesCSV} disabled={!filteredSalesLeads.length}>
+                <Download className="w-4 h-4 mr-2" />
+                {language === "es" ? "Exportar ventas" : "Export sales"}
+              </Button>
+            </div>
+          </div>
+
+          <Card>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>{language === "es" ? "Tipo" : "Type"}</TableHead>
+                  <TableHead>{language === "es" ? "Producto" : "Product"}</TableHead>
+                  <TableHead>{t("admin.dashboard.name")}</TableHead>
+                  <TableHead>{language === "es" ? "Contacto" : "Contact"}</TableHead>
+                  <TableHead>{language === "es" ? "Pago" : "Payment"}</TableHead>
+                  <TableHead>{t("admin.dashboard.date")}</TableHead>
+                  <TableHead>ManyChat</TableHead>
+                  <TableHead className="text-right">{language === "es" ? "Acciones" : "Actions"}</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {leadsLoading ? (
+                  <TableRow>
+                    <TableCell colSpan={8} className="text-center py-8">
+                      {t("admin.dashboard.loading")}
+                    </TableCell>
+                  </TableRow>
+                ) : filteredSalesLeads.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
+                      {language === "es"
+                        ? "No hay resultados para este filtro."
+                        : "No results for this filter."}
+                    </TableCell>
+                  </TableRow>
+                ) : (
+                  filteredSalesLeads.map((item) => (
+                    <TableRow
+                      key={item.lead.id}
+                      className="cursor-pointer"
+                      onClick={() => setSelectedLead(item.lead)}
+                    >
+                      <TableCell>{renderLeadBucket(item.bucket)}</TableCell>
+                      <TableCell>
+                        <div className="space-y-1">
+                          <p className="font-medium">{item.productLabel}</p>
+                          <p className="text-xs text-muted-foreground">{item.productKey}</p>
+                        </div>
+                      </TableCell>
+                      <TableCell className="font-medium">{item.lead.name || "—"}</TableCell>
+                      <TableCell>
+                        <div className="space-y-1 text-xs">
+                          <p className={item.isPlaceholderEmail ? "text-amber-500 font-medium" : ""}>
+                            {item.isPlaceholderEmail
+                              ? language === "es"
+                                ? "Sin email real aún"
+                                : "No real email yet"
+                              : item.lead.email}
+                          </p>
+                          <p className="text-muted-foreground">{item.lead.phone || "—"}</p>
+                        </div>
+                      </TableCell>
+                      <TableCell>{renderPayment(item.lead)}</TableCell>
+                      <TableCell className="text-muted-foreground">
+                        {format(
+                          new Date(item.lead.paid_at || item.lead.created_at),
+                          "dd MMM yyyy HH:mm",
+                          { locale: dateLocale },
+                        )}
+                      </TableCell>
+                      <TableCell>
+                        {item.lead.manychat_synced ? (
+                          <span className="text-green-500">✓</span>
+                        ) : (
+                          <span className="text-muted-foreground">—</span>
+                        )}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <div className="flex justify-end gap-2">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setSelectedLead(item.lead);
+                            }}
+                          >
+                            {language === "es" ? "Ver" : "View"}
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="icon"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              void copyToClipboard(item.lead.id);
+                            }}
+                          >
+                            <Copy className="w-4 h-4" />
+                          </Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
+              </TableBody>
+            </Table>
+          </Card>
+        </div>
+      )}
 
       {/* Overview Tab */}
       {activeTab === "overview" && (
