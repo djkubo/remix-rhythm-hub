@@ -76,6 +76,9 @@ const App = () => {
 
                       <Route path="/usb500" element={<Usb500gb />} />
                       <Route path="/usb500/gracias" element={<Usb500gbThankYou />} />
+                      {/* Alias with hyphen (legacy/SEO) */}
+                      <Route path="/usb-500gb" element={<Usb500gb />} />
+                      <Route path="/usb-500gb/gracias" element={<Usb500gbThankYou />} />
 
                       <Route path="/anual" element={<Anual />} />
                       <Route path="/anual/gracias" element={<AnualThankYou />} />
