@@ -54,12 +54,13 @@ export default function Login() {
       setStep("password");
     } catch (verifyError) {
       setError(
-        verifyError instanceof Error
-          ? verifyError.message
-          : isSpanish
-            ? "No pudimos validar tu correo"
-            : "Could not validate your email",
+        isSpanish
+          ? "No pudimos validar tu correo en este momento. Si ya pagaste, revisa tu email (y spam) o contáctanos en Soporte."
+          : "We couldn’t validate your email right now. If you already paid, check your email (and spam) or contact Support.",
       );
+      if (verifyError instanceof Error) {
+        console.error(verifyError.message);
+      }
     } finally {
       setSubmitting(false);
     }
@@ -83,8 +84,8 @@ export default function Login() {
     } catch (loginError) {
       setError(
         isSpanish
-          ? "No se pudo iniciar sesión. Verifica tus datos."
-          : "Login failed. Please verify your credentials.",
+          ? "No se pudo iniciar sesión en este momento. Intenta de nuevo más tarde o contáctanos en Soporte."
+          : "We couldn’t sign you in right now. Please try again later or contact Support.",
       );
       if (loginError instanceof Error) {
         console.error(loginError.message);

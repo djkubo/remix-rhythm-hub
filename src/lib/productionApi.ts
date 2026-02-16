@@ -87,18 +87,34 @@ async function requestJson<T>(path: string, config: RequestConfig = {}): Promise
     headers.set("Authorization", `Bearer ${config.token}`);
   }
 
-  const response = await fetch(buildApiUrl(path), {
-    method: config.method ?? "GET",
-    headers,
-    body: config.body ? JSON.stringify(config.body) : undefined,
-    signal: config.signal,
-  });
+  const url = buildApiUrl(path);
+
+  let response: Response;
+  try {
+    response = await fetch(url, {
+      method: config.method ?? "GET",
+      headers,
+      body: config.body ? JSON.stringify(config.body) : undefined,
+      signal: config.signal,
+    });
+  } catch {
+    throw new Error(`Production API unavailable (${path})`);
+  }
 
   if (!response.ok) {
     throw new Error(`Production API error ${response.status} (${path})`);
   }
 
-  return response.json() as Promise<T>;
+  const contentType = response.headers.get("content-type") || "";
+  if (!contentType.toLowerCase().includes("application/json")) {
+    throw new Error(`Production API invalid response (${path})`);
+  }
+
+  try {
+    return (await response.json()) as T;
+  } catch {
+    throw new Error(`Production API invalid response (${path})`);
+  }
 }
 
 export async function fetchGenresSelect(signal?: AbortSignal): Promise<GenresSelectResponse> {
