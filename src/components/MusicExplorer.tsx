@@ -5,6 +5,7 @@ import { Link, useLocation } from "react-router-dom";
 
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Dialog,
   DialogContent,
@@ -38,6 +39,8 @@ type MusicExplorerProps = {
   compact?: boolean;
 };
 
+type ExplorerDataSource = "live" | "cache" | "fallback";
+
 function toTrack(file: ProductionFile, index: number): ExplorerTrack {
   const titleFromName = file.name.replace(/\.[^/.]+$/, "");
   const title = file.title?.trim() || titleFromName;
@@ -57,6 +60,106 @@ function toTrack(file: ProductionFile, index: number): ExplorerTrack {
   };
 }
 
+type ExplorerCachePayload = {
+  v: 1;
+  savedAt: number;
+  genres: string[];
+  tracks: ExplorerTrack[];
+};
+
+const EXPLORER_CACHE_KEY = "vr_explorer_cache_v1";
+const EXPLORER_CACHE_TTL_MS = 1000 * 60 * 60 * 6;
+
+function readExplorerCache(): ExplorerCachePayload | null {
+  try {
+    const raw = window.localStorage.getItem(EXPLORER_CACHE_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as Partial<ExplorerCachePayload>;
+    if (parsed.v !== 1) return null;
+    if (!Array.isArray(parsed.genres) || !Array.isArray(parsed.tracks)) return null;
+    if (typeof parsed.savedAt !== "number") return null;
+    return parsed as ExplorerCachePayload;
+  } catch {
+    return null;
+  }
+}
+
+function writeExplorerCache(payload: ExplorerCachePayload) {
+  try {
+    window.localStorage.setItem(EXPLORER_CACHE_KEY, JSON.stringify(payload));
+  } catch {
+    // ignore (private mode / quota / etc.)
+  }
+}
+
+const FALLBACK_GENRES = [
+  "Reggaetón",
+  "Cumbia",
+  "Salsa",
+  "Bachata",
+  "Regional Mexicano",
+  "Dembow",
+  "Merengue",
+  "Pop Latino",
+] as const;
+
+const FALLBACK_TRACKS: ExplorerTrack[] = [
+  {
+    id: "demo-1",
+    title: "Baila Baila (Intro Edit)",
+    artist: "DJ Demo",
+    genre: "Reggaetón",
+    durationFormatted: "03:12",
+    bpm: 94,
+    path: "/DEMO/Reggaetón/DJ Demo - Baila Baila (Intro Edit).mp3",
+  },
+  {
+    id: "demo-2",
+    title: "Cumbia Power (DJ Tool)",
+    artist: "DJ Demo",
+    genre: "Cumbia",
+    durationFormatted: "02:58",
+    bpm: 100,
+    path: "/DEMO/Cumbia/DJ Demo - Cumbia Power (DJ Tool).mp3",
+  },
+  {
+    id: "demo-3",
+    title: "Salsa Pa' La Pista (Clean)",
+    artist: "DJ Demo",
+    genre: "Salsa",
+    durationFormatted: "03:45",
+    bpm: 92,
+    path: "/DEMO/Salsa/DJ Demo - Salsa Pa' La Pista (Clean).mp3",
+  },
+  {
+    id: "demo-4",
+    title: "Bachata Night (Transition)",
+    artist: "DJ Demo",
+    genre: "Bachata",
+    durationFormatted: "03:08",
+    bpm: 128,
+    path: "/DEMO/Bachata/DJ Demo - Bachata Night (Transition).mp3",
+  },
+  {
+    id: "demo-5",
+    title: "Norteño Mix (Short Edit)",
+    artist: "DJ Demo",
+    genre: "Regional Mexicano",
+    durationFormatted: "03:22",
+    bpm: 96,
+    path: "/DEMO/Regional/DJ Demo - Norteno Mix (Short Edit).mp3",
+  },
+  {
+    id: "demo-6",
+    title: "Dembow Heat (Quick Intro)",
+    artist: "DJ Demo",
+    genre: "Dembow",
+    durationFormatted: "02:41",
+    bpm: 102,
+    path: "/DEMO/Dembow/DJ Demo - Dembow Heat (Quick Intro).mp3",
+  },
+];
+
 const MusicExplorer = ({ compact = false }: MusicExplorerProps) => {
   const { t, language } = useLanguage();
   const { trackClick } = useDataLayer();
@@ -67,6 +170,9 @@ const MusicExplorer = ({ compact = false }: MusicExplorerProps) => {
   const isCompactPreview = compact && !isGenresRoute;
 
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+  const [dataSource, setDataSource] = useState<ExplorerDataSource>("live");
+  const [reloadKey, setReloadKey] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [allTracks, setAllTracks] = useState<ExplorerTrack[]>([]);
   const [knownGenres, setKnownGenres] = useState<string[]>([]);
@@ -78,9 +184,25 @@ const MusicExplorer = ({ compact = false }: MusicExplorerProps) => {
 
   useEffect(() => {
     const controller = new AbortController();
+    const startedAt = typeof performance !== "undefined" ? performance.now() : Date.now();
+
+    const cached = typeof window !== "undefined" ? readExplorerCache() : null;
+    const cacheAgeMs = cached ? Date.now() - cached.savedAt : null;
+    const cacheFresh = typeof cacheAgeMs === "number" ? cacheAgeMs <= EXPLORER_CACHE_TTL_MS : false;
+    const cacheUsable = Boolean(cached?.genres?.length && cached?.tracks?.length);
+
+    if (cacheUsable && cached) {
+      setKnownGenres(cached.genres);
+      setAllTracks(cached.tracks);
+      setDataSource("cache");
+      setLoading(false);
+      setRefreshing(true);
+    } else {
+      setLoading(true);
+      setRefreshing(false);
+    }
 
     const loadData = async () => {
-      setLoading(true);
       setError(null);
 
       try {
@@ -120,23 +242,73 @@ const MusicExplorer = ({ compact = false }: MusicExplorerProps) => {
 
         setKnownGenres(dedupedGenres);
         setAllTracks(dedupedTracks);
-      } catch (loadError) {
-        const message =
-          loadError instanceof Error
-            ? loadError.message
-            : language === "es"
-              ? "No se pudo cargar el contenido en vivo"
-              : "Could not load live content";
-        setError(message);
-      } finally {
+        setDataSource("live");
+        setRefreshing(false);
         setLoading(false);
+
+        writeExplorerCache({
+          v: 1,
+          savedAt: Date.now(),
+          genres: dedupedGenres,
+          tracks: dedupedTracks,
+        });
+
+        trackEvent("explorer_load", {
+          ok: true,
+          source: "live",
+          route: location.pathname,
+          compact: isCompactPreview,
+          genres_count: dedupedGenres.length,
+          tracks_count: dedupedTracks.length,
+          cache_present: cacheUsable,
+          cache_fresh: cacheFresh,
+          ms: Math.round((typeof performance !== "undefined" ? performance.now() : Date.now()) - startedAt),
+        });
+      } catch (loadError) {
+        const rawMessage =
+          loadError instanceof Error ? loadError.message : String(loadError);
+
+        if (cacheUsable) {
+          setDataSource("cache");
+          setError(
+            language === "es"
+              ? "No pudimos actualizar el catálogo en vivo. Mostrando contenido guardado."
+              : "We couldn't refresh the live catalog. Showing saved content."
+          );
+          setLoading(false);
+          setRefreshing(false);
+        } else {
+          setKnownGenres(Array.from(new Set([...FALLBACK_GENRES])));
+          setAllTracks(FALLBACK_TRACKS);
+          setDataSource("fallback");
+          setError(
+            language === "es"
+              ? "No pudimos cargar el catálogo en vivo. Mostrando un demo por ahora."
+              : "We couldn't load the live catalog. Showing a demo for now."
+          );
+          setLoading(false);
+          setRefreshing(false);
+        }
+
+        trackEvent("explorer_load", {
+          ok: false,
+          source: cacheUsable ? "cache" : "fallback",
+          route: location.pathname,
+          compact: isCompactPreview,
+          cache_present: cacheUsable,
+          cache_fresh: cacheFresh,
+          ms: Math.round((typeof performance !== "undefined" ? performance.now() : Date.now()) - startedAt),
+          error_message: rawMessage.slice(0, 180),
+        });
+      } finally {
+        // NOTE: loading state handled above to support cached "stale-while-revalidate".
       }
     };
 
-    loadData();
+    void loadData();
 
     return () => controller.abort();
-  }, [language]);
+  }, [isCompactPreview, language, location.pathname, reloadKey, trackEvent]);
 
   useEffect(() => {
     setSelectedGenre(null);
@@ -185,9 +357,21 @@ const MusicExplorer = ({ compact = false }: MusicExplorerProps) => {
   const shouldShowTrackList =
     isCompactPreview || showTracksByDefault || Boolean(selectedGenre) || normalizedSearch.length >= 2;
 
+  const hasData = knownGenres.length > 0 || allTracks.length > 0;
+  const showInitialSkeleton = loading && !hasData;
+
   const handleDownloadClick = (track: ExplorerTrack) => {
     setSelectedTrack(track);
     setShowModal(true);
+  };
+
+  const retryLoad = () => {
+    trackEvent("explorer_retry_click", {
+      route: location.pathname,
+      compact: isCompactPreview,
+      source: dataSource,
+    });
+    setReloadKey((k) => k + 1);
   };
 
   return (
@@ -233,12 +417,31 @@ const MusicExplorer = ({ compact = false }: MusicExplorerProps) => {
                 : t("explorer.subtitle")}
           </p>
 
-          <div className="mt-4 inline-flex items-center gap-2 rounded-full border border-primary/55 bg-card px-4 py-2 text-xs font-bold text-primary">
-            <Sparkles className="h-4 w-4" />
-            {language === "es"
-              ? `${knownGenres.length.toLocaleString()} géneros disponibles`
-              : `${knownGenres.length.toLocaleString()} available genres`}
-          </div>
+          {showInitialSkeleton ? (
+            <div className="mt-4 inline-flex items-center gap-2 rounded-full border border-primary/25 bg-card px-4 py-2">
+              <Skeleton className="h-4 w-4 rounded-full bg-muted/70" />
+              <Skeleton className="h-4 w-44 rounded bg-muted/70" />
+            </div>
+          ) : (
+            <div className="mt-4 inline-flex items-center gap-2 rounded-full border border-primary/55 bg-card px-4 py-2 text-xs font-bold text-primary">
+              {refreshing ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Sparkles className="h-4 w-4" />
+              )}
+              {language === "es"
+                ? dataSource === "cache"
+                  ? `Mostrando ${knownGenres.length.toLocaleString()} géneros (guardado)`
+                  : dataSource === "fallback"
+                    ? `Modo demo: ${knownGenres.length.toLocaleString()} géneros`
+                    : `${knownGenres.length.toLocaleString()} géneros disponibles`
+                : dataSource === "cache"
+                  ? `Showing ${knownGenres.length.toLocaleString()} genres (saved)`
+                  : dataSource === "fallback"
+                    ? `Demo mode: ${knownGenres.length.toLocaleString()} genres`
+                    : `${knownGenres.length.toLocaleString()} available genres`}
+            </div>
+          )}
         </motion.div>
 
         {!isCompactPreview && (
@@ -275,14 +478,79 @@ const MusicExplorer = ({ compact = false }: MusicExplorerProps) => {
             isCompactPreview ? "max-w-5xl" : "max-w-6xl"
           }`}
         >
-          {loading ? (
-            <div className="flex items-center justify-center py-16">
-              <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          {showInitialSkeleton ? (
+            <div className="p-6 md:p-8">
+              <div className="flex items-center justify-between gap-3">
+                <Skeleton className="h-4 w-40 bg-muted/70" />
+                <Skeleton className="h-8 w-20 rounded-full bg-muted/70" />
+              </div>
+              <div className="mt-4 flex flex-wrap gap-2">
+                {Array.from({ length: 12 }).map((_, idx) => (
+                  <Skeleton
+                    key={idx}
+                    className={`h-8 rounded-full bg-muted/70 ${
+                      idx % 3 === 0 ? "w-28" : idx % 3 === 1 ? "w-24" : "w-20"
+                    }`}
+                  />
+                ))}
+              </div>
+              <div className="mt-6 space-y-3">
+                {Array.from({ length: isCompactPreview ? 6 : 8 }).map((_, idx) => (
+                  <div key={idx} className="rounded-2xl border border-border/50 bg-background px-4 py-3">
+                    <Skeleton className="h-4 w-56 bg-muted/70" />
+                    <Skeleton className="mt-2 h-3 w-40 bg-muted/70" />
+                  </div>
+                ))}
+              </div>
             </div>
-          ) : error ? (
-            <div className="px-6 py-12 text-center text-sm text-destructive">{error}</div>
+          ) : !hasData ? (
+            <div className="px-6 py-12 text-center text-sm text-muted-foreground">
+              <p className="mx-auto max-w-md">
+                {error ||
+                  (language === "es"
+                    ? "No pudimos cargar el catálogo en este momento."
+                    : "We couldn't load the catalog right now.")}
+              </p>
+              <div className="mt-4 flex justify-center gap-2">
+                <Button type="button" variant="outline" onClick={retryLoad}>
+                  {language === "es" ? "Reintentar" : "Retry"}
+                </Button>
+                <Button asChild className="btn-primary-glow">
+                  <Link to="/plan">{language === "es" ? "Ver planes" : "See plans"}</Link>
+                </Button>
+              </div>
+            </div>
           ) : (
             <>
+              {error ? (
+                <div className="border-b border-border/75 bg-background-carbon/52 px-4 py-3 md:px-6">
+                  <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
+                    <p className="text-xs text-muted-foreground">{error}</p>
+                    <div className="flex items-center gap-2">
+                      {refreshing ? (
+                        <span className="inline-flex items-center gap-2 text-xs font-semibold text-muted-foreground">
+                          <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                          {language === "es" ? "Actualizando..." : "Refreshing..."}
+                        </span>
+                      ) : null}
+                      <Button type="button" size="sm" variant="outline" onClick={retryLoad}>
+                        {language === "es" ? "Reintentar" : "Retry"}
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              ) : refreshing ? (
+                <div className="border-b border-border/75 bg-background-carbon/52 px-4 py-3 md:px-6">
+                  <div className="flex items-center justify-between gap-3 text-xs text-muted-foreground">
+                    <span>
+                      {language === "es"
+                        ? "Actualizando catálogo en vivo..."
+                        : "Refreshing live catalog..."}
+                    </span>
+                    <Loader2 className="h-4 w-4 animate-spin text-primary" />
+                  </div>
+                </div>
+              ) : null}
               <div className={`border-b border-border/75 bg-background-carbon/52 ${isCompactPreview ? "p-4" : "p-4"}`}>
                 <div className="mb-3 flex items-center justify-between gap-3">
                   <div className="inline-flex items-center gap-2 text-sm font-semibold text-muted-foreground">
@@ -461,11 +729,13 @@ const MusicExplorer = ({ compact = false }: MusicExplorerProps) => {
           transition={{ duration: 0.5, delay: 0.2 }}
           className="mt-6 text-center"
         >
-          <p className="text-sm text-muted-foreground">
-            {language === "es"
-              ? `Mostrando ${visibleTracks.length} de ${filteredTracks.length} resultados (${allTracks.length.toLocaleString()} tracks recientes).`
-              : `Showing ${visibleTracks.length} of ${filteredTracks.length} results (${allTracks.length.toLocaleString()} recent tracks).`}
-          </p>
+          {hasData ? (
+            <p className="text-sm text-muted-foreground">
+              {language === "es"
+                ? `Mostrando ${visibleTracks.length} de ${filteredTracks.length} resultados (${allTracks.length.toLocaleString()} tracks recientes).`
+                : `Showing ${visibleTracks.length} of ${filteredTracks.length} results (${allTracks.length.toLocaleString()} recent tracks).`}
+            </p>
+          ) : null}
           {isCompactPreview && (
             <Button asChild variant="outline" className="mt-4 h-10 font-semibold">
               <Link to="/explorer">

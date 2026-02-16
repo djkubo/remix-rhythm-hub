@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Loader2, PlayCircle } from "lucide-react";
+import { Link } from "react-router-dom";
 import { useAudioStore } from "@/store/useAudioStore";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -35,6 +36,7 @@ export default function DemosSection() {
 
   const [tracks, setTracks] = useState<DemoTrack[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [hadLoadError, setHadLoadError] = useState(false);
   const cacheRef = useRef<Partial<Record<Genre, DemoTrack[]>>>({});
 
   useEffect(() => {
@@ -47,6 +49,7 @@ export default function DemosSection() {
     }
 
     setIsLoading(true);
+    setHadLoadError(false);
 
     (async () => {
       try {
@@ -90,6 +93,7 @@ export default function DemosSection() {
         setTracks(nextTracks);
       } catch {
         if (cancelled) return;
+        setHadLoadError(true);
         cacheRef.current[activeGenre] = [];
         setTracks([]);
       } finally {
@@ -149,34 +153,59 @@ export default function DemosSection() {
                 <span className="h-7 w-16 rounded-full border border-[#5E5E5E] bg-[#070707]" />
               </div>
             ))
-          ) : (
+          ) : tracks.length > 0 ? (
             tracks.map((track) => (
-            <button
-              key={track.id}
-              type="button"
-              onClick={() =>
-                playTrack({
-                  id: `${activeGenre}-${track.id}`,
-                  title: formatTrackTitle(track),
-                  genre: activeGenre,
-                  src: track.src,
-                })
-              }
-              className="flex w-full items-center gap-3 rounded-xl bg-[#111111] p-3 text-left hover:bg-[#070707]"
-            >
-              <span className="inline-flex h-11 w-11 items-center justify-center rounded-full bg-[#070707] text-[#EFEFEF]">
-                <PlayCircle className="h-6 w-6" />
-              </span>
-              <span className="min-w-0 flex-1">
-                <span className="block truncate text-sm font-semibold text-[#EFEFEF]">
-                  {formatTrackTitle(track)}
+              <button
+                key={track.id}
+                type="button"
+                onClick={() =>
+                  playTrack({
+                    id: `${activeGenre}-${track.id}`,
+                    title: formatTrackTitle(track),
+                    genre: activeGenre,
+                    src: track.src,
+                  })
+                }
+                className="flex w-full items-center gap-3 rounded-xl bg-[#111111] p-3 text-left hover:bg-[#070707]"
+              >
+                <span className="inline-flex h-11 w-11 items-center justify-center rounded-full bg-[#070707] text-[#EFEFEF]">
+                  <PlayCircle className="h-6 w-6" />
                 </span>
-              </span>
-              <span className="shrink-0 rounded-full border border-[#5E5E5E] bg-[#070707] px-2.5 py-1 text-xs font-semibold text-[#EFEFEF]">
-                320kbps
-              </span>
-            </button>
+                <span className="min-w-0 flex-1">
+                  <span className="block truncate text-sm font-semibold text-[#EFEFEF]">
+                    {formatTrackTitle(track)}
+                  </span>
+                </span>
+                <span className="shrink-0 rounded-full border border-[#5E5E5E] bg-[#070707] px-2.5 py-1 text-xs font-semibold text-[#EFEFEF]">
+                  320kbps
+                </span>
+              </button>
             ))
+          ) : (
+            <div className="rounded-2xl border border-[#5E5E5E] bg-[#111111] p-5 text-center">
+              <p className="text-sm font-semibold text-[#EFEFEF]">
+                {hadLoadError
+                  ? "No pudimos cargar los demos en vivo en este momento."
+                  : "Estamos actualizando los demos en vivo."}
+              </p>
+              <p className="mt-2 text-sm text-muted-foreground">
+                Abre el explorador para ver el catálogo y escuchar previews.
+              </p>
+              <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:justify-center">
+                <Link
+                  to="/explorer"
+                  className="rounded-xl bg-[#AA0202] px-4 py-2 text-sm font-bold text-[#EFEFEF] hover:bg-[#8A0101]"
+                >
+                  Abrir explorador
+                </Link>
+                <Link
+                  to="/plan"
+                  className="rounded-xl border border-[#5E5E5E] bg-[#070707] px-4 py-2 text-sm font-bold text-[#EFEFEF] hover:bg-[#111111]"
+                >
+                  Ver planes
+                </Link>
+              </div>
+            </div>
           )}
         </div>
       </div>

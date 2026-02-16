@@ -26,6 +26,7 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { createBestCheckoutUrl, type CheckoutProvider } from "@/lib/checkout";
 import usbSamsungBarPlus from "@/assets/usb128-samsung-bar-plus.jpg";
+import WhatsAppProof, { type WhatsAppProofMessage } from "@/components/WhatsAppProof";
 
 const BUY_ANCHOR_ID = "usb128-comprar";
 
@@ -124,20 +125,11 @@ export default function Usb128() {
     [isSpanish]
   );
 
-  const testimonials = useMemo(
+  const whatsappProofMessages = useMemo<WhatsAppProofMessage[]>(
     () => [
-      {
-        quote: "Ya lo compré bro, ya hasta me llegó.",
-        who: "DJ Carlos · Miami, FL",
-      },
-      {
-        quote: "Muy buena música, todo más ordenado para mis eventos.",
-        who: "DJ Andrea · Los Angeles, CA",
-      },
-      {
-        quote: "Excelente, me ahorró horas de búsqueda cada semana.",
-        who: "DJ Javier · Houston, TX",
-      },
+      { id: "usb-wp-1", text: "Ya lo compré bro, ya hasta me llegó. Saludos!" },
+      { id: "usb-wp-2", text: "Muy buena música, todo más ordenado para mis eventos." },
+      { id: "usb-wp-3", text: "Excelente, me ahorró horas de búsqueda cada semana." },
     ],
     []
   );
@@ -401,9 +393,12 @@ export default function Usb128() {
                 {renderCheckoutFeedback("usb128_hero_buy")}
                 {renderCheckoutFeedback("usb128_hero_buy_paypal")}
 
-	              <p className="text-xs text-yellow-500 mt-4 flex items-center justify-center gap-1.5 font-medium">
-	                ⚡ Stock limitado: Pídelo en las próximas 2 horas y se envía HOY mismo.
-	              </p>
+                <div className="mt-4 rounded-xl border border-yellow-500/35 bg-yellow-500/10 px-4 py-3 text-center text-sm font-semibold text-yellow-200">
+                  <span className="mr-1.5">⚡</span>
+                  {isSpanish
+                    ? "Stock limitado: Pídelo en las próximas 2 horas y se envía HOY mismo."
+                    : "Limited stock: Order within 2 hours and it ships TODAY."}
+                </div>
 
               <div className="mt-5 flex flex-wrap gap-2">
                 {paymentBadges.map((label) => (
@@ -578,15 +573,11 @@ export default function Usb128() {
                 {isSpanish ? "DJs reales, resultados reales" : "Real DJs, real outcomes"}
               </h2>
 
-              <div className="mt-5 grid gap-3">
-                {testimonials.map((item) => (
-                  <blockquote key={item.who} className="rounded-2xl border border-[#5E5E5E] bg-[#070707] p-4">
-                    <p className="text-sm text-[#EFEFEF]">“{item.quote}”</p>
-                    <footer className="mt-2 text-xs font-bold uppercase tracking-[0.07em] text-[#AA0202]">
-                      {item.who}
-                    </footer>
-                  </blockquote>
-                ))}
+              <div className="mt-5">
+                <WhatsAppProof messages={whatsappProofMessages} className="max-w-xl" />
+                <p className="mt-4 text-center text-xs text-muted-foreground">
+                  {isSpanish ? "Mensajes reales de DJs. Sin inventos." : "Real DJ messages. No fake reviews."}
+                </p>
               </div>
 
               <div className="mt-5 grid grid-cols-3 gap-2">
@@ -703,6 +694,9 @@ export default function Usb128() {
         <div className="flex flex-col">
           <p className="text-[10px] text-zinc-400 uppercase tracking-widest">ENVÍO GRATIS USA</p>
           <p className="font-bebas text-2xl text-white leading-none">$147 USD</p>
+          <p className="mt-1 text-[10px] text-yellow-400 uppercase tracking-widest">
+            {isSpanish ? "STOCK LIMITADO" : "LIMITED STOCK"}
+          </p>
         </div>
 
         <a

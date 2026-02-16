@@ -18,7 +18,7 @@ export default function MembresiaThankYou() {
 
   const hasStripeSession = Boolean(stripeSessionId);
   const hasPayPalOrder = Boolean(paypalOrderId);
-  const isMonthlyPlan = product === "plan_1tb_mensual";
+  const isMonthlyPlan = product === "plan_1tb_mensual" || product === "plan_1tb_trimestral";
 
   const [stripeVerifyState, setStripeVerifyState] = useState<
     "idle" | "processing" | "success" | "error"

@@ -64,6 +64,7 @@ type ProductKey =
   | "anual"
   | "djedits"
   | "plan_1tb_mensual"
+  | "plan_1tb_trimestral"
   | "plan_2tb_anual";
 
 type PayPalShippingPreference = "NO_SHIPPING" | "GET_FROM_FILE";
@@ -112,6 +113,13 @@ const PRODUCTS: Record<ProductKey, ProductConfig> = {
     description: "Acceso a la membresia con 1 TB de descarga mensual.",
     defaultAmountCents: 3500,
     envAmountKey: "PAYPAL_PLAN_1TB_MENSUAL_AMOUNT_CENTS",
+    shippingPreference: "NO_SHIPPING",
+  },
+  plan_1tb_trimestral: {
+    name: "Membresia 1 TB (Trimestral)",
+    description: "Acceso a la membresia por 3 meses (pago trimestral).",
+    defaultAmountCents: 9000,
+    envAmountKey: "PAYPAL_PLAN_1TB_TRIMESTRAL_AMOUNT_CENTS",
     shippingPreference: "NO_SHIPPING",
   },
   plan_2tb_anual: {
@@ -480,7 +488,11 @@ Deno.serve(async (req) => {
     const productKey = product as ProductKey;
 
     // PayPal Subscriptions are required for recurring billing/trials. We only support Orders (one-time CAPTURE) here.
-    if (productKey === "plan_1tb_mensual" || productKey === "plan_2tb_anual") {
+    if (
+      productKey === "plan_1tb_mensual" ||
+      productKey === "plan_1tb_trimestral" ||
+      productKey === "plan_2tb_anual"
+    ) {
       return new Response(JSON.stringify({ error: "PayPal not available for subscriptions. Use card." }), {
         status: 400,
         headers: { ...corsHeaders, "Content-Type": "application/json" },

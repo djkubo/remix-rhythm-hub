@@ -106,6 +106,7 @@ type ProductKey =
   | "anual"
   | "djedits"
   | "plan_1tb_mensual"
+  | "plan_1tb_trimestral"
   | "plan_2tb_anual";
 
 type ProductConfig = {
@@ -121,6 +122,7 @@ type ProductConfig = {
   };
   recurring?: {
     interval: "month" | "year";
+    intervalCount?: number;
   };
 };
 
@@ -172,6 +174,15 @@ const PRODUCTS: Record<ProductKey, ProductConfig> = {
     envAmountKey: "STRIPE_PLAN_1TB_MENSUAL_AMOUNT_CENTS",
     trialDays: 7,
     recurring: { interval: "month" },
+  },
+  plan_1tb_trimestral: {
+    mode: "subscription",
+    name: "Plan PRO DJ trimestral",
+    description: "Acceso a la membresia por 3 meses (pago trimestral).",
+    defaultAmountCents: 9000,
+    envAmountKey: "STRIPE_PLAN_1TB_TRIMESTRAL_AMOUNT_CENTS",
+    trialDays: 7,
+    recurring: { interval: "month", intervalCount: 3 },
   },
   plan_2tb_anual: {
     mode: "subscription",
@@ -295,11 +306,14 @@ function getRedirectPaths(product: ProductKey): { successPath: string; cancelPat
     case "djedits":
       return { successPath: "/djedits/gracias", cancelPath: "/djedits" };
     case "plan_1tb_mensual":
+    case "plan_1tb_trimestral":
     case "plan_2tb_anual":
       return {
         successPath: `/membresia/gracias?plan=${encodeURIComponent(product)}`,
         cancelPath: `/membresia?plan=${encodeURIComponent(product)}`,
       };
+    default:
+      return { successPath: "/gracias", cancelPath: "/plan" };
   }
 }
 
@@ -310,6 +324,7 @@ function buildStripeFormData(args: {
   amountCents: number;
   currency: string;
   interval?: "month" | "year";
+  intervalCount?: number;
   trialDays?: number;
   successUrl: string;
   cancelUrl: string;
@@ -342,6 +357,9 @@ function buildStripeFormData(args: {
     const interval = args.interval;
     if (!interval) throw new Error("Missing recurring interval for subscription product");
     p.set("line_items[0][price_data][recurring][interval]", interval);
+    if (args.intervalCount && args.intervalCount > 1) {
+      p.set("line_items[0][price_data][recurring][interval_count]", String(args.intervalCount));
+    }
 
     // If we're offering a free trial, still collect payment method as a quality filter.
     if (args.trialDays && args.trialDays > 0) {
@@ -833,6 +851,7 @@ Deno.serve(async (req) => {
       amountCents,
       currency,
       interval: cfg.recurring?.interval,
+      intervalCount: cfg.recurring?.intervalCount,
       trialDays: cfg.trialDays,
       successUrl,
       cancelUrl,

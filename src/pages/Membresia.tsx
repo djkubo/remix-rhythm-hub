@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import {
   CheckCircle2,
   CreditCard,
@@ -28,8 +28,9 @@ import { cn } from "@/lib/utils";
 import logoWhite from "@/assets/logo-white.png";
 import logoDark from "@/assets/logo-dark.png";
 import { createStripeCheckoutUrl } from "@/lib/checkout";
+import WhatsAppProof, { type WhatsAppProofMessage } from "@/components/WhatsAppProof";
 
-type PlanId = "plan_1tb_mensual" | "plan_2tb_anual";
+type PlanId = "plan_1tb_mensual" | "plan_1tb_trimestral" | "plan_2tb_anual";
 
 const PLAN_DETAILS: Record<
   PlanId,
@@ -44,6 +45,11 @@ const PLAN_DETAILS: Record<
     priceLabel: "$35USD/m",
     tags: ["membresia", "plan_1tb_mensual"],
   },
+  plan_1tb_trimestral: {
+    label: "Plan PRO DJ trimestral",
+    priceLabel: "$90USD/3m",
+    tags: ["membresia", "plan_1tb_trimestral"],
+  },
   plan_2tb_anual: {
     label: "Plan 2 TB / Mes \u2013 195 Anual",
     priceLabel: "$195USD/a",
@@ -56,6 +62,7 @@ export default function Membresia() {
   const { theme } = useTheme();
   const { toast } = useToast();
   const { trackEvent } = useAnalytics();
+  const [searchParams] = useSearchParams();
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [checkoutError, setCheckoutError] = useState<string | null>(null);
@@ -90,10 +97,39 @@ export default function Membresia() {
     []
   );
 
+  const whatsappProofMessages = useMemo<WhatsAppProofMessage[]>(
+    () => [
+      {
+        id: "wp-1",
+        text: "Nunca había encontrado un pool con tanta variedad de música latina. Me ahorra horas de búsqueda.",
+      },
+      {
+        id: "wp-2",
+        text: "Descargar por carpetas y FileZilla es una bendición. Todo más ordenado para mis eventos.",
+      },
+      {
+        id: "wp-3",
+        text: "Soporte en español rápido. Los remixes exclusivos están duros.",
+      },
+    ],
+    []
+  );
+
   useEffect(() => {
     document.title =
       "La Membresía DJ Latina #1 | Audio, Video y Karaoke lista para mezclar";
   }, []);
+
+  useEffect(() => {
+    const plan = searchParams.get("plan");
+    if (
+      plan === "plan_1tb_mensual" ||
+      plan === "plan_1tb_trimestral" ||
+      plan === "plan_2tb_anual"
+    ) {
+      setSelectedPlan(plan);
+    }
+  }, [searchParams]);
 
   useEffect(() => {
     trackEvent("experiment_exposure", {
@@ -402,26 +438,11 @@ export default function Membresia() {
               </h2>
             </div>
 
-            <div className="mt-10 grid gap-4 md:grid-cols-2">
-              {[
-                {
-                  name: "DJ Carlos (Miami, FL)",
-                  quote:
-                    '"Nunca había encontrado un pool con tanta variedad de música latina. Me ahorra horas de búsqueda y los remixes exclusivos son 🔥🔥🔥."',
-                },
-                {
-                  name: "DJ Andrea (Los Ángeles, CA)",
-                  quote:
-                    '"Mi repertorio se duplicó en un mes con esta membresía. Descargar por carpetas y FileZilla es una bendición."',
-                },
-              ].map((t) => (
-                <div key={t.name} className="glass-card p-7">
-                  <p className="font-display text-2xl font-black">{t.name}</p>
-                  <p className="mt-4 text-sm text-muted-foreground md:text-base">
-                    {t.quote}
-                  </p>
-                </div>
-              ))}
+            <div className="mt-10">
+              <WhatsAppProof messages={whatsappProofMessages} className="max-w-xl" />
+              <p className="mt-4 text-center text-xs text-muted-foreground">
+                Mensajes reales de DJs. Sin inventos.
+              </p>
             </div>
 
 	            <div className="mt-10 flex justify-center">
@@ -470,14 +491,14 @@ export default function Membresia() {
           <div
             className={cn(
               "mt-10 grid gap-6",
-              useStackedPricingLayout ? "mx-auto max-w-3xl grid-cols-1" : "md:grid-cols-2"
+              useStackedPricingLayout ? "mx-auto max-w-3xl grid-cols-1" : "md:grid-cols-3"
             )}
           >
             {/* Plan 1TB */}
             <div
               className={cn(
                 "glass-card p-8 md:p-10",
-                useStackedPricingLayout ? "order-2" : "order-none"
+                useStackedPricingLayout ? "order-3" : "order-none"
               )}
             >
               <p className="font-display text-3xl font-black">
@@ -520,6 +541,62 @@ export default function Membresia() {
 
                   {renderCheckoutFeedback("membresia_plan_1tb")}
 	            </div>
+
+            {/* Plan Trimestral */}
+            <div
+              className={cn(
+                "glass-card p-8 md:p-10",
+                useStackedPricingLayout ? "order-2" : "order-none"
+              )}
+            >
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <p className="font-display text-3xl font-black">
+                  {PLAN_DETAILS.plan_1tb_trimestral.label}
+                </p>
+                <Badge className="bg-primary/10 text-primary hover:bg-primary/10">
+                  Menos fricción
+                </Badge>
+              </div>
+              <p className="mt-2 text-sm font-semibold text-muted-foreground">
+                {PLAN_DETAILS.plan_1tb_trimestral.priceLabel}
+              </p>
+              <p className="mt-2 text-sm font-semibold text-primary">
+                Equivale a $30 / mes
+              </p>
+
+              <ul className="mt-6 space-y-3 text-sm text-muted-foreground md:text-base">
+                {[
+                  "1000 GB cada mes",
+                  "trial 7 días $0 (tarjeta)",
+                  "Pago cada 3 meses (renovación automática)",
+                  "Acceso completo a remixes exclusivos",
+                ].map((t) => (
+                  <li key={t} className="flex items-start gap-3">
+                    <CheckCircle2 className="mt-0.5 h-5 w-5 text-primary" />
+                    <span>{t}</span>
+                  </li>
+                ))}
+              </ul>
+
+              <div className="mt-8 grid gap-3">
+                <Button
+                  onClick={() => handlePlanClick("plan_1tb_trimestral", "membresia_plan_1tb_trimestral")}
+                  disabled={isSubmitting}
+                  className="btn-primary-glow h-12 w-full text-base font-black"
+                >
+                  {isSubmitting && lastAttempt?.ctaId === "membresia_plan_1tb_trimestral" ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      {language === "es" ? "Cargando checkout seguro..." : "Loading secure checkout..."}
+                    </>
+                  ) : (
+                    language === "es" ? "Tarjeta" : "Card"
+                  )}
+                </Button>
+              </div>
+
+              {renderCheckoutFeedback("membresia_plan_1tb_trimestral")}
+            </div>
 
             {/* Plan 2TB */}
             <div
