@@ -1,4 +1,4 @@
-import { CheckCheck } from "lucide-react";
+import { Star } from "lucide-react";
 import { motion } from "framer-motion";
 
 interface Testimonial {
@@ -92,29 +92,29 @@ function TestimonialCard({ testimonial, index }: { testimonial: Testimonial; ind
       whileInView={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, delay: index * 0.06 }}
       viewport={{ once: true }}
-      className="rounded-xl border border-[#2A3942] bg-[#0B141A] p-4 shadow-lg"
+      className="rounded-xl border border-[#5E5E5E] bg-[#070707] p-4 shadow-lg"
     >
       {/* Header */}
       <div className="flex items-center gap-3">
-        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#202C33] text-lg">
+        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-[#5E5E5E] bg-[#111111] text-lg">
           {testimonial.flag}
         </div>
         <div className="min-w-0">
-          <p className="truncate font-sans text-sm font-semibold text-[#E9EDEF]">
+          <p className="truncate font-sans text-sm font-semibold text-[#EFEFEF]">
             {testimonial.name}
           </p>
-          <p className="font-sans text-[11px] text-[#8696A0]">{testimonial.city}</p>
+          <p className="font-sans text-[11px] text-zinc-500">{testimonial.city}</p>
         </div>
       </div>
 
-      {/* Message bubble */}
-      <div className="mt-3 rounded-lg rounded-tl-none border border-[#2A3942] bg-[#202C33] px-3 py-2.5">
-        <p className="font-sans text-sm leading-relaxed text-[#E9EDEF]">
+      {/* Message */}
+      <div className="mt-3 rounded-lg border border-[#5E5E5E] bg-[#111111] px-3 py-2.5">
+        <p className="font-sans text-sm leading-relaxed text-[#EFEFEF]">
           {testimonial.text}
         </p>
         <div className="mt-1.5 flex items-center justify-end gap-1">
-          <span className="text-[10px] text-[#8696A0]">{testimonial.time}</span>
-          <CheckCheck className="h-3 w-3 text-[#53BDEB]" />
+          <span className="text-[10px] text-zinc-500">{testimonial.time}</span>
+          <span className="text-[10px] text-zinc-500">✓✓</span>
         </div>
       </div>
     </motion.div>
@@ -133,14 +133,15 @@ export default function SocialProofSection() {
           className="mb-3 text-center"
         >
           <span className="inline-flex items-center gap-2 rounded-full border border-[#AA0202]/30 bg-[#AA0202]/10 px-3 py-1 font-bebas text-xs uppercase tracking-widest text-[#AA0202]">
-            ⭐ +4,800 DJs CONFÍAN EN NOSOTROS
+            <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
+            +4,800 DJs CONFÍAN EN NOSOTROS
           </span>
         </motion.div>
 
         <h2 className="text-center font-bebas text-4xl uppercase text-[#EFEFEF] md:text-5xl">
           DJs reales. Resultados reales.
         </h2>
-        <p className="mb-10 mt-3 text-center font-sans text-muted-foreground">
+        <p className="mb-10 mt-3 text-center font-sans text-zinc-400">
           Cero inventos. Mensajes reales de DJs que ya descargan y mezclan nuestra música.
         </p>
 

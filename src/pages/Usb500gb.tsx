@@ -256,7 +256,7 @@ export default function Usb500gb() {
 
           <div className="mt-10 grid gap-8 md:grid-cols-2 md:items-start">
             {/* Product visual */}
-            <div className="rounded-3xl border border-[#5E5E5E] bg-[#111111] p-5">
+            <div className="rounded-2xl border border-[#5E5E5E] bg-[#111111] p-5">
               <div className="relative aspect-[4/5] w-full overflow-hidden rounded-xl bg-gradient-to-br from-[#AA0202]/25 via-[#070707] to-[#070707]">
                 <div className="absolute inset-0 opacity-70">
                   <div className="absolute -left-10 top-16 h-48 w-48 rounded-full bg-[#AA0202]/20 blur-3xl" />
@@ -267,7 +267,7 @@ export default function Usb500gb() {
                     <Usb className="h-10 w-10 text-[#AA0202]" />
                   </div>
                   <p className="mt-6 text-sm text-zinc-400">USB Definitiva</p>
-                  <p className="font-display text-4xl font-black tracking-wide">500 GB</p>
+                  <p className="font-bebas text-4xl uppercase tracking-wide">500 GB</p>
                   <p className="mt-3 text-xs text-zinc-400">
                     MP3 320 kbps • Organizada • Lista para eventos
                   </p>
@@ -282,10 +282,10 @@ export default function Usb500gb() {
                 {isSpanish ? "Envío incluido a todo USA" : "Free shipping USA-wide"}
               </Badge>
 
-              <h1 className="mt-4 text-4xl font-black leading-[0.95] md:text-5xl">
+              <h1 className="mt-4 font-bebas text-4xl uppercase leading-[0.95] md:text-5xl">
                 {isSpanish ? "La USB Definitiva:" : "The Ultimate USB:"}
               </h1>
-              <h2 className="mt-2 text-3xl font-black leading-[0.95] text-[#AA0202] md:text-4xl">
+              <h2 className="mt-2 font-bebas text-3xl uppercase leading-[0.95] text-[#AA0202] md:text-4xl">
                 {isSpanish
                   ? `+${SONGS} Canciones MP3 para DJ Latinos en USA`
                   : `+${SONGS} MP3 Songs for Latino DJs in the USA`}
@@ -321,7 +321,7 @@ export default function Usb500gb() {
 
               <div className="mt-7 grid gap-3">
                 <Button onClick={() => openOrder("usb500gb_hero_stripe")} disabled={isSubmitting}
-                  className="btn-primary-glow h-12 w-full text-base font-black">
+                  className="btn-primary-glow h-12 w-full font-bebas text-xl uppercase tracking-wide">
                   {isSubmitting && lastAttempt?.ctaId === "usb500gb_hero_stripe" ? (
                     <><Loader2 className="mr-2 h-4 w-4 animate-spin" />{isSpanish ? "Cargando checkout seguro..." : "Loading secure checkout..."}</>
                   ) : (
@@ -329,7 +329,7 @@ export default function Usb500gb() {
                   )}
                 </Button>
                 <Button onClick={() => openOrderPayPal("usb500gb_hero_paypal")} disabled={isSubmitting}
-                  variant="outline" className="h-12 w-full border-[#5E5E5E] text-base font-black text-[#EFEFEF] hover:bg-[#111111]">
+                  variant="outline" className="h-12 w-full border-[#5E5E5E] font-bebas text-xl uppercase tracking-wide text-[#EFEFEF] hover:bg-[#111111]">
                   {isSubmitting && lastAttempt?.ctaId === "usb500gb_hero_paypal" ? (
                     <><Loader2 className="mr-2 h-4 w-4 animate-spin" />{isSpanish ? "Cargando PayPal..." : "Loading PayPal..."}</>
                   ) : (
@@ -363,18 +363,18 @@ export default function Usb500gb() {
             <p className="text-xs font-bold uppercase tracking-[0.12em] text-[#AA0202]">
               {isSpanish ? "¿Qué incluye?" : "What's inside?"}
             </p>
-            <h2 className="mt-3 text-3xl font-black leading-tight md:text-4xl">
+            <h2 className="mt-3 font-bebas text-3xl uppercase leading-tight md:text-4xl">
               {isSpanish ? "Todo lo que necesitas en una sola USB" : "Everything you need in one USB"}
             </h2>
           </div>
 
           <div className="mt-10 grid gap-4 md:grid-cols-2">
             {/* Problems */}
-            <article className="rounded-3xl border border-[#5E5E5E] bg-[#111111] p-6 md:p-8">
+            <article className="rounded-2xl border border-[#5E5E5E] bg-[#111111] p-6 md:p-8">
               <p className="text-xs font-bold uppercase tracking-[0.12em] text-[#AA0202]">
                 {isSpanish ? "Sin la USB" : "Without the USB"}
               </p>
-              <h3 className="mt-3 text-2xl font-black md:text-3xl">
+              <h3 className="mt-3 font-bebas text-2xl uppercase md:text-3xl">
                 {isSpanish ? "¿Te suena familiar?" : "Sound familiar?"}
               </h3>
               <ul className="mt-6 space-y-3 text-sm text-zinc-400">
@@ -392,11 +392,11 @@ export default function Usb500gb() {
             </article>
 
             {/* Solution */}
-            <article className="rounded-3xl border border-[#5E5E5E] bg-[#111111] p-6 md:p-8">
+            <article className="rounded-2xl border border-[#5E5E5E] bg-[#111111] p-6 md:p-8">
               <p className="text-xs font-bold uppercase tracking-[0.12em] text-[#AA0202]">
                 {isSpanish ? "Con la USB" : "With the USB"}
               </p>
-              <h3 className="mt-3 text-2xl font-black md:text-3xl">
+              <h3 className="mt-3 font-bebas text-2xl uppercase md:text-3xl">
                 {isSpanish ? "Solución instantánea" : "Instant solution"}
               </h3>
               <ul className="mt-6 space-y-3 text-sm text-zinc-400">
@@ -411,15 +411,15 @@ export default function Usb500gb() {
           </div>
 
           {/* Mid CTA */}
-          <div className="mt-10 rounded-3xl border border-[#5E5E5E] bg-[#111111] p-8 text-center">
-            <p className="text-2xl font-black md:text-3xl">
+          <div className="mt-10 rounded-2xl border border-[#5E5E5E] bg-[#111111] p-8 text-center">
+            <p className="font-bebas text-2xl uppercase md:text-3xl">
               {isSpanish
                 ? "Menos estrés, más ingresos y mayor prestigio en cada presentación."
                 : "Less stress, more income and greater prestige at every gig."}
             </p>
             <div className="mt-6 flex justify-center">
               <Button onClick={() => openOrder("usb500gb_mid_stripe")} disabled={isSubmitting}
-                className="btn-primary-glow h-12 w-full max-w-xl text-base font-black">
+                className="btn-primary-glow h-12 w-full max-w-xl font-bebas text-xl uppercase tracking-wide">
                 {isSubmitting && lastAttempt?.ctaId === "usb500gb_mid_stripe" ? (
                   <><Loader2 className="mr-2 h-4 w-4 animate-spin" />{isSpanish ? "Cargando..." : "Loading..."}</>
                 ) : (
@@ -435,13 +435,13 @@ export default function Usb500gb() {
       {/* ── Bonus ── */}
       <section className="py-14 md:py-20">
         <div className="container mx-auto max-w-6xl px-4">
-          <article className="rounded-3xl border border-[#5E5E5E] bg-[#111111] p-8 md:p-10">
+          <article className="rounded-2xl border border-[#5E5E5E] bg-[#111111] p-8 md:p-10">
             <div className="flex flex-col items-center text-center">
               <Badge className="border-[#AA0202]/40 bg-[#AA0202]/15 px-3 py-1 text-[11px] font-bold text-yellow-300">
                 <Crown className="mr-1.5 h-3 w-3 fill-yellow-400 text-yellow-400" />
                 {isSpanish ? "BONUS GRATIS por Tiempo Limitado" : "FREE BONUS for Limited Time"}
               </Badge>
-              <h2 className="mt-5 text-3xl font-black leading-tight md:text-4xl">
+              <h2 className="mt-5 font-bebas text-3xl uppercase leading-tight md:text-4xl">
                 {isSpanish
                   ? <>Acceso Exclusivo a nuestra plataforma <span className="text-[#AA0202]">SKOOL</span></>
                   : <>Exclusive Access to our <span className="text-[#AA0202]">SKOOL</span> platform</>}
@@ -463,7 +463,7 @@ export default function Usb500gb() {
 
             <div className="mt-8 flex justify-center">
               <Button onClick={() => openOrder("usb500gb_bonus_stripe")} disabled={isSubmitting}
-                className="btn-primary-glow h-12 w-full max-w-xl text-base font-black">
+                className="btn-primary-glow h-12 w-full max-w-xl font-bebas text-xl uppercase tracking-wide">
                 {isSubmitting && lastAttempt?.ctaId === "usb500gb_bonus_stripe" ? (
                   <><Loader2 className="mr-2 h-4 w-4 animate-spin" />{isSpanish ? "Cargando..." : "Loading..."}</>
                 ) : (
@@ -479,12 +479,12 @@ export default function Usb500gb() {
       {/* ── Social proof (3×3 grid) ── */}
       <section className="py-14 md:py-20">
         <div className="container mx-auto max-w-6xl px-4">
-          <article className="rounded-3xl border border-[#5E5E5E] bg-[#111111] p-6 md:p-8">
+          <article className="rounded-2xl border border-[#5E5E5E] bg-[#111111] p-6 md:p-8">
             <Badge className="border-[#AA0202]/40 bg-[#AA0202]/15 px-3 py-1 text-[11px] font-bold text-yellow-300">
               <Star className="mr-1.5 h-3 w-3 fill-yellow-400 text-yellow-400" />
               {isSpanish ? "+7,000 DJs CONFÍAN EN NOSOTROS" : "+7,000 DJs TRUST US"}
             </Badge>
-            <h2 className="mt-3 text-3xl font-black leading-tight md:text-4xl">
+            <h2 className="mt-3 font-bebas text-3xl uppercase leading-tight md:text-4xl">
               {isSpanish ? "DJs reales, resultados reales" : "Real DJs, real outcomes"}
             </h2>
 
@@ -511,7 +511,7 @@ export default function Usb500gb() {
             </div>
 
             <Button onClick={() => openOrder("usb500gb_testimonials_stripe")} disabled={isSubmitting}
-              className="btn-primary-glow mt-6 h-11 w-full text-sm font-black">
+              className="btn-primary-glow mt-6 h-11 w-full font-bebas text-lg uppercase tracking-wide">
               {isSubmitting && lastAttempt?.ctaId === "usb500gb_testimonials_stripe" ? (
                 <><Loader2 className="mr-2 h-4 w-4 animate-spin" />{isSpanish ? "Cargando..." : "Loading..."}</>
               ) : (
@@ -526,8 +526,8 @@ export default function Usb500gb() {
       {/* ── Guarantee ── */}
       <section className="py-14 md:py-20">
         <div className="container mx-auto max-w-4xl px-4">
-          <article className="rounded-3xl border border-[#5E5E5E] bg-[#111111] p-8">
-            <h2 className="text-center text-3xl font-black md:text-4xl">
+          <article className="rounded-2xl border border-[#5E5E5E] bg-[#111111] p-8">
+            <h2 className="text-center font-bebas text-3xl uppercase md:text-4xl">
               {isSpanish ? "Nuestra Garantía de Confianza Total" : "Our Total Trust Guarantee"}
             </h2>
 
@@ -563,7 +563,7 @@ export default function Usb500gb() {
 
             <div className="mt-8 flex justify-center">
               <Button onClick={() => openOrder("usb500gb_guarantee_stripe")} disabled={isSubmitting}
-                className="btn-primary-glow h-12 w-full max-w-xl text-base font-black">
+                className="btn-primary-glow h-12 w-full max-w-xl font-bebas text-xl uppercase tracking-wide">
                 {isSubmitting && lastAttempt?.ctaId === "usb500gb_guarantee_stripe" ? (
                   <><Loader2 className="mr-2 h-4 w-4 animate-spin" />{isSpanish ? "Cargando..." : "Loading..."}</>
                 ) : (
@@ -579,8 +579,8 @@ export default function Usb500gb() {
       {/* ── Final CTA ── */}
       <section className="pb-20 pt-6 md:pb-28">
         <div className="container mx-auto max-w-4xl px-4">
-          <article className="rounded-3xl border border-[#5E5E5E] bg-[#111111] p-8 text-center">
-            <h2 className="text-3xl font-black leading-tight md:text-4xl">
+          <article className="rounded-2xl border border-[#5E5E5E] bg-[#111111] p-8 text-center">
+            <h2 className="font-bebas text-3xl uppercase leading-tight md:text-4xl">
               {isSpanish
                 ? <>Oferta Especial Por <span className="text-[#AA0202]">Tiempo Limitado</span>!</>
                 : <>Special <span className="text-[#AA0202]">Limited-Time</span> Offer!</>}
@@ -592,7 +592,7 @@ export default function Usb500gb() {
 
             <div className="mt-4 flex justify-center">
               <Button onClick={() => openOrder("usb500gb_offer_stripe")} disabled={isSubmitting}
-                className="btn-primary-glow h-14 w-full max-w-2xl text-base font-black md:text-lg">
+                className="btn-primary-glow h-14 w-full max-w-2xl font-bebas text-xl uppercase tracking-wide md:text-lg">
                 {isSubmitting && lastAttempt?.ctaId === "usb500gb_offer_stripe" ? (
                   <><Loader2 className="mr-2 h-4 w-4 animate-spin" />{isSpanish ? "Cargando..." : "Loading..."}</>
                 ) : (

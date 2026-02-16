@@ -332,7 +332,7 @@ export default function Usb128() {
                 {isSpanish ? "USB física · envío gratis USA" : "Physical USB · free USA shipping"}
               </Badge>
 
-              <h1 className="mt-5 max-w-3xl text-4xl font-black leading-[0.94] text-white sm:text-5xl lg:text-6xl">
+              <h1 className="mt-5 max-w-3xl font-bebas text-4xl uppercase leading-[0.94] text-white sm:text-5xl lg:text-6xl">
                 {isSpanish
                   ? "Tu música latina lista para conectar y mezclar"
                   : "Your Latin music ready to plug and mix"}
@@ -374,7 +374,7 @@ export default function Usb128() {
                   id={BUY_ANCHOR_ID}
                   onClick={() => openOrder("usb128_hero_buy")}
                   disabled={isSubmitting}
-                  className="btn-primary-glow h-12 px-8 text-base font-black"
+                  className="btn-primary-glow h-12 px-8 font-bebas text-xl uppercase tracking-wide"
                 >
                   {isSubmitting && lastAttempt?.ctaId === "usb128_hero_buy" ? (
                     <>
@@ -392,7 +392,7 @@ export default function Usb128() {
                   onClick={() => openOrderPayPal("usb128_hero_buy_paypal")}
                   disabled={isSubmitting}
                   variant="outline"
-                  className="h-12 px-8 text-base font-black"
+                  className="h-12 px-8 font-bebas text-xl uppercase tracking-wide"
                 >
                   {isSubmitting ? (
                     <>
@@ -431,7 +431,7 @@ export default function Usb128() {
               </div>
             </div>
 
-            <div className="rounded-3xl border border-[#5E5E5E] bg-[#111111] p-4 text-[#EFEFEF] shadow-[0_24px_52px_rgba(0,0,0,0.35)] md:p-5">
+            <div className="rounded-2xl border border-[#5E5E5E] bg-[#111111] p-4 text-[#EFEFEF] shadow-[0_24px_52px_rgba(0,0,0,0.35)] md:p-5">
               <div className="overflow-hidden rounded-2xl border border-[#5E5E5E] bg-[#070707] p-2">
                 <img
                   src={usbSamsungBarPlus}
@@ -444,9 +444,9 @@ export default function Usb128() {
               <div className="mt-4 rounded-2xl border border-[#5E5E5E] bg-[#070707] p-4">
                 <div className="flex items-start justify-between gap-3">
                   <div>
-                    <p className="text-xs font-bold uppercase tracking-[0.1em] text-muted-foreground">USB 128 GB</p>
-                    <p className="mt-1 text-3xl font-black text-[#AA0202]">$147 USD</p>
-                    <p className="text-xs text-muted-foreground">
+                    <p className="text-xs font-bold uppercase tracking-[0.1em] text-zinc-400">USB 128 GB</p>
+                    <p className="mt-1 font-bebas text-3xl uppercase text-[#AA0202]">$147 USD</p>
+                    <p className="text-xs text-zinc-400">
                       {isSpanish
                         ? "Envío gratis en USA · pago único"
                         : "Free shipping in USA · one-time payment"}
@@ -477,7 +477,7 @@ export default function Usb128() {
                   <Button
                     onClick={() => openOrder("usb128_product_card_buy")}
                     disabled={isSubmitting}
-                    className="btn-primary-glow h-11 w-full text-sm font-black"
+                    className="btn-primary-glow h-11 w-full font-bebas text-lg uppercase tracking-wide"
                   >
                     {isSubmitting && lastAttempt?.ctaId === "usb128_product_card_buy" ? (
                       <>
@@ -492,7 +492,7 @@ export default function Usb128() {
                     onClick={() => openOrderPayPal("usb128_product_card_buy_paypal")}
                     disabled={isSubmitting}
                     variant="outline"
-                    className="h-11 w-full text-sm font-black"
+                    className="h-11 w-full font-bebas text-lg uppercase tracking-wide"
                   >
                     {isSubmitting ? (
                       <>
@@ -532,7 +532,7 @@ export default function Usb128() {
           <div className="mt-6 grid gap-3 sm:grid-cols-3">
             {socialStats.map((stat) => (
               <div key={stat.label} className="rounded-2xl border border-white/25 bg-black/25 px-4 py-3">
-                <p className="text-2xl font-black text-white">{stat.value}</p>
+                <p className="font-bebas text-2xl uppercase text-white">{stat.value}</p>
                 <p className="text-xs uppercase tracking-[0.08em] text-white/80">{stat.label}</p>
               </div>
             ))}
@@ -543,11 +543,11 @@ export default function Usb128() {
       <section className="py-10 md:py-16">
         <div className="container mx-auto max-w-6xl px-4">
           <div className="grid gap-6 lg:grid-cols-[1.05fr_0.95fr]">
-            <article className="rounded-3xl border border-[#5E5E5E] bg-[#111111] p-6 shadow-[0_14px_34px_rgba(0,0,0,0.45)] md:p-8">
+            <article className="rounded-2xl border border-[#5E5E5E] bg-[#111111] p-6 shadow-[0_14px_34px_rgba(0,0,0,0.45)] md:p-8">
               <p className="text-xs font-bold uppercase tracking-[0.12em] text-[#AA0202]">
                 {isSpanish ? "Cómo funciona" : "How it works"}
               </p>
-              <h2 className="mt-2 text-3xl font-black text-[#EFEFEF] md:text-4xl">
+              <h2 className="mt-2 font-bebas text-3xl uppercase text-[#EFEFEF] md:text-4xl">
                 {isSpanish ? "Compra en 3 pasos, sin fricción" : "Buy in 3 steps, friction-free"}
               </h2>
 
@@ -573,8 +573,8 @@ export default function Usb128() {
                   },
                 ].map((step) => (
                   <div key={step.title} className="rounded-2xl border border-[#5E5E5E] bg-[#070707] p-4">
-                    <p className="text-sm font-black text-[#EFEFEF]">{step.title}</p>
-                    <p className="mt-1 text-sm text-muted-foreground">{step.desc}</p>
+                    <p className="font-bebas text-lg uppercase tracking-wide text-[#EFEFEF]">{step.title}</p>
+                    <p className="mt-1 text-sm text-zinc-400">{step.desc}</p>
                   </div>
                 ))}
               </div>
@@ -583,7 +583,7 @@ export default function Usb128() {
                 <Button
                   onClick={() => openOrder("usb128_how_buy")}
                   disabled={isSubmitting}
-                  className="btn-primary-glow h-11 px-6 text-sm font-black"
+                  className="btn-primary-glow h-11 px-6 font-bebas text-lg uppercase tracking-wide"
                 >
                   {isSubmitting && lastAttempt?.ctaId === "usb128_how_buy" ? (
                     <>
@@ -598,12 +598,12 @@ export default function Usb128() {
               {renderCheckoutFeedback("usb128_how_buy")}
             </article>
 
-            <article className="rounded-3xl border border-[#5E5E5E] bg-[#111111] p-6 text-[#EFEFEF] shadow-[0_18px_40px_rgba(0,0,0,0.45)] md:p-8">
+            <article className="rounded-2xl border border-[#5E5E5E] bg-[#111111] p-6 text-[#EFEFEF] shadow-[0_18px_40px_rgba(0,0,0,0.45)] md:p-8">
               <Badge className="border-[#AA0202]/40 bg-[#AA0202]/15 px-3 py-1 text-[11px] font-bold text-yellow-300">
                 <Star className="mr-1.5 h-3 w-3 fill-yellow-400 text-yellow-400" />
                 {isSpanish ? "+7,000 DJs CONFÍAN EN NOSOTROS" : "+7,000 DJs TRUST US"}
               </Badge>
-              <h2 className="mt-3 text-3xl font-black leading-tight md:text-4xl">
+              <h2 className="mt-3 font-bebas text-3xl uppercase leading-tight md:text-4xl">
                 {isSpanish ? "DJs reales, resultados reales" : "Real DJs, real outcomes"}
               </h2>
 
@@ -611,12 +611,12 @@ export default function Usb128() {
                 {whatsappProofMessages.map((msg) => (
                   <div key={msg.id} className="rounded-xl border border-[#5E5E5E] bg-[#070707] p-4">
                     <p className="text-sm text-[#EFEFEF]">{msg.text}</p>
-                    <p className="mt-2 text-right text-[10px] text-muted-foreground">✓✓</p>
+                    <p className="mt-2 text-right text-[10px] text-zinc-400">✓✓</p>
                   </div>
                 ))}
               </div>
 
-              <p className="mt-4 text-center text-xs text-muted-foreground">
+              <p className="mt-4 text-center text-xs text-zinc-400">
                 {isSpanish ? "Mensajes reales de DJs. Sin inventos." : "Real DJ messages. No fake reviews."}
               </p>
 
@@ -624,7 +624,7 @@ export default function Usb128() {
                 {socialStats.map((stat) => (
                   <div key={stat.label} className="rounded-xl border border-[#5E5E5E] bg-[#070707] p-2 text-center">
                     <p className="text-lg font-black text-[#EFEFEF]">{stat.value}</p>
-                    <p className="text-[10px] uppercase tracking-[0.07em] text-muted-foreground">{stat.label}</p>
+                    <p className="text-[10px] uppercase tracking-[0.07em] text-zinc-400">{stat.label}</p>
                   </div>
                 ))}
               </div>
@@ -632,7 +632,7 @@ export default function Usb128() {
               <Button
                 onClick={() => openOrder("usb128_social_buy")}
                 disabled={isSubmitting}
-                className="btn-primary-glow mt-6 h-11 w-full text-sm font-black"
+                className="btn-primary-glow mt-6 h-11 w-full font-bebas text-lg uppercase tracking-wide"
               >
                 {isSubmitting && lastAttempt?.ctaId === "usb128_social_buy" ? (
                   <>
@@ -651,11 +651,11 @@ export default function Usb128() {
 
       <section className="py-10 md:py-16">
         <div className="container mx-auto max-w-4xl px-4">
-          <div className="rounded-3xl border border-[#5E5E5E] bg-[#111111] p-6 shadow-[0_14px_34px_rgba(0,0,0,0.45)] md:p-8">
-            <h2 className="text-center text-3xl font-black text-[#EFEFEF] md:text-4xl">
+          <div className="rounded-2xl border border-[#5E5E5E] bg-[#111111] p-6 shadow-[0_14px_34px_rgba(0,0,0,0.45)] md:p-8">
+            <h2 className="text-center font-bebas text-3xl uppercase text-[#EFEFEF] md:text-4xl">
               {isSpanish ? "Preguntas frecuentes" : "Frequently asked questions"}
             </h2>
-            <p className="mt-2 text-center text-sm text-muted-foreground">
+            <p className="mt-2 text-center text-sm text-zinc-400">
               {isSpanish
                 ? "Respuestas directas a objeciones reales antes de pagar."
                 : "Direct answers to real objections before checkout."}
@@ -685,18 +685,18 @@ export default function Usb128() {
 
       <section className="pb-28 pt-4 md:pb-16">
         <div className="container mx-auto max-w-4xl px-4">
-          <div className="rounded-3xl border border-[#5E5E5E] bg-[#111111] p-6 text-[#EFEFEF] shadow-[0_20px_45px_rgba(0,0,0,0.45)] md:p-8">
+          <div className="rounded-2xl border border-[#5E5E5E] bg-[#111111] p-6 text-[#EFEFEF] shadow-[0_20px_45px_rgba(0,0,0,0.45)] md:p-8">
             <div className="grid gap-6 md:grid-cols-[1.1fr_0.9fr] md:items-center">
               <div>
                 <p className="text-xs font-bold uppercase tracking-[0.12em] text-[#AA0202]">
                   {isSpanish ? "Cierre" : "Final step"}
                 </p>
-                <h2 className="mt-2 text-3xl font-black leading-tight md:text-4xl">
+                <h2 className="mt-2 font-bebas text-3xl uppercase leading-tight md:text-4xl">
                   {isSpanish
                     ? "¿Listo para dejar de buscar música en 5 pools?"
                     : "Ready to stop searching in 5 different pools?"}
                 </h2>
-                <p className="mt-3 text-sm text-muted-foreground">
+                <p className="mt-3 text-sm text-zinc-400">
                   {isSpanish
                     ? "Oferta USB 128GB: $147 USD, envío gratis USA y soporte en español."
                     : "USB 128GB offer: $147 USD, free USA shipping, and Spanish support."}
@@ -707,7 +707,7 @@ export default function Usb128() {
                 <Button
                   onClick={() => openOrder("usb128_final_buy")}
                   disabled={isSubmitting}
-                  className="btn-primary-glow h-12 w-full text-base font-black"
+                  className="btn-primary-glow h-12 w-full font-bebas text-xl uppercase tracking-wide"
                 >
                   {isSubmitting && lastAttempt?.ctaId === "usb128_final_buy" ? (
                     <>
@@ -719,7 +719,7 @@ export default function Usb128() {
                   )}
                 </Button>
                 {renderCheckoutFeedback("usb128_final_buy")}
-                <p className="mt-3 text-center text-xs text-muted-foreground">
+                <p className="mt-3 text-center text-xs text-zinc-400">
                   {isSpanish
                     ? "Al continuar, te enviaremos confirmación y seguimiento por email."
                     : "By continuing, we’ll send confirmation and tracking by email."}

@@ -280,13 +280,13 @@ export default function Membresia() {
           </div>
 
           <div className="mt-12 grid gap-10 md:grid-cols-2 md:items-start">
-            <article className="rounded-3xl border border-[#5E5E5E] bg-[#111111] p-8 md:p-10">
-              <h1 className="text-4xl font-black leading-[0.92] md:text-5xl">
+            <article className="rounded-2xl border border-[#5E5E5E] bg-[#111111] p-8 md:p-10">
+              <h1 className="font-bebas text-4xl uppercase leading-[0.92] md:text-5xl">
                 {isSpanish
                   ? <>La <span className="text-[#AA0202]">Membresía DJ Latina</span> #1</>
                   : <>The #1 <span className="text-[#AA0202]">Latino DJ Membership</span></>}
               </h1>
-              <p className="mt-4 text-2xl font-black leading-[0.95] md:text-3xl">
+              <p className="mt-4 font-bebas text-2xl uppercase leading-[0.95] md:text-3xl">
                 {isSpanish
                   ? "música organizada, actualizada y lista para romper la pista."
                   : "organized, updated music ready to rock the floor."}
@@ -324,14 +324,14 @@ export default function Membresia() {
               </ul>
 
               <div className="mt-8 grid gap-3 sm:grid-cols-2">
-                <Button asChild className="btn-primary-glow h-12 text-base font-black">
+                <Button asChild className="btn-primary-glow h-12 font-bebas text-xl uppercase tracking-wide">
                   <Link to="/explorer">
                     <Headphones className="mr-2 h-5 w-5" />
                     {isSpanish ? "Escuchar demos" : "Listen to demos"}
                   </Link>
                 </Button>
                 <div className="grid gap-3">
-                  <Button className="btn-primary-glow h-12 text-base font-black" disabled={isSubmitting}
+                  <Button className="btn-primary-glow h-12 font-bebas text-xl uppercase tracking-wide" disabled={isSubmitting}
                     onClick={() => void openJoin(selectedPlan, "membresia_hero_adquiere")}>
                     {isSubmitting && lastAttempt?.ctaId === "membresia_hero_adquiere" ? (
                       <><Loader2 className="mr-2 h-4 w-4 animate-spin" />{isSpanish ? "Cargando..." : "Loading..."}</>
@@ -349,7 +349,7 @@ export default function Membresia() {
               </p>
             </article>
 
-            <article className="rounded-3xl border border-[#5E5E5E] bg-[#111111] p-8 md:p-10">
+            <article className="rounded-2xl border border-[#5E5E5E] bg-[#111111] p-8 md:p-10">
               <p className="text-sm font-semibold text-zinc-400">
                 {isSpanish ? "🎧 Todo lo que un DJ latino necesita, en un solo lugar" : "🎧 Everything a Latino DJ needs, in one place"}
               </p>
@@ -373,7 +373,7 @@ export default function Membresia() {
               </div>
 
               <div className="mt-10">
-                <Button asChild className="btn-primary-glow h-12 w-full text-base font-black">
+                <Button asChild className="btn-primary-glow h-12 w-full font-bebas text-xl uppercase tracking-wide">
                   <Link to="/explorer">
                     <Headphones className="mr-2 h-5 w-5" />
                     {isSpanish ? "Escuchar demos" : "Listen to demos"}
@@ -388,12 +388,12 @@ export default function Membresia() {
       {/* ── Social proof (3×3 grid) ── */}
       <section className="py-14 md:py-20">
         <div className="container mx-auto max-w-6xl px-4">
-          <article className="rounded-3xl border border-[#5E5E5E] bg-[#111111] p-6 md:p-8">
+          <article className="rounded-2xl border border-[#5E5E5E] bg-[#111111] p-6 md:p-8">
             <Badge className="border-[#AA0202]/40 bg-[#AA0202]/15 px-3 py-1 text-[11px] font-bold text-yellow-300">
               <Star className="mr-1.5 h-3 w-3 fill-yellow-400 text-yellow-400" />
               {isSpanish ? "+4,800 DJs CONFÍAN EN NOSOTROS" : "+4,800 DJs TRUST US"}
             </Badge>
-            <h2 className="mt-3 text-3xl font-black leading-tight md:text-4xl">
+            <h2 className="mt-3 font-bebas text-3xl uppercase leading-tight md:text-4xl">
               {isSpanish ? "DJs reales. Resultados reales." : "Real DJs. Real results."}
             </h2>
 
@@ -413,7 +413,7 @@ export default function Membresia() {
             <div className="mt-6 flex justify-center">
               <Button onClick={() => void openJoin(selectedPlan, "membresia_socialproof_adquiere")}
                 disabled={isSubmitting}
-                className="btn-primary-glow h-12 w-full max-w-2xl text-base font-black md:h-14 md:text-lg">
+                className="btn-primary-glow h-12 w-full max-w-2xl font-bebas text-xl uppercase tracking-wide md:h-14 md:text-lg">
                 {isSubmitting && lastAttempt?.ctaId === "membresia_socialproof_adquiere" ? (
                   <><Loader2 className="mr-2 h-4 w-4 animate-spin" />{isSpanish ? "Cargando..." : "Loading..."}</>
                 ) : (
@@ -430,7 +430,7 @@ export default function Membresia() {
       <section className="py-14 md:py-20">
         <div className="container mx-auto max-w-6xl px-4">
           <div className="text-center">
-            <h2 className="text-3xl font-black leading-tight md:text-4xl">
+            <h2 className="font-bebas text-3xl uppercase leading-tight md:text-4xl">
               {isSpanish
                 ? <>Escoge el plan que <span className="text-[#AA0202]">mejor</span> se adapte a tus necesidades</>
                 : <>Choose the plan that <span className="text-[#AA0202]">best</span> fits your needs</>}
@@ -445,8 +445,8 @@ export default function Membresia() {
           <div className={cn("mt-10 grid gap-6", useStackedPricingLayout ? "mx-auto max-w-3xl grid-cols-1" : "md:grid-cols-3")}>
 
             {/* Plan 1TB */}
-            <article className={cn("rounded-3xl border border-[#5E5E5E] bg-[#111111] p-8 md:p-10", useStackedPricingLayout ? "order-3" : "order-none")}>
-              <p className="text-2xl font-black">{PLAN_DETAILS.plan_1tb_mensual.label}</p>
+            <article className={cn("rounded-2xl border border-[#5E5E5E] bg-[#111111] p-8 md:p-10", useStackedPricingLayout ? "order-3" : "order-none")}>
+              <p className="font-bebas text-2xl uppercase">{PLAN_DETAILS.plan_1tb_mensual.label}</p>
               <p className="mt-2 text-sm font-semibold text-zinc-400">{PLAN_DETAILS.plan_1tb_mensual.priceLabel}</p>
               <ul className="mt-6 space-y-3 text-sm text-zinc-400 md:text-base">
                 {[
@@ -463,7 +463,7 @@ export default function Membresia() {
               </ul>
               <div className="mt-8">
                 <Button onClick={() => handlePlanClick("plan_1tb_mensual", "membresia_plan_1tb")}
-                  disabled={isSubmitting} className="btn-primary-glow h-12 w-full text-base font-black">
+                  disabled={isSubmitting} className="btn-primary-glow h-12 w-full font-bebas text-xl uppercase tracking-wide">
                   {isSubmitting && lastAttempt?.ctaId === "membresia_plan_1tb" ? (
                     <><Loader2 className="mr-2 h-4 w-4 animate-spin" />{isSpanish ? "Cargando..." : "Loading..."}</>
                   ) : (
@@ -475,9 +475,9 @@ export default function Membresia() {
             </article>
 
             {/* Plan Trimestral */}
-            <article className={cn("rounded-3xl border border-[#5E5E5E] bg-[#111111] p-8 md:p-10", useStackedPricingLayout ? "order-2" : "order-none")}>
+            <article className={cn("rounded-2xl border border-[#5E5E5E] bg-[#111111] p-8 md:p-10", useStackedPricingLayout ? "order-2" : "order-none")}>
               <div className="flex flex-wrap items-center justify-between gap-3">
-                <p className="text-2xl font-black">{PLAN_DETAILS.plan_1tb_trimestral.label}</p>
+                <p className="font-bebas text-2xl uppercase">{PLAN_DETAILS.plan_1tb_trimestral.label}</p>
                 <Badge className="border-[#AA0202]/40 bg-[#AA0202]/15 px-2 py-0.5 text-[10px] font-bold text-[#ff6b6b]">
                   {isSpanish ? "Menos fricción" : "Less friction"}
                 </Badge>
@@ -501,7 +501,7 @@ export default function Membresia() {
               </ul>
               <div className="mt-8">
                 <Button onClick={() => handlePlanClick("plan_1tb_trimestral", "membresia_plan_1tb_trimestral")}
-                  disabled={isSubmitting} className="btn-primary-glow h-12 w-full text-base font-black">
+                  disabled={isSubmitting} className="btn-primary-glow h-12 w-full font-bebas text-xl uppercase tracking-wide">
                   {isSubmitting && lastAttempt?.ctaId === "membresia_plan_1tb_trimestral" ? (
                     <><Loader2 className="mr-2 h-4 w-4 animate-spin" />{isSpanish ? "Cargando..." : "Loading..."}</>
                   ) : (
@@ -514,13 +514,13 @@ export default function Membresia() {
 
             {/* Plan 2TB (Recommended) */}
             <article className={cn(
-              "rounded-3xl border bg-[#111111] p-8 md:p-10",
+              "rounded-2xl border bg-[#111111] p-8 md:p-10",
               useStackedPricingLayout
                 ? "order-1 border-[#AA0202]/50 ring-1 ring-[#AA0202]/30 shadow-[0_0_30px_rgba(170,2,2,0.15)]"
                 : "order-none border-[#5E5E5E]"
             )}>
               <div className="flex flex-wrap items-center justify-between gap-3">
-                <p className="text-2xl font-black">{PLAN_DETAILS.plan_2tb_anual.label}</p>
+                <p className="font-bebas text-2xl uppercase">{PLAN_DETAILS.plan_2tb_anual.label}</p>
                 <Badge className="border-[#AA0202]/40 bg-[#AA0202]/15 px-3 py-1 text-[11px] font-bold text-yellow-300">
                   <Star className="mr-1 h-3 w-3 fill-yellow-400 text-yellow-400" />
                   {isSpanish ? "RECOMENDADO" : "RECOMMENDED"}
@@ -542,7 +542,7 @@ export default function Membresia() {
               </ul>
               <div className="mt-8">
                 <Button onClick={() => handlePlanClick("plan_2tb_anual", "membresia_plan_2tb")}
-                  disabled={isSubmitting} className="btn-primary-glow h-12 w-full text-base font-black">
+                  disabled={isSubmitting} className="btn-primary-glow h-12 w-full font-bebas text-xl uppercase tracking-wide">
                   {isSubmitting && lastAttempt?.ctaId === "membresia_plan_2tb" ? (
                     <><Loader2 className="mr-2 h-4 w-4 animate-spin" />{isSpanish ? "Cargando..." : "Loading..."}</>
                   ) : (
@@ -563,7 +563,7 @@ export default function Membresia() {
           </div>
 
           <div className="mt-10 flex justify-center">
-            <Button asChild className="btn-primary-glow h-12 w-full max-w-2xl text-base font-black md:h-14 md:text-lg">
+            <Button asChild className="btn-primary-glow h-12 w-full max-w-2xl font-bebas text-xl uppercase tracking-wide md:h-14 md:text-lg">
               <Link to="/explorer">
                 <Headphones className="mr-2 h-5 w-5" />
                 {isSpanish ? "Escuchar demos primero" : "Listen to demos first"}
@@ -577,14 +577,14 @@ export default function Membresia() {
       <section className="py-14 md:py-20">
         <div className="container mx-auto max-w-4xl px-4">
           <div className="text-center">
-            <h2 className="text-3xl font-black leading-tight md:text-4xl">
+            <h2 className="font-bebas text-3xl uppercase leading-tight md:text-4xl">
               {isSpanish
                 ? <><span className="text-[#AA0202]">Preguntas</span> Frecuentes</>
                 : <>Frequently Asked <span className="text-[#AA0202]">Questions</span></>}
             </h2>
           </div>
 
-          <div className="mt-10 rounded-3xl border border-[#5E5E5E] bg-[#111111] p-6">
+          <div className="mt-10 rounded-2xl border border-[#5E5E5E] bg-[#111111] p-6">
             <Accordion type="single" collapsible className="w-full">
               <AccordionItem value="item-1">
                 <AccordionTrigger>{isSpanish ? "¿Puedo cancelar cuando quiera?" : "Can I cancel anytime?"}</AccordionTrigger>
@@ -614,7 +614,7 @@ export default function Membresia() {
           <div className="mt-10 flex justify-center">
             <Button onClick={() => void openJoin(selectedPlan, "membresia_faq_adquiere")}
               disabled={isSubmitting}
-              className="btn-primary-glow h-12 w-full max-w-2xl text-base font-black md:h-14 md:text-lg">
+              className="btn-primary-glow h-12 w-full max-w-2xl font-bebas text-xl uppercase tracking-wide md:h-14 md:text-lg">
               {isSubmitting && lastAttempt?.ctaId === "membresia_faq_adquiere" ? (
                 <><Loader2 className="mr-2 h-4 w-4 animate-spin" />{isSpanish ? "Cargando..." : "Loading..."}</>
               ) : (
