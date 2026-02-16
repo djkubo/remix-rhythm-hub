@@ -7,8 +7,10 @@ import {
   Loader2,
   Package,
   ShieldCheck,
+  Star,
   Truck,
   Usb,
+  Zap,
 } from "lucide-react";
 
 import Footer from "@/components/Footer";
@@ -130,6 +132,12 @@ export default function Usb128() {
       { id: "usb-wp-1", text: "Ya lo compré bro, ya hasta me llegó. Saludos!" },
       { id: "usb-wp-2", text: "Muy buena música, todo más ordenado para mis eventos." },
       { id: "usb-wp-3", text: "Excelente, me ahorró horas de búsqueda cada semana." },
+      { id: "usb-wp-4", text: "La USB llegó en 3 días. Todo funciona perfecto en Serato." },
+      { id: "usb-wp-5", text: "10,000 canciones organizadas por género, no encontré nada así en otro lado." },
+      { id: "usb-wp-6", text: "Compré la USB para mi quinceañera y el DJ quedó feliz. Todo listo." },
+      { id: "usb-wp-7", text: "Soy DJ de bodas y esta USB me salvó. Tiene de todo, cumbia, salsa, bachata." },
+      { id: "usb-wp-8", text: "Mejor que andar buscando canción por canción. Vale cada centavo." },
+      { id: "usb-wp-9", text: "La conecté a VirtualDJ y todo cargó al instante. Plug & play real." },
     ],
     []
   );
@@ -336,7 +344,17 @@ export default function Usb128() {
                   : "+10,000 MP3 320 kbps songs, genre-organized for Latino DJs in the United States."}
               </p>
 
-              <div className="mt-6 flex flex-wrap items-center gap-2">
+              {/* Value anchoring */}
+              <div className="mt-5 flex items-center gap-3">
+                <span className="text-sm text-zinc-400 line-through decoration-[#AA0202] decoration-2">
+                  {isSpanish ? "$300+ USD en apps y pools separados" : "$300+ USD in separate apps & pools"}
+                </span>
+                <Badge className="border-[#AA0202]/50 bg-[#AA0202]/15 px-2 py-0.5 text-[10px] font-bold text-[#ff6b6b]">
+                  {isSpanish ? "AHORRA 50%+" : "SAVE 50%+"}
+                </Badge>
+              </div>
+
+              <div className="mt-3 flex flex-wrap items-center gap-2">
                 {[
                   isSpanish ? "Pago único" : "One-time payment",
                   "$147 USD",
@@ -351,54 +369,54 @@ export default function Usb128() {
                 ))}
               </div>
 
-	              <div className="mt-6 flex flex-col gap-3 sm:flex-row">
-	                <Button
-	                  id={BUY_ANCHOR_ID}
-	                  onClick={() => openOrder("usb128_hero_buy")}
-	                  disabled={isSubmitting}
-	                  className="btn-primary-glow h-12 px-8 text-base font-black"
-	                >
-	                  {isSubmitting && lastAttempt?.ctaId === "usb128_hero_buy" ? (
-	                    <>
-	                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-	                      {isSpanish ? "Cargando checkout seguro..." : "Loading secure checkout..."}
-	                    </>
-	                  ) : (
-	                    <>
-	                      {isSpanish ? "Comprar USB 128GB" : "Buy USB 128GB"}
-	                      <ArrowRight className="ml-2 h-4 w-4" />
-	                    </>
-	                  )}
-	                </Button>
-	                <Button
-	                  onClick={() => openOrderPayPal("usb128_hero_buy_paypal")}
-	                  disabled={isSubmitting}
-	                  variant="outline"
-	                  className="h-12 px-8 text-base font-black"
-	                >
-	                  {isSubmitting ? (
-	                    <>
-	                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-	                      {isSpanish ? "Cargando PayPal..." : "Loading PayPal..."}
-	                    </>
-	                  ) : (
-	                    <>
-	                      <CreditCard className="mr-2 h-4 w-4 text-primary" />
-	                      {isSpanish ? "Pagar con PayPal" : "Pay with PayPal"}
-	                    </>
-	                  )}
-	                </Button>
-	              </div>
+              <div className="mt-6 flex flex-col gap-3 sm:flex-row">
+                <Button
+                  id={BUY_ANCHOR_ID}
+                  onClick={() => openOrder("usb128_hero_buy")}
+                  disabled={isSubmitting}
+                  className="btn-primary-glow h-12 px-8 text-base font-black"
+                >
+                  {isSubmitting && lastAttempt?.ctaId === "usb128_hero_buy" ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      {isSpanish ? "Cargando checkout seguro..." : "Loading secure checkout..."}
+                    </>
+                  ) : (
+                    <>
+                      {isSpanish ? "Comprar USB 128GB" : "Buy USB 128GB"}
+                      <ArrowRight className="ml-2 h-4 w-4" />
+                    </>
+                  )}
+                </Button>
+                <Button
+                  onClick={() => openOrderPayPal("usb128_hero_buy_paypal")}
+                  disabled={isSubmitting}
+                  variant="outline"
+                  className="h-12 px-8 text-base font-black"
+                >
+                  {isSubmitting ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      {isSpanish ? "Cargando PayPal..." : "Loading PayPal..."}
+                    </>
+                  ) : (
+                    <>
+                      <CreditCard className="mr-2 h-4 w-4 text-primary" />
+                      {isSpanish ? "Pagar con PayPal" : "Pay with PayPal"}
+                    </>
+                  )}
+                </Button>
+              </div>
 
-                {renderCheckoutFeedback("usb128_hero_buy")}
-                {renderCheckoutFeedback("usb128_hero_buy_paypal")}
+              {renderCheckoutFeedback("usb128_hero_buy")}
+              {renderCheckoutFeedback("usb128_hero_buy_paypal")}
 
-                <div className="mt-4 rounded-xl border border-yellow-500/35 bg-yellow-500/10 px-4 py-3 text-center text-sm font-semibold text-yellow-200">
-                  <span className="mr-1.5">⚡</span>
-                  {isSpanish
-                    ? "Stock limitado: Pídelo en las próximas 2 horas y se envía HOY mismo."
-                    : "Limited stock: Order within 2 hours and it ships TODAY."}
-                </div>
+              <div className="mt-4 rounded-xl border border-yellow-500/35 bg-yellow-500/10 px-4 py-3 text-center text-sm font-semibold text-yellow-200">
+                <span className="mr-1.5">⚡</span>
+                {isSpanish
+                  ? "Stock limitado: Pídelo en las próximas 2 horas y se envía HOY mismo."
+                  : "Limited stock: Order within 2 hours and it ships TODAY."}
+              </div>
 
               <div className="mt-5 flex flex-wrap gap-2">
                 {paymentBadges.map((label) => (
@@ -455,44 +473,59 @@ export default function Usb128() {
                   </li>
                 </ul>
 
-	                <div className="mt-4 grid gap-3 sm:grid-cols-2">
-	                  <Button
-	                    onClick={() => openOrder("usb128_product_card_buy")}
-	                    disabled={isSubmitting}
-	                    className="btn-primary-glow h-11 w-full text-sm font-black"
-	                  >
-	                    {isSubmitting && lastAttempt?.ctaId === "usb128_product_card_buy" ? (
-	                      <>
-	                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-	                        {isSpanish ? "Cargando checkout seguro..." : "Loading secure checkout..."}
-	                      </>
-	                    ) : (
-	                      isSpanish ? "Asegurar mi USB" : "Secure my USB"
-	                    )}
-	                  </Button>
-	                  <Button
-	                    onClick={() => openOrderPayPal("usb128_product_card_buy_paypal")}
-	                    disabled={isSubmitting}
-	                    variant="outline"
-	                    className="h-11 w-full text-sm font-black"
-	                  >
-	                    {isSubmitting ? (
-	                      <>
-	                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-	                        {isSpanish ? "Cargando PayPal..." : "Loading PayPal..."}
-	                      </>
-	                    ) : (
-	                      <>
-	                        <CreditCard className="mr-2 h-4 w-4 text-primary" />
-	                        {isSpanish ? "PayPal" : "PayPal"}
-	                      </>
-	                    )}
-	                  </Button>
-	                </div>
+                <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                  <Button
+                    onClick={() => openOrder("usb128_product_card_buy")}
+                    disabled={isSubmitting}
+                    className="btn-primary-glow h-11 w-full text-sm font-black"
+                  >
+                    {isSubmitting && lastAttempt?.ctaId === "usb128_product_card_buy" ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        {isSpanish ? "Cargando checkout seguro..." : "Loading secure checkout..."}
+                      </>
+                    ) : (
+                      isSpanish ? "Asegurar mi USB" : "Secure my USB"
+                    )}
+                  </Button>
+                  <Button
+                    onClick={() => openOrderPayPal("usb128_product_card_buy_paypal")}
+                    disabled={isSubmitting}
+                    variant="outline"
+                    className="h-11 w-full text-sm font-black"
+                  >
+                    {isSubmitting ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        {isSpanish ? "Cargando PayPal..." : "Loading PayPal..."}
+                      </>
+                    ) : (
+                      <>
+                        <CreditCard className="mr-2 h-4 w-4 text-primary" />
+                        {isSpanish ? "PayPal" : "PayPal"}
+                      </>
+                    )}
+                  </Button>
+                </div>
 
-                  {renderCheckoutFeedback("usb128_product_card_buy")}
-                  {renderCheckoutFeedback("usb128_product_card_buy_paypal")}
-	              </div>
+                {renderCheckoutFeedback("usb128_product_card_buy")}
+                {renderCheckoutFeedback("usb128_product_card_buy_paypal")}
+              </div>
+
+              {/* Standalone guarantee badge */}
+              <div className="mt-4 flex items-center gap-3 rounded-xl border border-green-500/30 bg-green-500/10 px-4 py-3">
+                <ShieldCheck className="h-6 w-6 shrink-0 text-green-400" />
+                <div>
+                  <p className="text-sm font-bold text-green-300">
+                    {isSpanish ? "Garantía Plug & Play 100%" : "100% Plug & Play Guarantee"}
+                  </p>
+                  <p className="text-xs text-green-300/70">
+                    {isSpanish
+                      ? "Conecta y funciona al instante, o te devolvemos tu dinero."
+                      : "Plug in and it works instantly, or your money back."}
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -505,12 +538,12 @@ export default function Usb128() {
             ))}
           </div>
         </div>
-	      </section>
+      </section>
 
-	      <section className="py-10 md:py-16">
-	        <div className="container mx-auto max-w-6xl px-4">
-	          <div className="grid gap-6 lg:grid-cols-[1.05fr_0.95fr]">
-	            <article className="rounded-3xl border border-[#5E5E5E] bg-[#111111] p-6 shadow-[0_14px_34px_rgba(0,0,0,0.45)] md:p-8">
+      <section className="py-10 md:py-16">
+        <div className="container mx-auto max-w-6xl px-4">
+          <div className="grid gap-6 lg:grid-cols-[1.05fr_0.95fr]">
+            <article className="rounded-3xl border border-[#5E5E5E] bg-[#111111] p-6 shadow-[0_14px_34px_rgba(0,0,0,0.45)] md:p-8">
               <p className="text-xs font-bold uppercase tracking-[0.12em] text-[#AA0202]">
                 {isSpanish ? "Cómo funciona" : "How it works"}
               </p>
@@ -546,39 +579,46 @@ export default function Usb128() {
                 ))}
               </div>
 
-	              <div className="mt-6 flex flex-col gap-3 sm:flex-row">
-	                <Button
-	                  onClick={() => openOrder("usb128_how_buy")}
-	                  disabled={isSubmitting}
-	                  className="btn-primary-glow h-11 px-6 text-sm font-black"
-	                >
-	                  {isSubmitting && lastAttempt?.ctaId === "usb128_how_buy" ? (
-	                    <>
-	                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-	                      {isSpanish ? "Cargando checkout seguro..." : "Loading secure checkout..."}
-	                    </>
-	                  ) : (
-	                    isSpanish ? "Continuar compra" : "Continue purchase"
-	                  )}
-	                </Button>
-	              </div>
-                {renderCheckoutFeedback("usb128_how_buy")}
-	            </article>
+              <div className="mt-6 flex flex-col gap-3 sm:flex-row">
+                <Button
+                  onClick={() => openOrder("usb128_how_buy")}
+                  disabled={isSubmitting}
+                  className="btn-primary-glow h-11 px-6 text-sm font-black"
+                >
+                  {isSubmitting && lastAttempt?.ctaId === "usb128_how_buy" ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      {isSpanish ? "Cargando checkout seguro..." : "Loading secure checkout..."}
+                    </>
+                  ) : (
+                    isSpanish ? "Continuar compra" : "Continue purchase"
+                  )}
+                </Button>
+              </div>
+              {renderCheckoutFeedback("usb128_how_buy")}
+            </article>
 
             <article className="rounded-3xl border border-[#5E5E5E] bg-[#111111] p-6 text-[#EFEFEF] shadow-[0_18px_40px_rgba(0,0,0,0.45)] md:p-8">
-              <p className="text-xs font-bold uppercase tracking-[0.12em] text-[#AA0202]">
-                {isSpanish ? "Prueba social" : "Social proof"}
-              </p>
-              <h2 className="mt-2 text-3xl font-black leading-tight md:text-4xl">
+              <Badge className="border-[#AA0202]/40 bg-[#AA0202]/15 px-3 py-1 text-[11px] font-bold text-yellow-300">
+                <Star className="mr-1.5 h-3 w-3 fill-yellow-400 text-yellow-400" />
+                {isSpanish ? "+7,000 DJs CONFÍAN EN NOSOTROS" : "+7,000 DJs TRUST US"}
+              </Badge>
+              <h2 className="mt-3 text-3xl font-black leading-tight md:text-4xl">
                 {isSpanish ? "DJs reales, resultados reales" : "Real DJs, real outcomes"}
               </h2>
 
-              <div className="mt-5">
-                <WhatsAppProof messages={whatsappProofMessages} className="max-w-xl" />
-                <p className="mt-4 text-center text-xs text-muted-foreground">
-                  {isSpanish ? "Mensajes reales de DJs. Sin inventos." : "Real DJ messages. No fake reviews."}
-                </p>
+              <div className="mt-5 grid gap-3 sm:grid-cols-3">
+                {whatsappProofMessages.map((msg) => (
+                  <div key={msg.id} className="rounded-xl border border-[#5E5E5E] bg-[#070707] p-4">
+                    <p className="text-sm text-[#EFEFEF]">{msg.text}</p>
+                    <p className="mt-2 text-right text-[10px] text-muted-foreground">✓✓</p>
+                  </div>
+                ))}
               </div>
+
+              <p className="mt-4 text-center text-xs text-muted-foreground">
+                {isSpanish ? "Mensajes reales de DJs. Sin inventos." : "Real DJ messages. No fake reviews."}
+              </p>
 
               <div className="mt-5 grid grid-cols-3 gap-2">
                 {socialStats.map((stat) => (
@@ -589,22 +629,22 @@ export default function Usb128() {
                 ))}
               </div>
 
-	              <Button
-	                onClick={() => openOrder("usb128_social_buy")}
-	                disabled={isSubmitting}
-	                className="btn-primary-glow mt-6 h-11 w-full text-sm font-black"
-	              >
-	                {isSubmitting && lastAttempt?.ctaId === "usb128_social_buy" ? (
-	                  <>
-	                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-	                    {isSpanish ? "Cargando checkout seguro..." : "Loading secure checkout..."}
-	                  </>
-	                ) : (
-	                  isSpanish ? "Comprar ahora" : "Buy now"
-	                )}
-	              </Button>
-                {renderCheckoutFeedback("usb128_social_buy")}
-	            </article>
+              <Button
+                onClick={() => openOrder("usb128_social_buy")}
+                disabled={isSubmitting}
+                className="btn-primary-glow mt-6 h-11 w-full text-sm font-black"
+              >
+                {isSubmitting && lastAttempt?.ctaId === "usb128_social_buy" ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    {isSpanish ? "Cargando checkout seguro..." : "Loading secure checkout..."}
+                  </>
+                ) : (
+                  isSpanish ? "Comprar ahora" : "Buy now"
+                )}
+              </Button>
+              {renderCheckoutFeedback("usb128_social_buy")}
+            </article>
           </div>
         </div>
       </section>
@@ -663,28 +703,28 @@ export default function Usb128() {
                 </p>
               </div>
 
-	              <div>
-	                <Button
-	                  onClick={() => openOrder("usb128_final_buy")}
-	                  disabled={isSubmitting}
-	                  className="btn-primary-glow h-12 w-full text-base font-black"
-	                >
-	                  {isSubmitting && lastAttempt?.ctaId === "usb128_final_buy" ? (
-	                    <>
-	                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-	                      {isSpanish ? "Cargando checkout seguro..." : "Loading secure checkout..."}
-	                    </>
-	                  ) : (
-	                    isSpanish ? "Comprar USB por $147" : "Buy USB for $147"
-	                  )}
-	                </Button>
-                  {renderCheckoutFeedback("usb128_final_buy")}
-	                <p className="mt-3 text-center text-xs text-muted-foreground">
-	                  {isSpanish
-	                    ? "Al continuar, te enviaremos confirmación y seguimiento por email."
-	                    : "By continuing, we’ll send confirmation and tracking by email."}
-	                </p>
-	              </div>
+              <div>
+                <Button
+                  onClick={() => openOrder("usb128_final_buy")}
+                  disabled={isSubmitting}
+                  className="btn-primary-glow h-12 w-full text-base font-black"
+                >
+                  {isSubmitting && lastAttempt?.ctaId === "usb128_final_buy" ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      {isSpanish ? "Cargando checkout seguro..." : "Loading secure checkout..."}
+                    </>
+                  ) : (
+                    isSpanish ? "Comprar USB por $147" : "Buy USB for $147"
+                  )}
+                </Button>
+                {renderCheckoutFeedback("usb128_final_buy")}
+                <p className="mt-3 text-center text-xs text-muted-foreground">
+                  {isSpanish
+                    ? "Al continuar, te enviaremos confirmación y seguimiento por email."
+                    : "By continuing, we’ll send confirmation and tracking by email."}
+                </p>
+              </div>
             </div>
           </div>
         </div>
