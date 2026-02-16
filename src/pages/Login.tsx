@@ -9,16 +9,13 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { useTheme } from "@/contexts/ThemeContext";
 import { checkEmailAvailability, loginWithEmail } from "@/lib/productionApi";
 import logoWhite from "@/assets/logo-white.png";
-import logoDark from "@/assets/logo-dark.png";
 
 type Step = "email" | "password" | "success";
 
 export default function Login() {
   const { language } = useLanguage();
-  const { theme } = useTheme();
 
   const isSpanish = language === "es";
 
@@ -103,7 +100,7 @@ export default function Login() {
   };
 
   return (
-    <main className="brand-frame min-h-screen bg-background">
+    <main className="brand-frame min-h-screen bg-[#070707]">
       <section className="relative overflow-hidden py-16">
         <div className="absolute inset-x-0 top-0 h-1.5 bg-gradient-to-r from-[#1a1a1a] via-[#AA0202] to-[#1a1a1a]" />
 
@@ -111,23 +108,23 @@ export default function Login() {
           <div className="mb-10 flex justify-center">
             <Link to="/">
               <img
-                src={theme === "dark" ? logoWhite : logoDark}
+                src={logoWhite}
                 alt="VideoRemixesPack"
                 className="h-12 w-auto object-contain"
               />
             </Link>
           </div>
 
-          <div className="mx-auto max-w-2xl rounded-2xl border border-border/60 bg-card p-8 text-center shadow-xl md:p-12">
+          <div className="mx-auto max-w-2xl rounded-2xl border border-[#5E5E5E]/60 bg-[#111111] p-8 text-center shadow-xl md:p-12">
             <p className="mb-4 inline-flex items-center gap-2 rounded-full border border-[#5E5E5E] bg-[#111111] px-4 py-1 text-xs font-bold uppercase tracking-wider text-[#AA0202]">
               <ShieldCheck className="h-4 w-4" />
               {isSpanish ? "Acceso seguro" : "Secure access"}
             </p>
 
-            <h1 className="font-display text-4xl font-black leading-tight md:text-5xl">
+            <h1 className="font-bebas text-4xl font-black leading-tight md:text-5xl">
               {isSpanish ? "Te damos la bienvenida a VideoRemixesPack" : "Welcome to VideoRemixesPack"}
             </h1>
-            <p className="mt-4 text-muted-foreground">
+            <p className="mt-4 text-zinc-400">
               {isSpanish
                 ? "Usa el mismo flujo del sitio en producción para validar tu acceso."
                 : "Use the same flow as production to validate your access."}
@@ -138,7 +135,7 @@ export default function Login() {
                 type="button"
                 onClick={handleBack}
                 disabled={step === "email"}
-                className="mt-6 inline-flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
+                className="mt-6 inline-flex items-center gap-2 text-sm text-zinc-400 transition-colors hover:text-foreground"
               >
                 <ArrowLeft className="h-4 w-4" />
                 {isSpanish ? "Volver" : "Back"}
@@ -179,7 +176,7 @@ export default function Login() {
             {step === "password" && (
               <form onSubmit={handleLogin} className="mt-8 space-y-4 text-left">
                 <div>
-                  <p className="text-sm text-muted-foreground">{isSpanish ? "Cuenta detectada" : "Account found"}</p>
+                  <p className="text-sm text-zinc-400">{isSpanish ? "Cuenta detectada" : "Account found"}</p>
                   <p className="font-semibold text-foreground">{userName || email}</p>
                 </div>
 
@@ -220,7 +217,7 @@ export default function Login() {
                 <p className="font-semibold text-foreground">
                   {isSpanish ? "Sesión iniciada correctamente" : "Session started successfully"}
                 </p>
-                <p className="text-sm text-muted-foreground">{userName || email}</p>
+                <p className="text-sm text-zinc-400">{userName || email}</p>
 
                 <Button asChild className="h-12 w-full font-bold">
                   <Link to="/trends">{isSpanish ? "Ir a Tendencias" : "Go to Trends"}</Link>
@@ -236,7 +233,7 @@ export default function Login() {
                     setPassword("");
                     setError(null);
                   }}
-                  className="text-xs text-muted-foreground underline-offset-2 transition-colors hover:text-foreground hover:underline"
+                  className="text-xs text-zinc-400 underline-offset-2 transition-colors hover:text-foreground hover:underline"
                 >
                   {isSpanish ? "Cerrar sesión local" : "Clear local session"}
                 </button>
@@ -245,7 +242,7 @@ export default function Login() {
 
             {error && <p className="mt-4 text-sm text-destructive">{error}</p>}
 
-            <p className="mt-8 text-xs text-muted-foreground">
+            <p className="mt-8 text-xs text-zinc-400">
               {isSpanish ? "¿Prefieres usar el portal oficial?" : "Prefer the official portal?"} {" "}
               <a
                 href="https://videoremixpack.com/login"
@@ -256,7 +253,7 @@ export default function Login() {
                 {isSpanish ? "Abrir videoremixpack.com/login" : "Open videoremixpack.com/login"}
               </a>
             </p>
-            <p className="mt-2 text-xs text-muted-foreground">
+            <p className="mt-2 text-xs text-zinc-400">
               {isSpanish ? "¿Necesitas ayuda?" : "Need help?"}{" "}
               <a
                 href="/help"

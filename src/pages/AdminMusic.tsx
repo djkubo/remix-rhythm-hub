@@ -124,7 +124,7 @@ function SortableFolder({
       style={style}
       className={`relative group p-4 rounded-xl border ${
         folder.is_visible
-          ? "bg-card border-border"
+          ? "bg-[#111111] border-[#5E5E5E]"
           : "bg-muted/50 border-dashed border-muted-foreground/30"
       } hover:border-primary transition-colors`}
     >
@@ -134,7 +134,7 @@ function SortableFolder({
         {...listeners}
         className="absolute top-2 left-2 p-1 cursor-grab active:cursor-grabbing opacity-0 group-hover:opacity-100 transition-opacity"
       >
-        <GripVertical className="w-4 h-4 text-muted-foreground" />
+        <GripVertical className="w-4 h-4 text-zinc-400" />
       </div>
 
       {/* Clickable area */}
@@ -150,7 +150,7 @@ function SortableFolder({
             e.stopPropagation();
             onToggleVisibility();
           }}
-          className="p-1 rounded bg-background/80 hover:bg-background"
+          className="p-1 rounded bg-[#070707]/80 hover:bg-[#070707]"
         >
           {folder.is_visible ? (
             <Eye className="w-3 h-3" />
@@ -163,7 +163,7 @@ function SortableFolder({
             e.stopPropagation();
             onDelete();
           }}
-          className="p-1 rounded bg-background/80 hover:bg-destructive hover:text-destructive-foreground"
+          className="p-1 rounded bg-[#070707]/80 hover:bg-destructive hover:text-destructive-foreground"
         >
           <Trash2 className="w-3 h-3" />
         </button>
@@ -203,7 +203,7 @@ function SortableTrack({
     <div
       ref={setNodeRef}
       style={style}
-      className={`flex items-center gap-4 px-4 py-3 border-b border-border/50 last:border-b-0 hover:bg-muted/50 transition-colors ${
+      className={`flex items-center gap-4 px-4 py-3 border-b border-[#5E5E5E]/50 last:border-b-0 hover:bg-muted/50 transition-colors ${
         !track.is_visible ? "opacity-50" : ""
       }`}
     >
@@ -213,17 +213,17 @@ function SortableTrack({
         {...listeners}
         className="cursor-grab active:cursor-grabbing p-1"
       >
-        <GripVertical className="w-4 h-4 text-muted-foreground" />
+        <GripVertical className="w-4 h-4 text-zinc-400" />
       </div>
 
-      <Music className="w-5 h-5 text-muted-foreground flex-shrink-0" />
+      <Music className="w-5 h-5 text-zinc-400 flex-shrink-0" />
       <div className="flex-1 min-w-0">
         <p className="font-medium truncate">{track.title}</p>
-        <p className="text-sm text-muted-foreground truncate">{track.artist}</p>
+        <p className="text-sm text-zinc-400 truncate">{track.artist}</p>
       </div>
       <div className="flex items-center gap-2">
         {track.bpm && (
-          <span className="text-xs text-muted-foreground">{track.bpm} BPM</span>
+          <span className="text-xs text-zinc-400">{track.bpm} BPM</span>
         )}
         {track.genre && (
           <span className="text-xs px-2 py-1 bg-secondary rounded-full">
@@ -1278,16 +1278,16 @@ export default function AdminMusic() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
+      <div className="min-h-screen bg-[#070707] flex items-center justify-center">
         <Loader2 className="w-8 h-8 animate-spin text-primary" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-[#070707]">
       {/* Header */}
-      <header className="sticky top-0 z-40 border-b border-border bg-background/95 backdrop-blur">
+      <header className="sticky top-0 z-40 border-b border-[#5E5E5E] bg-[#070707]/95 backdrop-blur">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-4">
             <Music className="w-8 h-8 text-primary" />
@@ -1305,17 +1305,17 @@ export default function AdminMusic() {
         <nav className="flex items-center gap-2 mb-6 text-sm">
           <button
             onClick={() => setCurrentFolderId(null)}
-            className="flex items-center gap-1 text-muted-foreground hover:text-foreground transition-colors"
+            className="flex items-center gap-1 text-zinc-400 hover:text-foreground transition-colors"
           >
             <Home className="w-4 h-4" />
             {t("admin.music.home")}
           </button>
           {breadcrumbs.map((crumb) => (
             <div key={crumb.id} className="flex items-center gap-2">
-              <ChevronRight className="w-4 h-4 text-muted-foreground" />
+              <ChevronRight className="w-4 h-4 text-zinc-400" />
               <button
                 onClick={() => setCurrentFolderId(crumb.id)}
-                className="text-muted-foreground hover:text-foreground transition-colors"
+                className="text-zinc-400 hover:text-foreground transition-colors"
               >
                 {crumb.name}
               </button>
@@ -1366,7 +1366,7 @@ export default function AdminMusic() {
             <div className="flex items-center gap-4 mb-4">
               <button
                 onClick={selectAllFolders}
-                className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
+                className="flex items-center gap-2 text-sm text-zinc-400 hover:text-foreground transition-colors"
               >
                 {selectedFolders.size === folders.length && folders.length > 0 ? (
                   <CheckSquare className="w-4 h-4 text-primary" />
@@ -1400,7 +1400,7 @@ export default function AdminMusic() {
                       >
                         <Checkbox
                           checked={selectedFolders.has(folder.id)}
-                          className="bg-background"
+                          className="bg-[#070707]"
                         />
                       </div>
                       <SortableFolder
@@ -1432,7 +1432,7 @@ export default function AdminMusic() {
             <div className="flex items-center gap-4 mb-4">
               <button
                 onClick={selectAllTracks}
-                className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
+                className="flex items-center gap-2 text-sm text-zinc-400 hover:text-foreground transition-colors"
               >
                 {selectedTracks.size === tracks.length && tracks.length > 0 ? (
                   <CheckSquare className="w-4 h-4 text-primary" />
@@ -1454,7 +1454,7 @@ export default function AdminMusic() {
                 items={tracks.map((t) => t.id)}
                 strategy={verticalListSortingStrategy}
               >
-                <div className="bg-card rounded-xl border border-border overflow-hidden">
+                <div className="bg-[#111111] rounded-xl border border-[#5E5E5E] overflow-hidden">
                   {tracks.map((track) => (
                     <div
                       key={track.id}
@@ -1498,7 +1498,7 @@ export default function AdminMusic() {
 
         {/* Empty state */}
         {folders.length === 0 && tracks.length === 0 && (
-          <div className="text-center py-16 text-muted-foreground">
+          <div className="text-center py-16 text-zinc-400">
             <FolderOpen className="w-16 h-16 mx-auto mb-4 opacity-50" />
             <p>Esta carpeta está vacía</p>
             <p className="text-sm">
@@ -1561,7 +1561,7 @@ export default function AdminMusic() {
               />
             </div>
             {uploadFiles && (
-              <p className="text-sm text-muted-foreground">
+              <p className="text-sm text-zinc-400">
                 {uploadFiles.length} archivo(s) seleccionado(s)
               </p>
             )}
@@ -1624,7 +1624,7 @@ export default function AdminMusic() {
                 onChange={(e) => setBulkUploadFiles(e.target.files)}
                 className="mt-2"
               />
-              <p className="text-xs text-muted-foreground mt-2">
+              <p className="text-xs text-zinc-400 mt-2">
                 Formato de archivos: Artista - Título.mp3
               </p>
             </div>
@@ -1633,7 +1633,7 @@ export default function AdminMusic() {
                 <p className="font-medium mb-1">
                   {bulkUploadFiles.length} archivos seleccionados
                 </p>
-                <p className="text-muted-foreground text-xs">
+                <p className="text-zinc-400 text-xs">
                   Se detectaron las siguientes carpetas:
                 </p>
                 <div className="flex flex-wrap gap-1 mt-2">
@@ -1658,7 +1658,7 @@ export default function AdminMusic() {
 	                        .filter(Boolean)
                     )
                   ).length > 10 && (
-                    <span className="text-xs text-muted-foreground">
+                    <span className="text-xs text-zinc-400">
                       +{Array.from(
                         new Set(
 	                          Array.from(bulkUploadFiles)
@@ -1681,7 +1681,7 @@ export default function AdminMusic() {
                 </div>
                 <p className="text-sm text-center">{uploadProgress}%</p>
                 {uploadStatus && (
-                  <p className="text-xs text-muted-foreground text-center truncate">
+                  <p className="text-xs text-zinc-400 text-center truncate">
                     {uploadStatus}
                   </p>
                 )}

@@ -43,7 +43,7 @@ const AggregatorSection = () => {
           transition={{ duration: 0.5 }}
           className="mx-auto max-w-5xl"
         >
-          <div className="glow-border bg-card dark:bg-gradient-to-b dark:from-card-elevated dark:to-card p-8 md:p-14">
+          <div className="glow-border bg-[#111111] dark:bg-gradient-to-b dark:from-card-elevated dark:to-card p-8 md:p-14">
             {/* Header */}
             <div className="text-center mb-14">
               <motion.span
@@ -55,12 +55,12 @@ const AggregatorSection = () => {
                 {t("aggregator.badge")}
               </motion.span>
               
-              <h2 className="font-display text-display-sm md:text-display-md font-extrabold text-foreground">
+              <h2 className="font-bebas text-display-sm md:text-display-md font-extrabold text-[#EFEFEF]">
                 {t("aggregator.title")}{" "}
-                <span className="text-gradient-red">{t("aggregator.titleHighlight")}</span>
+                <span className="text-[#AA0202]">{t("aggregator.titleHighlight")}</span>
               </h2>
               
-              <p className="mt-6 max-w-2xl mx-auto font-sans text-lg text-muted-foreground">
+              <p className="mt-6 max-w-2xl mx-auto font-sans text-lg text-zinc-400">
                 {t("aggregator.subtitle")}
               </p>
             </div>
@@ -86,7 +86,7 @@ const AggregatorSection = () => {
                   <div 
                     className={`
                       group flex flex-col items-center text-center p-6 rounded-2xl 
-                      bg-muted/50 dark:bg-secondary/40 border border-border 
+                      bg-muted/50 dark:bg-secondary/40 border border-[#5E5E5E] 
                       transition-all duration-300 hover:border-primary/30 
                       hover:bg-muted dark:hover:bg-secondary/60 hover:shadow-md dark:hover:shadow-none
                       h-full
@@ -94,7 +94,7 @@ const AggregatorSection = () => {
                     `}
                   >
                     {/* Step indicator */}
-                    <div className="absolute -top-2 left-4 bg-background dark:bg-card px-2 py-0.5 rounded text-xs font-mono text-muted-foreground">
+                    <div className="absolute -top-2 left-4 bg-background dark:bg-[#111111] px-2 py-0.5 rounded text-xs font-mono text-zinc-400">
                       {String(feature.step).padStart(2, '0')}
                     </div>
                     
@@ -113,10 +113,10 @@ const AggregatorSection = () => {
                       />
                     </div>
                     
-                    <h3 className="font-display text-lg font-bold tracking-wide text-foreground">
+                    <h3 className="font-bebas text-lg font-bold tracking-wide text-[#EFEFEF]">
                       {feature.title}
                     </h3>
-                    <p className="mt-2 font-sans text-sm text-muted-foreground leading-relaxed">
+                    <p className="mt-2 font-sans text-sm text-zinc-400 leading-relaxed">
                       {feature.description}
                     </p>
                     

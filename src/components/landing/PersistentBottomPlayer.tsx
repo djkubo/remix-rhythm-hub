@@ -166,22 +166,22 @@ export default function PersistentBottomPlayer() {
       <Dialog open={upgradeOpen} onOpenChange={setUpgradeOpen}>
         <DialogContent className="glass-card border-primary/30 sm:max-w-md">
           <DialogHeader className="text-center">
-            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full border border-primary/45 bg-card">
+            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full border border-primary/45 bg-[#111111]">
               <Lock className="h-8 w-8 text-primary" />
             </div>
             <DialogTitle className="text-2xl font-bold">
               {language === "es" ? "Preview terminado" : "Preview ended"}
             </DialogTitle>
-            <DialogDescription className="mt-3 text-base text-muted-foreground">
+            <DialogDescription className="mt-3 text-base text-zinc-400">
               {language === "es"
                 ? "Activa tu plan para escuchar completo y descargar por carpetas. Trial 7 días $0."
                 : "Activate your plan to listen fully and download by folders. 7-day $0 trial."}
             </DialogDescription>
           </DialogHeader>
 
-          <div className="my-4 rounded-lg border border-border/70 bg-background-carbon/38 p-4 text-left">
-            <p className="font-medium text-foreground">{currentTrack.title}</p>
-            <p className="text-xs text-muted-foreground">{currentTrack.genre}</p>
+          <div className="my-4 rounded-lg border border-[#5E5E5E]/70 bg-background-carbon/38 p-4 text-left">
+            <p className="font-medium text-[#EFEFEF]">{currentTrack.title}</p>
+            <p className="text-xs text-zinc-400">{currentTrack.genre}</p>
           </div>
 
           <div className="flex flex-col gap-3">

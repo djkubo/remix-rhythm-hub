@@ -32,9 +32,9 @@ const DJTodoterrenoSection = () => {
             transition={{ duration: 0.5 }}
             className="text-center mb-12"
           >
-            <h2 className="font-display text-display-sm md:text-display-md font-extrabold text-foreground">
+            <h2 className="font-bebas text-display-sm md:text-display-md font-extrabold text-[#EFEFEF]">
               {t("dj.title")}{" "}
-              <span className="text-gradient-red">{t("dj.titleHighlight")}</span>
+              <span className="text-[#AA0202]">{t("dj.titleHighlight")}</span>
             </h2>
           </motion.div>
 
@@ -47,22 +47,22 @@ const DJTodoterrenoSection = () => {
             className="glass-card p-8 md:p-12"
           >
             <div className="text-center">
-              <p className="font-sans text-xl md:text-2xl text-muted-foreground leading-relaxed">
+              <p className="font-sans text-xl md:text-2xl text-zinc-400 leading-relaxed">
                 {t("dj.question")}{" "}
-                <span className="text-foreground font-semibold">Cumbia Wepa</span>,{" "}
+                <span className="text-[#EFEFEF] font-semibold">Cumbia Wepa</span>,{" "}
                 {language === "es" ? "luego" : "then"}{" "}
-                <span className="text-foreground font-semibold">Afro House</span>{" "}
+                <span className="text-[#EFEFEF] font-semibold">Afro House</span>{" "}
                 {language === "es" ? "y cierras con" : "and close with"}{" "}
-                <span className="text-foreground font-semibold">Karaoke</span>?
+                <span className="text-[#EFEFEF] font-semibold">Karaoke</span>?
               </p>
               
-              <p className="mt-6 font-display text-2xl md:text-3xl font-bold text-primary">
+              <p className="mt-6 font-bebas text-2xl md:text-3xl font-bold text-primary">
                 {t("dj.covered")}
               </p>
               
-              <p className="mt-4 font-sans text-lg text-muted-foreground">
+              <p className="mt-4 font-sans text-lg text-zinc-400">
                 {t("dj.from")}{" "}
-                <span className="text-foreground font-bold">{t("dj.never")}</span>
+                <span className="text-[#EFEFEF] font-bold">{t("dj.never")}</span>
               </p>
             </div>
 
@@ -78,7 +78,7 @@ const DJTodoterrenoSection = () => {
                   className="flex items-center gap-2 rounded-full bg-primary/10 border border-primary/30 px-5 py-3 transition-all duration-300 hover:bg-primary/20 hover:scale-105"
                 >
                   <genre.icon className="h-5 w-5 text-primary" strokeWidth={1.5} />
-                  <span className="font-sans font-medium text-foreground">{genre.name}</span>
+                  <span className="font-sans font-medium text-[#EFEFEF]">{genre.name}</span>
                 </motion.div>
               ))}
             </div>
@@ -94,10 +94,10 @@ const DJTodoterrenoSection = () => {
                   transition={{ duration: 0.3, delay: 0.3 + index * 0.1 }}
                   className="text-center"
                 >
-                  <div className="font-display text-3xl md:text-4xl font-extrabold text-primary dark:text-shadow-glow">
+                  <div className="font-bebas text-3xl md:text-4xl font-extrabold text-primary dark:text-shadow-glow">
                     {stat.value}
                   </div>
-                  <div className="mt-1 font-bebas text-sm tracking-widest text-muted-foreground">{stat.label}</div>
+                  <div className="mt-1 font-bebas text-sm tracking-widest text-zinc-400">{stat.label}</div>
                 </motion.div>
               ))}
             </div>

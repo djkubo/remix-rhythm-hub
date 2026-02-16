@@ -5,13 +5,10 @@ import MusicExplorer from "@/components/MusicExplorer";
 import PersistentBottomPlayer from "@/components/landing/PersistentBottomPlayer";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { useTheme } from "@/contexts/ThemeContext";
 import logoWhite from "@/assets/logo-white.png";
-import logoDark from "@/assets/logo-dark.png";
 
 export default function Explorer() {
   const { language } = useLanguage();
-  const { theme } = useTheme();
   const location = useLocation();
   const isGenresRoute = location.pathname === "/genres";
 
@@ -45,7 +42,7 @@ export default function Explorer() {
   }, [isGenresRoute, language]);
 
   return (
-    <main className="brand-frame min-h-screen bg-background pb-[calc(env(safe-area-inset-bottom)+6.5rem)]">
+    <main className="brand-frame min-h-screen bg-[#070707] pb-[calc(env(safe-area-inset-bottom)+6.5rem)]">
       <section className="relative overflow-hidden">
         <div className="absolute inset-x-0 top-0 h-1.5 bg-gradient-to-r from-[#1a1a1a] via-[#AA0202] to-[#1a1a1a]" />
 
@@ -53,7 +50,7 @@ export default function Explorer() {
           <div className="flex items-center justify-between gap-4">
             <Link to="/" className="inline-flex items-center">
               <img
-                src={theme === "dark" ? logoWhite : logoDark}
+                src={logoWhite}
                 alt="VideoRemixesPack"
                 className="h-10 w-auto object-contain md:h-12"
               />
@@ -72,17 +69,17 @@ export default function Explorer() {
               <Headphones className="h-4 w-4" />
               {copy.badge}
             </div>
-            <h1 className="mt-5 font-display text-5xl font-black leading-[0.92] md:text-6xl">
+            <h1 className="mt-5 font-bebas text-5xl font-black leading-[0.92] md:text-6xl">
               {isGenresRoute ? (
                 copy.title
               ) : (
                 <>
                   {copy.title.split(" ")[0]}{" "}
-                  <span className="text-gradient-red">{copy.title.replace(/^\\S+\\s?/, "")}</span>
+                  <span className="text-[#AA0202]">{copy.title.replace(/^\\S+\\s?/, "")}</span>
                 </>
               )}
             </h1>
-            <p className="mt-4 max-w-2xl text-sm text-muted-foreground md:text-base">
+            <p className="mt-4 max-w-2xl text-sm text-zinc-400 md:text-base">
               {copy.subtitle}
             </p>
           </div>

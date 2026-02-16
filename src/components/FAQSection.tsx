@@ -58,10 +58,10 @@ const FAQSection = () => {
           transition={{ duration: 0.35 }}
           className="mb-12 text-center"
         >
-          <h2 className="mb-3 font-display text-4xl font-black md:text-5xl">
+          <h2 className="mb-3 font-bebas text-4xl font-black md:text-5xl">
             {isSpanish ? "Objeciones antes de comprar" : "Buying objections answered"}
           </h2>
-          <p className="mx-auto max-w-2xl text-sm text-muted-foreground md:text-base">
+          <p className="mx-auto max-w-2xl text-sm text-zinc-400 md:text-base">
             {isSpanish
               ? "Lo esencial sobre pago, compatibilidad, cancelación y soporte."
               : "The essentials about payment, compatibility, cancellation, and support."}
@@ -78,12 +78,12 @@ const FAQSection = () => {
               <AccordionItem
                 key={index}
                 value={`item-${index}`}
-                className="rounded-2xl border border-border/88 bg-card px-5 transition-all data-[state=open]:border-primary/55"
+                className="rounded-2xl border border-[#5E5E5E]/88 bg-[#111111] px-5 transition-all data-[state=open]:border-primary/55"
               >
-                <AccordionTrigger className="py-4 text-left font-sans text-base font-semibold text-foreground hover:text-primary hover:no-underline">
+                <AccordionTrigger className="py-4 text-left font-sans text-base font-semibold text-[#EFEFEF] hover:text-primary hover:no-underline">
                   {faq.question}
                 </AccordionTrigger>
-                <AccordionContent className="pb-4 text-sm leading-relaxed text-muted-foreground md:text-base">
+                <AccordionContent className="pb-4 text-sm leading-relaxed text-zinc-400 md:text-base">
                   {faq.answer}
                 </AccordionContent>
               </AccordionItem>

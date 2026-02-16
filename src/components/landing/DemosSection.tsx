@@ -112,7 +112,7 @@ export default function DemosSection() {
         <h2 className="text-center text-3xl font-bold text-[#EFEFEF] md:text-4xl">
           ¿Quieres escuchar antes de pagar? Dale play.
         </h2>
-        <p className="mb-8 mt-3 text-center text-muted-foreground">
+        <p className="mb-8 mt-3 text-center text-zinc-400">
           Sin registro. Sin tarjeta. Comprueba la calidad MP3 320kbps.
         </p>
 
@@ -188,7 +188,7 @@ export default function DemosSection() {
                   ? "No pudimos cargar los demos en vivo en este momento."
                   : "Estamos actualizando los demos en vivo."}
               </p>
-              <p className="mt-2 text-sm text-muted-foreground">
+              <p className="mt-2 text-sm text-zinc-400">
                 Abre el explorador para ver el catálogo y escuchar previews.
               </p>
               <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:justify-center">

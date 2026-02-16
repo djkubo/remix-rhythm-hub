@@ -123,10 +123,10 @@ const TestimonialsSection = () => {
           viewport={{ once: true }}
           className="mb-10 text-center"
         >
-          <h2 className="mb-3 font-display text-4xl font-bold md:text-5xl lg:text-6xl text-foreground">
+          <h2 className="mb-3 font-bebas text-4xl font-bold md:text-5xl lg:text-6xl text-[#EFEFEF]">
             {t("testimonialCard.title")}
           </h2>
-          <p className="font-sans text-lg text-muted-foreground">
+          <p className="font-sans text-lg text-zinc-400">
             {t("testimonialCard.subtitle")}
           </p>
         </motion.div>

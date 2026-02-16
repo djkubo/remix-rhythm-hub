@@ -90,7 +90,7 @@ export default function DjEditsThankYou() {
     (hasPayPalOrder && paypalCaptureState === "success");
 
   return (
-    <main className="min-h-screen bg-background flex items-center justify-center p-4">
+    <main className="min-h-screen bg-[#070707] flex items-center justify-center p-4">
       <div className="w-full max-w-lg">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -133,7 +133,7 @@ export default function DjEditsThankYou() {
                   : "All set!"}
           </h1>
 
-          <p className="text-lg text-muted-foreground mb-8">
+          <p className="text-lg text-zinc-400 mb-8">
             {paidConfirmed
               ? language === "es"
                 ? "Listo. Revisa tu email (y spam): ahí llega la confirmación y los siguientes pasos del curso."
@@ -166,7 +166,7 @@ export default function DjEditsThankYou() {
                 {language === "es" ? "Siguientes pasos" : "Next steps"}
               </span>
             </div>
-            <ul className="space-y-2 text-sm text-muted-foreground">
+            <ul className="space-y-2 text-sm text-zinc-400">
               <li>
                 {language === "es"
                   ? "1) Revisa tu email (y spam) para la confirmación."

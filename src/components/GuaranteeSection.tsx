@@ -15,19 +15,19 @@ const GuaranteeSection = () => {
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.35 }}
-          className="mx-auto flex max-w-3xl flex-col items-center rounded-3xl border border-border/88 bg-card p-8 text-center shadow-[0_12px_24px_rgba(15,23,42,0.1)]"
+          className="mx-auto flex max-w-3xl flex-col items-center rounded-2xl border border-[#5E5E5E]/88 bg-[#111111] p-8 text-center shadow-[0_12px_24px_rgba(15,23,42,0.1)]"
         >
-          <div className="mb-4 flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-full border border-primary/45 bg-card">
+          <div className="mb-4 flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-full border border-primary/45 bg-[#111111]">
             <ShieldCheck className="h-7 w-7 text-primary" strokeWidth={1.6} />
           </div>
           <div className="text-center">
-            <h3 className="mb-2 font-display text-2xl font-bold text-foreground md:text-3xl">
+            <h3 className="mb-2 font-bebas text-2xl font-bold text-[#EFEFEF] md:text-3xl">
               {t("guarantee.title")}
             </h3>
-            <p className="mb-6 text-sm leading-relaxed text-muted-foreground md:text-base">
+            <p className="mb-6 text-sm leading-relaxed text-zinc-400 md:text-base">
               {t("guarantee.desc")}
             </p>
-            <p className="mb-4 text-xs uppercase tracking-[0.12em] text-muted-foreground">
+            <p className="mb-4 text-xs uppercase tracking-[0.12em] text-zinc-400">
               {isSpanish ? "Sin riesgo · sin permanencia · soporte humano" : "No risk · no lock-in · human support"}
             </p>
             <Button

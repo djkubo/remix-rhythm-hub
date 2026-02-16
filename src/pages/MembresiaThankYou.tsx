@@ -102,7 +102,7 @@ export default function MembresiaThankYou() {
     (hasPayPalOrder && paypalCaptureState === "error");
 
   return (
-    <main className="min-h-screen bg-background flex items-center justify-center p-4">
+    <main className="min-h-screen bg-[#070707] flex items-center justify-center p-4">
       <div className="w-full max-w-lg">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -137,7 +137,7 @@ export default function MembresiaThankYou() {
                     : "All set!"}
           </h1>
 
-          <p className="text-lg text-muted-foreground mb-8">
+          <p className="text-lg text-zinc-400 mb-8">
             {paidConfirmed
               ? language === "es"
                 ? "Pago confirmado. Revisa tu email: ahí llega tu confirmación. Si ya tienes cuenta con ese correo, inicia sesión ahora."
@@ -187,7 +187,7 @@ export default function MembresiaThankYou() {
                 {language === "es" ? "Siguientes pasos" : "Next steps"}
               </span>
             </div>
-            <ul className="space-y-2 text-sm text-muted-foreground">
+            <ul className="space-y-2 text-sm text-zinc-400">
               <li>
                 {language === "es"
                   ? "1) Confirmación: revisa tu email (y spam)."

@@ -1,9 +1,7 @@
 import { Link } from "react-router-dom";
 
 import { useLanguage } from "@/contexts/LanguageContext";
-import { useTheme } from "@/contexts/ThemeContext";
 import logoWhite from "@/assets/logo-white.png";
-import logoDark from "@/assets/logo-dark.png";
 
 type FaqItem = {
   question: { es: string; en: string };
@@ -105,11 +103,10 @@ const FAQ_ITEMS: FaqItem[] = [
 
 export default function Help() {
   const { language } = useLanguage();
-  const { theme } = useTheme();
   const isSpanish = language === "es";
 
   return (
-    <main className="brand-frame min-h-screen bg-background">
+    <main className="brand-frame min-h-screen bg-[#070707]">
       <section className="relative overflow-hidden py-12 md:py-16">
         <div className="absolute inset-x-0 top-0 h-1.5 bg-gradient-to-r from-[#1a1a1a] via-[#AA0202] to-[#1a1a1a]" />
 
@@ -117,18 +114,18 @@ export default function Help() {
           <div className="mb-8 flex justify-center">
             <Link to="/">
               <img
-                src={theme === "dark" ? logoWhite : logoDark}
+                src={logoWhite}
                 alt="VideoRemixesPack"
                 className="h-12 w-auto object-contain"
               />
             </Link>
           </div>
 
-          <div className="rounded-2xl border border-border/60 bg-card p-6 shadow-xl md:p-8">
-            <h1 className="font-display text-4xl font-black md:text-5xl">
+          <div className="rounded-2xl border border-[#5E5E5E]/60 bg-[#111111] p-6 shadow-xl md:p-8">
+            <h1 className="font-bebas text-4xl font-black md:text-5xl">
               {isSpanish ? "Preguntas frecuentes" : "Frequently asked questions"}
             </h1>
-            <p className="mt-3 text-muted-foreground">
+            <p className="mt-3 text-zinc-400">
               {isSpanish
                 ? "Guía rápida basada en el contenido vigente del sitio en producción."
                 : "Quick guide based on the current production site content."}
@@ -138,19 +135,19 @@ export default function Help() {
               {FAQ_ITEMS.map((item, index) => (
                 <details
                   key={item.question.es}
-                  className="group rounded-xl border border-border/70 bg-background/60 p-4 open:border-primary/40"
+                  className="group rounded-xl border border-[#5E5E5E]/70 bg-[#070707]/60 p-4 open:border-primary/40"
                 >
                   <summary className="cursor-pointer list-none font-semibold text-foreground">
                     {index + 1}. {isSpanish ? item.question.es : item.question.en}
                   </summary>
-                  <p className="mt-3 text-sm text-muted-foreground">
+                  <p className="mt-3 text-sm text-zinc-400">
                     {isSpanish ? item.answer.es : item.answer.en}
                   </p>
                 </details>
               ))}
             </div>
 
-            <p className="mt-8 text-xs text-muted-foreground">
+            <p className="mt-8 text-xs text-zinc-400">
               {isSpanish ? "Soporte directo:" : "Direct support:"}{" "}
               <a
                 href="mailto:soporte@videoremixpack.com"

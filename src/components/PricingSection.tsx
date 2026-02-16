@@ -67,11 +67,11 @@ const PricingSection = () => {
           <span className="badge-primary mb-6">
             {t("pricing.badge")}
           </span>
-          <h2 className="font-display text-display-md md:text-display-lg font-extrabold text-foreground">
+          <h2 className="font-bebas text-display-md md:text-display-lg font-extrabold text-[#EFEFEF]">
             {t("pricing.title")}{" "}
-            <span className="text-gradient-red">{t("pricing.titleHighlight")}</span>
+            <span className="text-[#AA0202]">{t("pricing.titleHighlight")}</span>
           </h2>
-          <p className="mx-auto mt-6 max-w-xl font-sans text-lg text-muted-foreground">
+          <p className="mx-auto mt-6 max-w-xl font-sans text-lg text-zinc-400">
             {t("pricing.subtitle")}
           </p>
         </motion.div>
@@ -91,14 +91,14 @@ const PricingSection = () => {
             >
               {/* Gold glow for highlighted */}
               {plan.highlighted && (
-                <div className="absolute -inset-[3px] rounded-3xl bg-gradient-to-r from-gold via-gold-light to-gold animate-pulse-gold opacity-70" />
+                <div className="absolute -inset-[3px] rounded-2xl bg-gradient-to-r from-gold via-gold-light to-gold animate-pulse-gold opacity-70" />
               )}
 
               {/* Card */}
               <div
-                className={`relative h-full flex flex-col rounded-3xl p-8 md:p-10 transition-all duration-300 ${
+                className={`relative h-full flex flex-col rounded-2xl p-8 md:p-10 transition-all duration-300 ${
                   plan.highlighted
-                    ? "bg-card dark:bg-gradient-to-b dark:from-card-elevated dark:to-card border-2 border-gold/50 shadow-xl dark:shadow-glow-gold"
+                    ? "bg-[#111111] dark:bg-gradient-to-b dark:from-card-elevated dark:to-card border-2 border-gold/50 shadow-xl dark:shadow-glow-gold"
                     : "glass-card-hover"
                 }`}
               >
@@ -113,18 +113,18 @@ const PricingSection = () => {
 
                 {/* Plan Header */}
                 <div className={`text-center ${plan.badge ? "mt-4" : ""}`}>
-                  <h3 className="font-bebas text-2xl tracking-wider text-muted-foreground">
+                  <h3 className="font-bebas text-2xl tracking-wider text-zinc-400">
                     {plan.name}
                   </h3>
                   
                   <div className="mt-4 flex items-baseline justify-center gap-1">
-                    <span className={`font-display text-5xl md:text-6xl font-extrabold ${
-                      plan.highlighted ? "text-gradient-gold" : "text-foreground"
+                    <span className={`font-bebas text-5xl md:text-6xl font-extrabold ${
+                      plan.highlighted ? "text-gradient-gold" : "text-[#EFEFEF]"
                     }`}>
                       {convertPrice(plan.priceUSD)}
                     </span>
                   </div>
-                  <span className="font-sans text-sm text-muted-foreground">
+                  <span className="font-sans text-sm text-zinc-400">
                     {plan.period}
                   </span>
 
@@ -150,7 +150,7 @@ const PricingSection = () => {
                       }`}>
                         <Check className="h-3 w-3" strokeWidth={3} />
                       </div>
-                      <span className="font-sans text-foreground/90">{feature}</span>
+                      <span className="font-sans text-[#EFEFEF]/90">{feature}</span>
                     </li>
                   ))}
                 </ul>
@@ -162,7 +162,7 @@ const PricingSection = () => {
                   className={`w-full h-14 text-base font-bold transition-smooth ${
                     plan.highlighted
                       ? "btn-gold-glow"
-                      : "bg-secondary hover:bg-secondary/80 text-foreground"
+                      : "bg-secondary hover:bg-secondary/80 text-[#EFEFEF]"
                   }`}
                   onClick={() => trackClick(plan.cta)}
                 >
@@ -184,7 +184,7 @@ const PricingSection = () => {
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
             transition={{ delay: 0.5 }}
-            className="mt-8 text-center text-sm text-muted-foreground"
+            className="mt-8 text-center text-sm text-zinc-400"
           >
             {language === "es" 
               ? `* Precios mostrados en ${currency.name} como referencia. El cobro se realiza en USD.`

@@ -3,7 +3,6 @@ import { Link, useLocation } from "react-router-dom";
 import { Menu, Zap } from "lucide-react";
 
 import { useLanguage } from "@/contexts/LanguageContext";
-import { useTheme } from "@/contexts/ThemeContext";
 import { useAnalytics } from "@/hooks/useAnalytics";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -16,7 +15,6 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import logoWhite from "@/assets/logo-white.png";
-import logoDark from "@/assets/logo-dark.png";
 
 type NavLink = {
   to: string;
@@ -33,7 +31,6 @@ const NAV_LINKS: NavLink[] = [
 export default function RouteMenu() {
   const [open, setOpen] = useState(false);
   const { language, toggleLanguage } = useLanguage();
-  const { theme } = useTheme();
   const { trackEvent } = useAnalytics();
   const location = useLocation();
 
@@ -57,11 +54,11 @@ export default function RouteMenu() {
   };
 
   return (
-    <header className="sticky top-0 z-50 border-b border-border/90 bg-card/95 backdrop-blur-md shadow-[0_8px_16px_rgba(15,23,42,0.08)]">
+    <header className="sticky top-0 z-50 border-b border-[#5E5E5E]/90 bg-[#111111]/95 backdrop-blur-md shadow-[0_8px_16px_rgba(15,23,42,0.08)]">
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
         <Link to="/" className="inline-flex items-center" onClick={() => handleNavClick("header_logo")}>
           <img
-            src={theme === "dark" ? logoWhite : logoDark}
+            src={logoWhite}
             alt="VideoRemixesPack"
             className="h-9 w-auto object-contain md:h-10"
           />
@@ -80,7 +77,7 @@ export default function RouteMenu() {
                 onClick={() => handleNavClick(item.ctaId)}
                 className={cn(
                   "text-sm font-semibold transition-colors",
-                  isActive ? "text-primary" : "text-foreground/72 hover:text-foreground"
+                  isActive ? "text-primary" : "text-[#EFEFEF]/72 hover:text-foreground"
                 )}
               >
                 {isSpanish ? item.label.es : item.label.en}
@@ -93,7 +90,7 @@ export default function RouteMenu() {
           <button
             type="button"
             onClick={handleLanguageToggle}
-            className="h-10 rounded-lg border border-border/90 bg-background px-3 text-sm font-semibold text-foreground transition-colors hover:bg-muted"
+            className="h-10 rounded-lg border border-[#5E5E5E]/90 bg-background px-3 text-sm font-semibold text-[#EFEFEF] transition-colors hover:bg-muted"
             aria-label={isSpanish ? "Cambiar idioma a inglés" : "Switch language to Spanish"}
           >
             {isSpanish ? "EN" : "ES"}
@@ -110,7 +107,7 @@ export default function RouteMenu() {
           <button
             type="button"
             onClick={handleLanguageToggle}
-            className="h-9 rounded-md border border-border px-2.5 text-xs font-bold text-foreground"
+            className="h-9 rounded-md border border-[#5E5E5E] px-2.5 text-xs font-bold text-[#EFEFEF]"
             aria-label={isSpanish ? "Cambiar idioma a inglés" : "Switch language to Spanish"}
           >
             {isSpanish ? "EN" : "ES"}
@@ -120,13 +117,13 @@ export default function RouteMenu() {
             <SheetTrigger asChild>
               <button
                 type="button"
-                className="inline-flex h-10 w-10 items-center justify-center rounded-md border border-border/85 bg-card"
+                className="inline-flex h-10 w-10 items-center justify-center rounded-md border border-[#5E5E5E]/85 bg-[#111111]"
                 aria-label={isSpanish ? "Abrir menú" : "Open menu"}
               >
                 <Menu className="h-5 w-5" />
               </button>
             </SheetTrigger>
-            <SheetContent side="right" className="w-[300px] border-border/80 bg-card">
+            <SheetContent side="right" className="w-[300px] border-[#5E5E5E]/80 bg-[#111111]">
               <SheetHeader>
                 <SheetTitle>{isSpanish ? "Navegación" : "Navigation"}</SheetTitle>
               </SheetHeader>
@@ -143,8 +140,8 @@ export default function RouteMenu() {
                         className={cn(
                           "block rounded-lg border px-4 py-3 text-sm font-semibold",
                           isActive
-                            ? "border-primary/60 bg-card text-primary"
-                            : "border-border/85 text-foreground hover:bg-background"
+                            ? "border-primary/60 bg-[#111111] text-primary"
+                            : "border-[#5E5E5E]/85 text-[#EFEFEF] hover:bg-background"
                         )}
                       >
                         {isSpanish ? item.label.es : item.label.en}

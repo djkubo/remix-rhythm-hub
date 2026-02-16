@@ -150,20 +150,20 @@ export default function AdminLogin() {
 
   if (checkingAuth) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
+      <div className="min-h-screen bg-[#070707] flex items-center justify-center">
         <Loader2 className="w-8 h-8 animate-spin text-primary" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-4">
+    <div className="min-h-screen bg-[#070707] flex items-center justify-center p-4">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         className="w-full max-w-md"
       >
-        <div className="bg-card border border-border rounded-2xl p-8 shadow-lg">
+        <div className="bg-[#111111] border border-[#5E5E5E] rounded-2xl p-8 shadow-lg">
           {/* Header */}
           <div className="text-center mb-8">
             <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 mb-4">
@@ -172,7 +172,7 @@ export default function AdminLogin() {
             <h1 className="text-2xl font-bold">
               {language === "es" ? "Panel de Admin" : "Admin Panel"}
             </h1>
-            <p className="text-muted-foreground">
+            <p className="text-zinc-400">
               {language === "es"
                 ? "Acceso restringido a administradores"
                 : "Restricted admin access"}
@@ -180,9 +180,9 @@ export default function AdminLogin() {
           </div>
 
           {/* Security notice */}
-          <div className="flex items-center gap-2 p-3 rounded-lg bg-muted/50 border border-border mb-6">
+          <div className="flex items-center gap-2 p-3 rounded-lg bg-muted/50 border border-[#5E5E5E] mb-6">
             <ShieldAlert className="w-5 h-5 text-primary flex-shrink-0" />
-            <p className="text-xs text-muted-foreground">
+            <p className="text-xs text-zinc-400">
               {language === "es"
                 ? "Solo usuarios autorizados pueden acceder"
                 : "Only authorized users can access"}

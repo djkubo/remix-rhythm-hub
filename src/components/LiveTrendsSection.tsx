@@ -115,15 +115,15 @@ const LiveTrendsSection = () => {
             <TrendingUp className="h-4 w-4" />
             {language === "es" ? "Tendencias en vivo" : "Live trends"}
           </span>
-          <h2 className="font-display text-4xl font-bold md:text-5xl lg:text-6xl">
+          <h2 className="font-bebas text-4xl font-bold md:text-5xl lg:text-6xl">
             {language === "es" ? "Top actual de producción" : "Current production top"}
           </h2>
-          <p className="mx-auto mt-4 max-w-3xl text-muted-foreground">
+          <p className="mx-auto mt-4 max-w-3xl text-zinc-400">
             {language === "es"
               ? "Datos directos desde videoremixpack.com (actualizados en tiempo real)."
               : "Direct data from videoremixpack.com (real-time updates)."}
           </p>
-          <p className="mt-2 text-xs text-muted-foreground/80">
+          <p className="mt-2 text-xs text-zinc-400/80">
             {language === "es" ? `Actualizado: ${updatedAt}` : `Updated: ${updatedAt}`}
           </p>
         </motion.div>
@@ -148,9 +148,9 @@ const LiveTrendsSection = () => {
                   transition={{ duration: 0.45, delay: columnIndex * 0.08 }}
                   className="glass-card overflow-hidden"
                 >
-                  <div className="border-b border-border/40 bg-card/30 px-4 py-3">
+                  <div className="border-b border-[#5E5E5E]/40 bg-[#111111]/30 px-4 py-3">
                     <div className="flex items-center justify-between">
-                      <h3 className="inline-flex items-center gap-2 font-display text-xl font-bold">
+                      <h3 className="inline-flex items-center gap-2 font-bebas text-xl font-bold">
                         <Icon className="h-5 w-5 text-primary" />
                         {language === "es" ? label.es : label.en}
                       </h3>
@@ -164,14 +164,14 @@ const LiveTrendsSection = () => {
                     {trending[key].map((item, index) => (
                       <div
                         key={`${key}-${item.id || item.name}-${index}`}
-                        className="grid grid-cols-[24px,1fr,50px] items-center gap-3 border-b border-border/10 px-4 py-3 text-sm"
+                        className="grid grid-cols-[24px,1fr,50px] items-center gap-3 border-b border-[#5E5E5E]/10 px-4 py-3 text-sm"
                       >
                         <span className="text-xs font-bold text-primary">#{index + 1}</span>
                         <div className="min-w-0">
-                          <p className="truncate font-medium text-foreground">{getItemTitle(item)}</p>
-                          <p className="truncate text-xs text-muted-foreground">{getItemGenre(item)}</p>
+                          <p className="truncate font-medium text-[#EFEFEF]">{getItemTitle(item)}</p>
+                          <p className="truncate text-xs text-zinc-400">{getItemGenre(item)}</p>
                         </div>
-                        <span className="text-right text-xs text-muted-foreground">
+                        <span className="text-right text-xs text-zinc-400">
                           {formatDuration(item.duration)}
                         </span>
                       </div>
@@ -189,8 +189,8 @@ const LiveTrendsSection = () => {
                 transition={{ duration: 0.45 }}
                 className="glass-card overflow-hidden"
               >
-                <div className="border-b border-border/40 bg-card/30 px-4 py-3">
-                  <h3 className="inline-flex items-center gap-2 font-display text-xl font-bold">
+                <div className="border-b border-[#5E5E5E]/40 bg-[#111111]/30 px-4 py-3">
+                  <h3 className="inline-flex items-center gap-2 font-bebas text-xl font-bold">
                     <Download className="h-5 w-5 text-primary" />
                     {language === "es" ? "Más descargados (archivos)" : "Most downloaded (files)"}
                   </h3>
@@ -199,12 +199,12 @@ const LiveTrendsSection = () => {
                   {downloads.File.slice(0, 10).map((item, index) => (
                     <div
                       key={`file-${item.id || item.name}-${index}`}
-                      className="grid grid-cols-[24px,1fr] gap-3 border-b border-border/10 px-4 py-3 text-sm"
+                      className="grid grid-cols-[24px,1fr] gap-3 border-b border-[#5E5E5E]/10 px-4 py-3 text-sm"
                     >
                       <span className="text-xs font-bold text-primary">#{index + 1}</span>
                       <div className="min-w-0">
                         <p className="truncate font-medium">{getItemTitle(item)}</p>
-                        <p className="truncate text-xs text-muted-foreground">{getItemGenre(item)}</p>
+                        <p className="truncate text-xs text-zinc-400">{getItemGenre(item)}</p>
                       </div>
                     </div>
                   ))}
@@ -218,8 +218,8 @@ const LiveTrendsSection = () => {
                 transition={{ duration: 0.45, delay: 0.08 }}
                 className="glass-card overflow-hidden"
               >
-                <div className="border-b border-border/40 bg-card/30 px-4 py-3">
-                  <h3 className="inline-flex items-center gap-2 font-display text-xl font-bold">
+                <div className="border-b border-[#5E5E5E]/40 bg-[#111111]/30 px-4 py-3">
+                  <h3 className="inline-flex items-center gap-2 font-bebas text-xl font-bold">
                     <Folder className="h-5 w-5 text-primary" />
                     {language === "es" ? "Carpetas más descargadas" : "Most downloaded folders"}
                   </h3>
@@ -228,11 +228,11 @@ const LiveTrendsSection = () => {
                   {downloads.Folder.slice(0, 10).map((item, index) => (
                     <div
                       key={`folder-${item.id || item.name}-${index}`}
-                      className="grid grid-cols-[24px,1fr,66px] items-center gap-3 border-b border-border/10 px-4 py-3 text-sm"
+                      className="grid grid-cols-[24px,1fr,66px] items-center gap-3 border-b border-[#5E5E5E]/10 px-4 py-3 text-sm"
                     >
                       <span className="text-xs font-bold text-primary">#{index + 1}</span>
                       <p className="truncate font-medium">{getFolderLabel(item)}</p>
-                      <span className="text-right text-xs text-muted-foreground">
+                      <span className="text-right text-xs text-zinc-400">
                         {(item as unknown as { downloadCount?: number }).downloadCount
                           ? `${(item as unknown as { downloadCount: number }).downloadCount}x`
                           : ""}

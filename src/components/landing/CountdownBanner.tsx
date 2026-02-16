@@ -22,7 +22,7 @@ function TimeBlock({ value, label }: { value: number; label: string }) {
             <span className="font-bebas text-2xl tabular-nums text-[#EFEFEF] md:text-3xl">
                 {String(value).padStart(2, "0")}
             </span>
-            <span className="font-sans text-[10px] uppercase tracking-wider text-muted-foreground">
+            <span className="font-sans text-[10px] uppercase tracking-wider text-zinc-400">
                 {label}
             </span>
         </div>
@@ -50,7 +50,7 @@ export default function CountdownBanner() {
                         <p className="font-bebas text-lg uppercase tracking-wide text-[#EFEFEF] md:text-xl">
                             🔥 PRECIO ESPECIAL ESTE MES
                         </p>
-                        <p className="font-sans text-xs text-muted-foreground">
+                        <p className="font-sans text-xs text-zinc-400">
                             <Users className="mr-1 inline h-3 w-3" />
                             Plazas limitadas para nuevos miembros · La oferta termina en:
                         </p>

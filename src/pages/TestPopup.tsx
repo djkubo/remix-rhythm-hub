@@ -27,7 +27,7 @@ El modal debería aparecer en:
   };
 
   return (
-    <div className="min-h-screen bg-background p-8">
+    <div className="min-h-screen bg-[#070707] p-8">
       <div className="max-w-3xl mx-auto">
         <h1 className="text-4xl font-bold mb-6">🧪 Test de Exit Intent Popup</h1>
         
@@ -47,7 +47,7 @@ El modal debería aparecer en:
           </div>
         )}
 
-        <div className="space-y-4 bg-card p-6 rounded-lg border">
+        <div className="space-y-4 bg-[#111111] p-6 rounded-lg border">
           <h2 className="text-2xl font-bold mb-4">🛠️ Herramientas de Debug</h2>
           
           <div className="grid gap-4">
@@ -104,7 +104,7 @@ El modal debería aparecer en:
           </div>
         </div>
 
-        <div className="mt-8 p-6 bg-card border rounded-lg">
+        <div className="mt-8 p-6 bg-[#111111] border rounded-lg">
           <h2 className="text-xl font-bold mb-4">🎯 Cómo Probar el Exit Intent</h2>
           <div className="space-y-3 text-sm">
             <p><strong>Método 1 (Timer):</strong> Espera 45 segundos en esta página</p>

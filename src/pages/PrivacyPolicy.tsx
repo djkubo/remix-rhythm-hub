@@ -2,9 +2,7 @@ import { Link } from "react-router-dom";
 
 import SettingsToggle from "@/components/SettingsToggle";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { useTheme } from "@/contexts/ThemeContext";
 import logoWhite from "@/assets/logo-white.png";
-import logoDark from "@/assets/logo-dark.png";
 
 type Section = {
   title: { es: string; en: string };
@@ -51,12 +49,11 @@ const SECTIONS: Section[] = [
 
 export default function PrivacyPolicy() {
   const { language } = useLanguage();
-  const { theme } = useTheme();
   const isSpanish = language === "es";
   const lastUpdated = isSpanish ? "15 Feb 2026" : "Feb 15, 2026";
 
   return (
-    <main className="brand-frame min-h-screen bg-background">
+    <main className="brand-frame min-h-screen bg-[#070707]">
       <SettingsToggle />
 
       <section className="relative overflow-hidden py-12 md:py-16">
@@ -66,22 +63,22 @@ export default function PrivacyPolicy() {
           <div className="mb-8 flex justify-center">
             <Link to="/">
               <img
-                src={theme === "dark" ? logoWhite : logoDark}
+                src={logoWhite}
                 alt="VideoRemixesPack"
                 className="h-12 w-auto object-contain"
               />
             </Link>
           </div>
 
-          <article className="rounded-2xl border border-border/60 bg-card p-6 shadow-xl md:p-8">
-            <h1 className="font-display text-4xl font-black md:text-5xl">
+          <article className="rounded-2xl border border-[#5E5E5E]/60 bg-[#111111] p-6 shadow-xl md:p-8">
+            <h1 className="font-bebas text-4xl font-black md:text-5xl">
               {isSpanish ? "Política de privacidad" : "Privacy policy"}
             </h1>
-            <p className="mt-2 text-sm text-muted-foreground">
+            <p className="mt-2 text-sm text-zinc-400">
               {isSpanish ? "Última actualización:" : "Last updated:"} {lastUpdated}
             </p>
 
-            <p className="mt-6 text-muted-foreground">
+            <p className="mt-6 text-zinc-400">
               {isSpanish
                 ? "Esta política describe cómo recopilamos, usamos y compartimos información cuando visitas o compras en VideoRemixesPack."
                 : "This policy describes how we collect, use, and share information when you visit or purchase from VideoRemixesPack."}
@@ -89,18 +86,18 @@ export default function PrivacyPolicy() {
 
             <div className="mt-8 space-y-6">
               {SECTIONS.map((section) => (
-                <section key={section.title.es} className="rounded-xl border border-border/70 bg-background/60 p-4">
+                <section key={section.title.es} className="rounded-xl border border-[#5E5E5E]/70 bg-[#070707]/60 p-4">
                   <h2 className="text-lg font-bold">
                     {isSpanish ? section.title.es : section.title.en}
                   </h2>
-                  <p className="mt-2 text-sm text-muted-foreground">
+                  <p className="mt-2 text-sm text-zinc-400">
                     {isSpanish ? section.content.es : section.content.en}
                   </p>
                 </section>
               ))}
             </div>
 
-            <p className="mt-8 text-sm text-muted-foreground">
+            <p className="mt-8 text-sm text-zinc-400">
               {isSpanish ? "Contacto:" : "Contact:"}{" "}
               <a className="font-semibold text-primary underline-offset-2 hover:underline" href="mailto:soporte@videoremixpack.com">
                 soporte@videoremixpack.com

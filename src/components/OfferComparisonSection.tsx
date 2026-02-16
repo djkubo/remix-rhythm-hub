@@ -84,14 +84,14 @@ const OfferComparisonSection = () => {
   ];
 
   return (
-    <section className="relative border-y border-border/75 bg-background-carbon/68 py-16 md:py-24">
+    <section className="relative border-y border-[#5E5E5E]/75 bg-background-carbon/68 py-16 md:py-24">
       <div className="container mx-auto px-4">
         <div className="mx-auto max-w-6xl">
           <div className="text-center">
-            <Badge variant="outline" className="border border-primary/60 bg-card px-3 py-1 text-primary hover:bg-card">
+            <Badge variant="outline" className="border border-primary/60 bg-[#111111] px-3 py-1 text-primary hover:bg-[#111111]">
               {isEs ? "OFERTA CLARA" : "CLEAR OFFER"}
             </Badge>
-            <h2 className="mt-4 font-display text-4xl font-bold md:text-5xl lg:text-6xl">
+            <h2 className="mt-4 font-bebas text-4xl font-bold md:text-5xl lg:text-6xl">
               {isEs ? (
                 <>
                   Elige la opción con <span className="text-primary">mejor retorno</span>
@@ -102,7 +102,7 @@ const OfferComparisonSection = () => {
                 </>
               )}
             </h2>
-            <p className="mx-auto mt-4 max-w-2xl text-sm text-muted-foreground md:text-base">
+            <p className="mx-auto mt-4 max-w-2xl text-sm text-zinc-400 md:text-base">
               {isEs
                 ? "Comparación directa de precio, formato y objetivo. Sin letras chiquitas, sin confusión."
                 : "Direct comparison of price, format, and goal. No fine print, no confusion."}
@@ -113,14 +113,14 @@ const OfferComparisonSection = () => {
             {offers.map((offer) => (
               <div
                 key={offer.key}
-                className={`rounded-2xl border bg-card p-6 shadow-[0_12px_28px_rgba(15,23,42,0.1)] ${
+                className={`rounded-2xl border bg-[#111111] p-6 shadow-[0_12px_28px_rgba(15,23,42,0.1)] ${
                   offer.highlighted
                     ? "border-primary/65 ring-1 ring-primary/28 shadow-[0_16px_32px_rgba(236,9,50,0.16)]"
-                    : "border-border/88"
+                    : "border-[#5E5E5E]/88"
                 }`}
               >
                 <div className="flex items-start justify-between gap-3">
-                  <div className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-primary/45 bg-card">
+                  <div className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-primary/45 bg-[#111111]">
                     <offer.icon className="h-5 w-5 text-primary" />
                   </div>
                   {offer.highlighted && (
@@ -130,11 +130,11 @@ const OfferComparisonSection = () => {
                   )}
                 </div>
 
-                <p className="mt-4 font-display text-2xl font-bold text-foreground">{offer.title}</p>
-                <p className="mt-2 font-display text-4xl font-bold text-primary">{offer.price}</p>
-                <p className="mt-1 text-sm text-muted-foreground">{offer.subtitle}</p>
+                <p className="mt-4 font-bebas text-2xl font-bold text-[#EFEFEF]">{offer.title}</p>
+                <p className="mt-2 font-bebas text-4xl font-bold text-primary">{offer.price}</p>
+                <p className="mt-1 text-sm text-zinc-400">{offer.subtitle}</p>
 
-                <ul className="mt-6 space-y-2 text-sm text-foreground/90">
+                <ul className="mt-6 space-y-2 text-sm text-[#EFEFEF]/90">
                   {offer.bullets.map((bullet) => (
                     <li key={bullet} className="flex items-start gap-2.5">
                       <Check className="mt-0.5 h-4 w-4 text-primary" />
@@ -167,7 +167,7 @@ const OfferComparisonSection = () => {
             ))}
           </div>
 
-          <p className="mt-6 text-center text-xs text-muted-foreground">
+          <p className="mt-6 text-center text-xs text-zinc-400">
             {isEs
               ? "Tip CRO: si dudas, valida con demos y vuelve al plan recomendado."
               : "CRO tip: if unsure, validate with demos and return to the recommended plan."}

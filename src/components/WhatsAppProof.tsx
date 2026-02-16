@@ -33,7 +33,7 @@ export default function WhatsAppProof({ messages, className }: WhatsAppProofProp
 
           <p className="text-sm leading-relaxed">{msg.text}</p>
 
-          <div className="mt-1 text-right text-[10px] text-muted-foreground">
+          <div className="mt-1 text-right text-[10px] text-zinc-400">
             {msg.time || "14:23"}{" "}
             <CheckCheck className="ml-1 inline-block h-3 w-3 text-[#53BDEB]" />
           </div>

@@ -131,7 +131,7 @@ export default function Usb500gbThankYou() {
   const paymentProvider = stripeSessionId ? "Stripe" : paypalOrderId ? "PayPal" : null;
 
   return (
-    <main className="min-h-screen bg-background flex items-center justify-center p-4">
+    <main className="min-h-screen bg-[#070707] flex items-center justify-center p-4">
       <div className="w-full max-w-lg">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -175,7 +175,7 @@ export default function Usb500gbThankYou() {
                       : "All set!"}
           </h1>
 
-          <p className="text-lg text-muted-foreground mb-8">
+          <p className="text-lg text-zinc-400 mb-8">
             {paidConfirmed
               ? language === "es"
                 ? "Pago confirmado. Tu pedido ya está en proceso. Te enviaremos la confirmación y el seguimiento por email."
@@ -206,17 +206,17 @@ export default function Usb500gbThankYou() {
           </p>
 
           {paidConfirmed ? (
-            <div className="rounded-xl border border-border/70 bg-card p-6 mb-8 text-left shadow-xl">
-              <p className="text-xs font-bold uppercase tracking-[0.12em] text-muted-foreground">
+            <div className="rounded-xl border border-[#5E5E5E]/70 bg-[#111111] p-6 mb-8 text-left shadow-xl">
+              <p className="text-xs font-bold uppercase tracking-[0.12em] text-zinc-400">
                 {language === "es" ? "Estado del envío" : "Shipping status"}
               </p>
               {trackingNumber ? (
                 <>
-                  <p className="mt-2 text-sm text-muted-foreground">
+                  <p className="mt-2 text-sm text-zinc-400">
                     {language === "es" ? "Guía de rastreo" : "Tracking number"}
                   </p>
-                  <p className="mt-1 font-mono text-sm text-foreground">{trackingNumber}</p>
-                  <p className="mt-3 text-xs text-muted-foreground">
+                  <p className="mt-1 font-mono text-sm text-[#EFEFEF]">{trackingNumber}</p>
+                  <p className="mt-3 text-xs text-zinc-400">
                     {language === "es"
                       ? "La guía puede tardar un poco en activarse en la paquetería."
                       : "It may take a little while for the carrier to activate the tracking."}
@@ -233,7 +233,7 @@ export default function Usb500gbThankYou() {
                   ) : null}
                 </>
               ) : (
-                <p className="mt-2 text-sm text-muted-foreground">
+                <p className="mt-2 text-sm text-zinc-400">
                   {language === "es"
                     ? "Estamos preparando tu envío. En cuanto se genere la guía, aparecerá aquí y te llegará por email."
                     : "We’re preparing your shipment. Once tracking is generated, it will show here and arrive by email."}
@@ -250,14 +250,14 @@ export default function Usb500gbThankYou() {
             </div>
           ) : null}
 
-          <div className="rounded-xl border border-border/70 bg-muted/30 p-6 mb-8 text-left">
+          <div className="rounded-xl border border-[#5E5E5E]/70 bg-muted/30 p-6 mb-8 text-left">
             <div className="flex items-center gap-3 mb-3">
               <MessageCircle className="w-6 h-6 text-primary" />
               <span className="font-semibold">
                 {language === "es" ? "Soporte en español" : "Spanish support"}
               </span>
             </div>
-            <p className="text-sm text-muted-foreground">
+            <p className="text-sm text-zinc-400">
               {language === "es"
                 ? "Si necesitas ayuda con tu pedido, contáctanos y te respondemos rápido."
                 : "If you need help with your order, contact us and we’ll reply fast."}
@@ -269,7 +269,7 @@ export default function Usb500gbThankYou() {
                 </Button>
               </Link>
               {paymentRef && paymentProvider ? (
-                <p className="text-xs text-muted-foreground">
+                <p className="text-xs text-zinc-400">
                   {language === "es" ? "Referencia" : "Reference"}: {paymentProvider} ·{" "}
                   <span className="font-mono">{paymentRef}</span>
                 </p>

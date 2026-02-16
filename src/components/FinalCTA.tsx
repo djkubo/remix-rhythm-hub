@@ -30,7 +30,7 @@ const FinalCTA = () => {
   ];
 
   return (
-    <section className="relative border-y border-border/75 bg-background-carbon/68 py-18 md:py-22">
+    <section className="relative border-y border-[#5E5E5E]/75 bg-background-carbon/68 py-18 md:py-22">
       <div className="container mx-auto px-4">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -38,14 +38,14 @@ const FinalCTA = () => {
           transition={{ duration: 0.35 }}
           className="mx-auto max-w-5xl"
         >
-          <div className="rounded-3xl border border-border/88 bg-card p-8 shadow-[0_14px_30px_rgba(15,23,42,0.1)] md:p-12">
+          <div className="rounded-2xl border border-[#5E5E5E]/88 bg-[#111111] p-8 shadow-[0_14px_30px_rgba(15,23,42,0.1)] md:p-12">
             <div className="grid gap-8 md:grid-cols-[1.15fr_1fr] md:items-center">
               <div>
-                <h2 className="font-display text-4xl font-bold leading-tight text-foreground md:text-5xl">
+                <h2 className="font-bebas text-4xl font-bold leading-tight text-[#EFEFEF] md:text-5xl">
                   {t("cta.title")} <span className="text-primary">{t("cta.titleHighlight")}</span>
                 </h2>
 
-                <p className="mt-4 max-w-lg text-sm leading-relaxed text-muted-foreground md:text-base">
+                <p className="mt-4 max-w-lg text-sm leading-relaxed text-zinc-400 md:text-base">
                   {t("cta.subtitleSimple")}
                 </p>
 
@@ -61,7 +61,7 @@ const FinalCTA = () => {
                   </Link>
                 </Button>
 
-                <p className="mt-4 text-xs tracking-wide text-muted-foreground">
+                <p className="mt-4 text-xs tracking-wide text-zinc-400">
                   FTP / AIR EXPLORER • 320KBPS / 1080P •{" "}
                   {language === "es" ? "soporte incluido" : "support included"}
                 </p>
@@ -71,12 +71,12 @@ const FinalCTA = () => {
                 {benefits.map((benefit) => (
                   <div
                     key={benefit.text}
-                    className="flex items-center gap-3 rounded-xl border border-border/85 bg-background px-4 py-3 text-left"
+                    className="flex items-center gap-3 rounded-xl border border-[#5E5E5E]/85 bg-background px-4 py-3 text-left"
                   >
-                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-primary/45 bg-card">
+                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-primary/45 bg-[#111111]">
                       <benefit.icon className="h-4.5 w-4.5 text-primary" strokeWidth={1.8} />
                     </div>
-                    <span className="text-sm font-medium text-foreground/95">{benefit.text}</span>
+                    <span className="text-sm font-medium text-[#EFEFEF]/95">{benefit.text}</span>
                   </div>
                 ))}
               </div>

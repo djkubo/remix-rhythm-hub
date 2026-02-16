@@ -39,7 +39,7 @@ const SpeedSection = () => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
-            className="glow-border bg-card dark:bg-gradient-to-b dark:from-card-elevated dark:to-card p-8 md:p-14"
+            className="glow-border bg-[#111111] dark:bg-gradient-to-b dark:from-card-elevated dark:to-card p-8 md:p-14"
           >
             {/* Header */}
             <div className="text-center mb-12">
@@ -52,13 +52,13 @@ const SpeedSection = () => {
                 {t("speed.badge")}
               </motion.span>
               
-              <h2 className="font-display text-display-sm md:text-display-md font-extrabold leading-tight text-foreground">
+              <h2 className="font-bebas text-display-sm md:text-display-md font-extrabold leading-tight text-[#EFEFEF]">
                 {t("speed.title1")}{" "}
-                <span className="text-gradient-red">{t("speed.title2")}</span>{" "}
+                <span className="text-[#AA0202]">{t("speed.title2")}</span>{" "}
                 {t("speed.title3")}
               </h2>
               
-              <p className="mt-6 max-w-2xl mx-auto font-sans text-lg text-muted-foreground">
+              <p className="mt-6 max-w-2xl mx-auto font-sans text-lg text-zinc-400">
                 {t("speed.subtitle")}
               </p>
             </div>
@@ -70,10 +70,10 @@ const SpeedSection = () => {
               </div>
               
               <div className="text-center md:text-left">
-                <h3 className="font-display text-2xl md:text-3xl font-bold">
+                <h3 className="font-bebas text-2xl md:text-3xl font-bold">
                   {t("speed.ftpTitle")}
                 </h3>
-                <p className="mt-2 font-sans text-lg text-muted-foreground">
+                <p className="mt-2 font-sans text-lg text-zinc-400">
                   {t("speed.ftpDesc")}
                 </p>
               </div>
@@ -88,11 +88,11 @@ const SpeedSection = () => {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.4, delay: index * 0.1 }}
-                  className="group flex flex-col items-center rounded-2xl bg-muted/50 dark:bg-secondary/40 border border-border transition-all duration-300 hover:bg-muted dark:hover:bg-secondary/60 hover:border-primary/30 p-6 text-center hover:shadow-md dark:hover:shadow-none"
+                  className="group flex flex-col items-center rounded-2xl bg-muted/50 dark:bg-secondary/40 border border-[#5E5E5E] transition-all duration-300 hover:bg-muted dark:hover:bg-secondary/60 hover:border-primary/30 p-6 text-center hover:shadow-md dark:hover:shadow-none"
                 >
                   <feature.icon className="mb-4 h-10 w-10 text-primary group-hover:scale-110 transition-all duration-300" strokeWidth={1.5} />
-                  <h3 className="font-display text-lg font-bold tracking-wide text-foreground">{feature.title}</h3>
-                  <p className="mt-2 font-sans text-sm text-muted-foreground">{feature.description}</p>
+                  <h3 className="font-bebas text-lg font-bold tracking-wide text-[#EFEFEF]">{feature.title}</h3>
+                  <p className="mt-2 font-sans text-sm text-zinc-400">{feature.description}</p>
                 </motion.div>
               ))}
             </div>

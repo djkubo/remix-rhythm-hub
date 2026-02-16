@@ -4,15 +4,12 @@ import { Zap } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { useTheme } from "@/contexts/ThemeContext";
 import { useAnalytics } from "@/hooks/useAnalytics";
 import { cn } from "@/lib/utils";
 import logoWhite from "@/assets/logo-white.png";
-import logoDark from "@/assets/logo-dark.png";
 
 const MobileStickyBar = () => {
   const { t } = useLanguage();
-  const { theme } = useTheme();
   const { trackEvent } = useAnalytics();
   const [isVisible, setIsVisible] = useState(false);
 
@@ -45,16 +42,16 @@ const MobileStickyBar = () => {
               "flex items-center justify-between gap-3 border-t px-4 py-3 backdrop-blur-xl",
               theme === "dark"
                 ? "border-white/10 bg-background/90 shadow-[0_-6px_24px_rgba(0,0,0,0.45)]"
-                : "border-border bg-card/98 shadow-[0_-10px_22px_rgba(15,23,42,0.14)]"
+                : "border-[#5E5E5E] bg-[#111111]/98 shadow-[0_-10px_22px_rgba(15,23,42,0.14)]"
             )}
           >
             <div className="flex items-center gap-2 min-w-0">
               <img
-                src={theme === "dark" ? logoWhite : logoDark}
+                src={logoWhite}
                 alt="VRP"
                 className="h-7 w-auto object-contain flex-shrink-0"
               />
-              <p className="text-sm text-muted-foreground font-sans truncate">
+              <p className="text-sm text-zinc-400 font-sans truncate">
                 {t("mobile.ready")}
               </p>
             </div>
@@ -82,7 +79,7 @@ const MobileStickyBar = () => {
           </div>
           
           {/* Safe area for iOS */}
-          <div className="h-[env(safe-area-inset-bottom)] bg-card" />
+          <div className="h-[env(safe-area-inset-bottom)] bg-[#111111]" />
         </motion.div>
       )}
     </AnimatePresence>

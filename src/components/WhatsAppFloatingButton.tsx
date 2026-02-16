@@ -29,7 +29,7 @@ export default function WhatsAppFloatingButton() {
                     <div className="relative rounded-xl border border-[#2A3942] bg-[#202C33] px-3 py-2.5 shadow-xl">
                         <button
                             onClick={() => setDismissed(true)}
-                            className="absolute -top-2 -right-2 flex h-5 w-5 items-center justify-center rounded-full bg-[#111111] border border-[#5E5E5E] text-muted-foreground hover:text-[#EFEFEF]"
+                            className="absolute -top-2 -right-2 flex h-5 w-5 items-center justify-center rounded-full bg-[#111111] border border-[#5E5E5E] text-zinc-400 hover:text-[#EFEFEF]"
                         >
                             <X className="h-3 w-3" />
                         </button>

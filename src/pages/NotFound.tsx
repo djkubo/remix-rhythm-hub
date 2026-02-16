@@ -15,19 +15,19 @@ const NotFound = () => {
   }, [location.pathname]);
 
   return (
-    <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-background px-4 py-16">
+    <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[#070707] px-4 py-16">
       {/* Background accents */}
       <div className="pointer-events-none absolute inset-0 hero-gradient opacity-40" />
       <div className="pointer-events-none absolute -top-24 left-1/2 h-[500px] w-[900px] -translate-x-1/2 rounded-full bg-primary/10 blur-3xl" />
 
-      <div className="relative w-full max-w-lg rounded-2xl border border-border/60 bg-card/80 p-8 text-center shadow-2xl backdrop-blur-sm">
-        <p className="font-bebas text-sm uppercase tracking-[0.25em] text-muted-foreground">
+      <div className="relative w-full max-w-lg rounded-2xl border border-[#5E5E5E]/60 bg-[#111111]/80 p-8 text-center shadow-2xl backdrop-blur-sm">
+        <p className="font-bebas text-sm uppercase tracking-[0.25em] text-zinc-400">
           404
         </p>
         <h1 className="mt-3 text-3xl font-bold md:text-4xl">
           {language === "es" ? "Página no encontrada" : "Page not found"}
         </h1>
-        <p className="mt-3 text-muted-foreground">
+        <p className="mt-3 text-zinc-400">
           {language === "es"
             ? "La página que intentaste abrir no existe o fue movida."
             : "The page you tried to open doesn't exist or was moved."}
@@ -48,7 +48,7 @@ const NotFound = () => {
           </Button>
         </div>
 
-        <p className="mt-8 text-xs text-muted-foreground">
+        <p className="mt-8 text-xs text-zinc-400">
           {language === "es" ? "Ruta:" : "Route:"}{" "}
           <span className="font-mono">{location.pathname}</span>
         </p>

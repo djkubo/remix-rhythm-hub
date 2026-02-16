@@ -37,7 +37,7 @@ const HowItWorksSection = () => {
           <p className="text-xs font-bold uppercase tracking-[0.18em] text-primary">
             {isSpanish ? "Cómo funciona" : "How it works"}
           </p>
-          <h2 className="mt-3 font-display text-4xl font-bold md:text-5xl lg:text-6xl">
+          <h2 className="mt-3 font-bebas text-4xl font-bold md:text-5xl lg:text-6xl">
             {isSpanish ? "Más claro, más rápido, más rentable" : "Clearer, faster, more profitable"}
           </h2>
         </div>
@@ -49,13 +49,13 @@ const HowItWorksSection = () => {
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.35, delay: index * 0.08 }}
-              className="rounded-2xl border border-border/88 bg-card p-6 shadow-[0_12px_26px_rgba(15,23,42,0.09)]"
+              className="rounded-2xl border border-[#5E5E5E]/88 bg-[#111111] p-6 shadow-[0_12px_26px_rgba(15,23,42,0.09)]"
             >
-              <div className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-primary/45 bg-card">
+              <div className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-primary/45 bg-[#111111]">
                 <step.icon className="h-5 w-5 text-primary" />
               </div>
-              <h3 className="mt-4 font-display text-2xl font-bold">{step.title}</h3>
-              <p className="mt-2 text-sm leading-relaxed text-muted-foreground md:text-base">
+              <h3 className="mt-4 font-bebas text-2xl font-bold">{step.title}</h3>
+              <p className="mt-2 text-sm leading-relaxed text-zinc-400 md:text-base">
                 {step.description}
               </p>
             </motion.article>

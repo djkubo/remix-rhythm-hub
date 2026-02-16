@@ -22,7 +22,7 @@ export default function ThankYou() {
   }, [trackEvent]);
 
   return (
-    <main className="min-h-screen bg-background flex items-center justify-center p-4">
+    <main className="min-h-screen bg-[#070707] flex items-center justify-center p-4">
       <div className="w-full max-w-lg">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -51,7 +51,7 @@ export default function ThankYou() {
           </h1>
 
           {/* Subtitle */}
-          <p className="text-lg text-muted-foreground mb-8">
+          <p className="text-lg text-zinc-400 mb-8">
             {language === "es" 
               ? "En unos minutos recibirás un mensaje en tu WhatsApp con los demos exclusivos. 🎧" 
               : "In a few minutes you'll receive a WhatsApp message with the exclusive demos. 🎧"}
@@ -71,7 +71,7 @@ export default function ThankYou() {
               </span>
             </div>
             
-            <p className="text-sm text-muted-foreground">
+            <p className="text-sm text-zinc-400">
               {language === "es" 
                 ? "Si no recibes el mensaje en 10 minutos, revisa que el número esté correcto o contáctanos directamente." 
                 : "If you don't receive the message in 10 minutes, make sure the number is correct or contact us directly."}
@@ -89,7 +89,7 @@ export default function ThankYou() {
               <Disc3 className="w-5 h-5 text-primary" />
               {language === "es" ? "Lo que recibirás:" : "What you'll get:"}
             </h3>
-            <ul className="space-y-2 text-sm text-muted-foreground">
+            <ul className="space-y-2 text-sm text-zinc-400">
               <li className="flex items-start gap-2">
                 <span className="text-primary">✓</span>
                 {language === "es" 

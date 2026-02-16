@@ -21,7 +21,7 @@ export default function PricingSection({ checkoutUrl }: PricingSectionProps) {
       <div className="mx-auto max-w-6xl">
         {/* Value anchor */}
         <div className="mb-10 text-center">
-          <p className="font-sans text-sm text-muted-foreground">
+          <p className="font-sans text-sm text-zinc-400">
             Suscribirte a BPMSupreme + DJCity + Beatjunkies por separado =
           </p>
           <p className="mt-1 font-bebas text-3xl text-[#5E5E5E] line-through decoration-[#AA0202] md:text-4xl">
@@ -152,7 +152,7 @@ export default function PricingSection({ checkoutUrl }: PricingSectionProps) {
                   HAZTE ELITE
                 </Link>
               </Button>
-              <p className="mt-3 text-center font-sans text-xs text-muted-foreground">
+              <p className="mt-3 text-center font-sans text-xs text-zinc-400">
                 Ahorras $225 vs plan mensual · Garantía 7 días
               </p>
             </div>

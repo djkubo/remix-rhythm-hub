@@ -63,7 +63,7 @@ export default function HeroCommunitySection({
           TU BIBLIOTECA DE DJ LISTA EN MINUTOS, NO EN DÍAS.
         </h1>
 
-        <p className="mt-4 font-sans text-lg leading-relaxed text-muted-foreground">
+        <p className="mt-4 font-sans text-lg leading-relaxed text-zinc-400">
           Descarga masiva vía FTP. Centralizamos los éxitos de todos los pools, filtramos la basura y te entregamos +150,000 archivos limpios. Audio, Video y Karaoke.
         </p>
 
@@ -98,7 +98,7 @@ export default function HeroCommunitySection({
 
         {/* Social proof stats bar */}
         <div className="mt-10 flex flex-wrap items-center justify-center gap-6 md:gap-10">
-          <div className="flex items-center gap-2 text-muted-foreground">
+          <div className="flex items-center gap-2 text-zinc-400">
             <Users className="h-4 w-4 text-[#AA0202]" />
             <span className="font-bebas text-xl text-[#EFEFEF]">
               <AnimatedCounter target={4800} suffix="+" />
@@ -106,7 +106,7 @@ export default function HeroCommunitySection({
             <span className="font-sans text-xs uppercase tracking-wide">DJs activos</span>
           </div>
           <div className="hidden h-4 w-px bg-[#5E5E5E] md:block" />
-          <div className="flex items-center gap-2 text-muted-foreground">
+          <div className="flex items-center gap-2 text-zinc-400">
             <Disc3 className="h-4 w-4 text-[#AA0202]" />
             <span className="font-bebas text-xl text-[#EFEFEF]">
               <AnimatedCounter target={150000} suffix="+" />
@@ -114,7 +114,7 @@ export default function HeroCommunitySection({
             <span className="font-sans text-xs uppercase tracking-wide">archivos</span>
           </div>
           <div className="hidden h-4 w-px bg-[#5E5E5E] md:block" />
-          <div className="flex items-center gap-2 text-muted-foreground">
+          <div className="flex items-center gap-2 text-zinc-400">
             <Music className="h-4 w-4 text-[#AA0202]" />
             <span className="font-bebas text-xl text-[#EFEFEF]">
               <AnimatedCounter target={30} suffix="+" />

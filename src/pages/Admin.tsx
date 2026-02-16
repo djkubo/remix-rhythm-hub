@@ -77,7 +77,7 @@ export default function AdminPanel() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
+      <div className="min-h-screen flex items-center justify-center bg-[#070707]">
         <Loader2 className="w-8 h-8 animate-spin text-primary" />
       </div>
     );
@@ -89,9 +89,9 @@ export default function AdminPanel() {
   ];
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-[#070707]">
       {/* Mobile header */}
-      <header className="lg:hidden flex items-center justify-between p-4 border-b bg-card">
+      <header className="lg:hidden flex items-center justify-between p-4 border-b bg-[#111111]">
         <h1 className="font-bold text-lg">Admin Panel</h1>
         <div className="flex items-center gap-2">
           <Button variant="ghost" size="icon" onClick={() => setSidebarOpen(!sidebarOpen)}>
@@ -103,14 +103,14 @@ export default function AdminPanel() {
       <div className="flex">
         {/* Sidebar */}
         <aside className={`
-          fixed inset-y-0 left-0 z-50 w-64 bg-card border-r transform transition-transform lg:relative lg:translate-x-0
+          fixed inset-y-0 left-0 z-50 w-64 bg-[#111111] border-r transform transition-transform lg:relative lg:translate-x-0
           ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}
         `}>
           <div className="flex flex-col h-full">
             {/* Logo */}
             <div className="p-6 border-b hidden lg:block">
               <h1 className="font-bold text-xl">Admin Panel</h1>
-              <p className="text-sm text-muted-foreground truncate">{user?.email}</p>
+              <p className="text-sm text-zinc-400 truncate">{user?.email}</p>
             </div>
 
             {/* Navigation */}

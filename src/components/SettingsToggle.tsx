@@ -24,10 +24,10 @@ const SettingsToggle = () => {
       >
         <button
           onClick={() => setIsOpen(true)}
-          className="flex h-12 w-12 items-center justify-center rounded-full bg-card/90 dark:bg-card/80 backdrop-blur-xl border border-border shadow-lg transition-all hover:bg-card hover:border-primary/50 hover:shadow-xl dark:hover:shadow-glow"
+          className="flex h-12 w-12 items-center justify-center rounded-full bg-[#111111]/90 dark:bg-[#111111]/80 backdrop-blur-xl border border-[#5E5E5E] shadow-lg transition-all hover:bg-[#111111] hover:border-primary/50 hover:shadow-xl dark:hover:shadow-glow"
           aria-label={language === "es" ? "Configuración" : "Settings"}
         >
-          <Settings className="h-5 w-5 text-foreground" />
+          <Settings className="h-5 w-5 text-[#EFEFEF]" />
         </button>
       </motion.div>
 
@@ -53,11 +53,11 @@ const SettingsToggle = () => {
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: 100 }}
               transition={{ type: "spring", damping: 25, stiffness: 300 }}
-              className="fixed right-0 top-0 z-50 h-full w-80 bg-card backdrop-blur-xl border-l border-border shadow-2xl"
+              className="fixed right-0 top-0 z-50 h-full w-80 bg-[#111111] backdrop-blur-xl border-l border-[#5E5E5E] shadow-2xl"
             >
               {/* Header */}
-              <div className="flex items-center justify-between border-b border-border/50 p-6">
-                <h2 className="font-display text-xl font-bold">
+              <div className="flex items-center justify-between border-b border-[#5E5E5E]/50 p-6">
+                <h2 className="font-bebas text-xl font-bold">
                   {language === "es" ? "Configuración" : "Settings"}
                 </h2>
                 <button
@@ -74,12 +74,12 @@ const SettingsToggle = () => {
               <div className="p-6 space-y-6">
                 {/* Theme Toggle */}
                 <div className="space-y-3">
-                  <label className="font-bebas text-sm tracking-wider text-muted-foreground">
+                  <label className="font-bebas text-sm tracking-wider text-zinc-400">
                     {language === "es" ? "TEMA" : "THEME"}
                   </label>
                   <button
                     onClick={toggleTheme}
-                    className="flex w-full items-center justify-between rounded-xl bg-secondary/50 border border-border/50 p-4 transition-all hover:bg-secondary hover:border-primary/30"
+                    className="flex w-full items-center justify-between rounded-xl bg-secondary/50 border border-[#5E5E5E]/50 p-4 transition-all hover:bg-secondary hover:border-primary/30"
                   >
                     <div className="flex items-center gap-3">
                       {theme === "dark" ? (
@@ -113,12 +113,12 @@ const SettingsToggle = () => {
 
                 {/* Language Toggle */}
                 <div className="space-y-3">
-                  <label className="font-bebas text-sm tracking-wider text-muted-foreground">
+                  <label className="font-bebas text-sm tracking-wider text-zinc-400">
                     {language === "es" ? "IDIOMA" : "LANGUAGE"}
                   </label>
                   <button
                     onClick={toggleLanguage}
-                    className="flex w-full items-center justify-between rounded-xl bg-secondary/50 border border-border/50 p-4 transition-all hover:bg-secondary hover:border-primary/30"
+                    className="flex w-full items-center justify-between rounded-xl bg-secondary/50 border border-[#5E5E5E]/50 p-4 transition-all hover:bg-secondary hover:border-primary/30"
                   >
                     <div className="flex items-center gap-3">
                       <Globe className="h-5 w-5 text-primary" />
@@ -134,13 +134,13 @@ const SettingsToggle = () => {
 
                 {/* Currency Selector */}
                 <div className="space-y-3">
-                  <label className="font-bebas text-sm tracking-wider text-muted-foreground">
+                  <label className="font-bebas text-sm tracking-wider text-zinc-400">
                     {language === "es" ? "MONEDA" : "CURRENCY"}
                   </label>
                   <div className="relative">
                     <button
                       onClick={() => setShowCurrencyList(!showCurrencyList)}
-                      className="flex w-full items-center justify-between rounded-xl bg-secondary/50 border border-border/50 p-4 transition-all hover:bg-secondary hover:border-primary/30"
+                      className="flex w-full items-center justify-between rounded-xl bg-secondary/50 border border-[#5E5E5E]/50 p-4 transition-all hover:bg-secondary hover:border-primary/30"
                     >
                       <div className="flex items-center gap-3">
                         <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/20 font-bold text-primary">
@@ -150,13 +150,13 @@ const SettingsToggle = () => {
                           <span className="font-sans font-medium block">
                             {currency.code}
                           </span>
-                          <span className="text-xs text-muted-foreground">
+                          <span className="text-xs text-zinc-400">
                             {currency.name}
                           </span>
                         </div>
                       </div>
                       <ChevronDown
-                        className={`h-5 w-5 text-muted-foreground transition-transform ${
+                        className={`h-5 w-5 text-zinc-400 transition-transform ${
                           showCurrencyList ? "rotate-180" : ""
                         }`}
                       />
@@ -169,7 +169,7 @@ const SettingsToggle = () => {
                           initial={{ opacity: 0, y: -10 }}
                           animate={{ opacity: 1, y: 0 }}
                           exit={{ opacity: 0, y: -10 }}
-                          className="absolute left-0 right-0 top-full mt-2 max-h-60 overflow-auto rounded-xl bg-card border border-border/50 shadow-xl z-10"
+                          className="absolute left-0 right-0 top-full mt-2 max-h-60 overflow-auto rounded-xl bg-[#111111] border border-[#5E5E5E]/50 shadow-xl z-10"
                         >
                           {currencies.map((curr) => (
                             <button
@@ -191,7 +191,7 @@ const SettingsToggle = () => {
                                 <span className="font-medium block text-sm">
                                   {curr.code}
                                 </span>
-                                <span className="text-xs text-muted-foreground">
+                                <span className="text-xs text-zinc-400">
                                   {curr.name}
                                 </span>
                               </div>
@@ -208,7 +208,7 @@ const SettingsToggle = () => {
 
                 {/* Info */}
                 <div className="rounded-xl bg-primary/10 border border-primary/20 p-4">
-                  <p className="text-xs text-muted-foreground leading-relaxed">
+                  <p className="text-xs text-zinc-400 leading-relaxed">
                     {language === "es"
                       ? "Los precios se muestran como referencia y se cobran en USD al momento del pago."
                       : "Prices are shown as reference and charged in USD at checkout."}

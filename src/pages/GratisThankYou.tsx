@@ -13,7 +13,7 @@ export default function GratisThankYou() {
   const { language } = useLanguage();
 
   return (
-    <main className="min-h-screen bg-background flex items-center justify-center p-4">
+    <main className="min-h-screen bg-[#070707] flex items-center justify-center p-4">
       <div className="w-full max-w-lg">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -34,7 +34,7 @@ export default function GratisThankYou() {
             {language === "es" ? "¡Gracias por registrarte!" : "Thanks for registering!"}
           </h1>
 
-          <p className="text-lg text-muted-foreground mb-8">
+          <p className="text-lg text-zinc-400 mb-8">
             {language === "es"
               ? "Ya casi: estás entrando a nuestra comunidad exclusiva para DJs."
               : "Almost there: you’re joining our exclusive DJ community."}
@@ -47,7 +47,7 @@ export default function GratisThankYou() {
                 {language === "es" ? "Revisa tu WhatsApp" : "Check your WhatsApp"}
               </span>
             </div>
-            <p className="text-sm text-muted-foreground">
+            <p className="text-sm text-zinc-400">
               {language === "es"
                 ? "En unos minutos recibirás el acceso. Si no te llega, revisa tu número o intenta de nuevo."
                 : "In a few minutes you’ll receive access. If it doesn’t arrive, double-check your number or try again."}

@@ -39,11 +39,11 @@ const PremiumFeaturesSection = () => {
           <span className="badge-primary mb-6">
             {t("premium.badge")}
           </span>
-          <h2 className="font-display text-display-sm md:text-display-md font-extrabold text-foreground">
+          <h2 className="font-bebas text-display-sm md:text-display-md font-extrabold text-[#EFEFEF]">
             {t("premium.title")}{" "}
-            <span className="text-gradient-red">{t("premium.titleHighlight")}</span>
+            <span className="text-[#AA0202]">{t("premium.titleHighlight")}</span>
           </h2>
-          <p className="mx-auto mt-6 max-w-xl text-lg text-muted-foreground">
+          <p className="mx-auto mt-6 max-w-xl text-lg text-zinc-400">
             {t("premium.subtitle")}
           </p>
         </motion.div>
@@ -68,10 +68,10 @@ const PremiumFeaturesSection = () => {
                 </div>
 
                 {/* Content */}
-                <h3 className="mb-3 font-display text-xl font-bold tracking-wide text-foreground md:text-2xl">
+                <h3 className="mb-3 font-bebas text-xl font-bold tracking-wide text-[#EFEFEF] md:text-2xl">
                   {feature.title}
                 </h3>
-                <p className="text-muted-foreground leading-relaxed">
+                <p className="text-zinc-400 leading-relaxed">
                   {feature.description}
                 </p>
               </div>

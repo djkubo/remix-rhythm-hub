@@ -30,7 +30,7 @@ const InfiniteMarquee = memo(() => {
           {repeatedGenres.map((genre, index) => (
             <span
               key={`row1-${genre}-${index}`}
-              className="mx-6 whitespace-nowrap font-display text-5xl font-bold uppercase tracking-wide text-white/10 transition-all duration-500 hover:text-primary/50 md:mx-8 md:text-6xl lg:text-7xl"
+              className="mx-6 whitespace-nowrap font-bebas text-5xl font-bold uppercase tracking-wide text-white/10 transition-all duration-500 hover:text-primary/50 md:mx-8 md:text-6xl lg:text-7xl"
             >
               {genre}
             </span>
@@ -50,7 +50,7 @@ const InfiniteMarquee = memo(() => {
           {[...repeatedGenres].reverse().map((genre, index) => (
             <span
               key={`row2-${genre}-${index}`}
-              className="mx-6 whitespace-nowrap font-display text-4xl font-bold uppercase tracking-wide text-white/5 transition-all duration-500 hover:text-primary/30 md:mx-8 md:text-5xl lg:text-6xl"
+              className="mx-6 whitespace-nowrap font-bebas text-4xl font-bold uppercase tracking-wide text-white/5 transition-all duration-500 hover:text-primary/30 md:mx-8 md:text-5xl lg:text-6xl"
             >
               {genre}
             </span>

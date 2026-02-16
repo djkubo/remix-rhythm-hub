@@ -301,7 +301,7 @@ export default function ExitIntentPopup() {
             transition={{ type: "spring", damping: 25, stiffness: 300 }}
             className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[95%] max-w-md z-[60]"
           >
-            <div className="relative bg-gradient-to-br from-background via-background to-primary/5 border border-border rounded-2xl shadow-2xl overflow-hidden">
+            <div className="relative bg-gradient-to-br from-background via-background to-primary/5 border border-[#5E5E5E] rounded-2xl shadow-2xl overflow-hidden">
               {/* Decorative gradient */}
               <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-primary via-accent to-primary" />
               
@@ -311,7 +311,7 @@ export default function ExitIntentPopup() {
 	                className="absolute top-4 right-4 p-2 rounded-full hover:bg-muted transition-colors"
 	                aria-label={language === "es" ? "Cerrar" : "Close"}
 	              >
-                <X className="w-5 h-5 text-muted-foreground" />
+                <X className="w-5 h-5 text-zinc-400" />
               </button>
 
               <div className="p-6 md:p-8">
@@ -325,7 +325,7 @@ export default function ExitIntentPopup() {
                     {language === "es" ? "¡Hey DJ! 🎧" : "Hey DJ! 🎧"}
                   </h2>
                   
-                  <p className="text-muted-foreground">
+                  <p className="text-zinc-400">
                     {language === "es" 
                       ? "¿Te gustaría recibir una carpeta con demos gratis directo a tu WhatsApp?" 
                       : "Want a free demo folder sent straight to your WhatsApp?"}
@@ -383,7 +383,7 @@ export default function ExitIntentPopup() {
                       {language === "es" ? "Tu WhatsApp" : "Your WhatsApp"}
                     </Label>
                     <div className="flex mt-1">
-                      <div className="flex items-center px-3 bg-muted border border-r-0 border-input rounded-l-md text-sm text-muted-foreground">
+                      <div className="flex items-center px-3 bg-muted border border-r-0 border-input rounded-l-md text-sm text-zinc-400">
                         {countryData.dial_code}
                       </div>
 	                      <Input
@@ -400,14 +400,14 @@ export default function ExitIntentPopup() {
 	                        disabled={isSubmitting}
 	                      />
 	                    </div>
-	                    <p className="text-xs text-muted-foreground mt-1">
+	                    <p className="text-xs text-zinc-400 mt-1">
 	                      {language === "es" 
 	                        ? `Solo números, sin el código de país. Detectamos que estás en ${countryData.country_name}` 
 	                        : `Digits only, without country code. We detected you're in ${countryData.country_name}`}
 	                    </p>
                   </div>
 
-                  <div className="rounded-xl border border-border/60 bg-card/40 p-4">
+                  <div className="rounded-xl border border-[#5E5E5E]/60 bg-[#111111]/40 p-4">
                     <div className="flex items-start gap-3">
                       <Checkbox
                         id="exit-consent-transactional"
@@ -421,7 +421,7 @@ export default function ExitIntentPopup() {
                       />
                       <Label
                         htmlFor="exit-consent-transactional"
-                        className="cursor-pointer text-xs leading-snug text-foreground"
+                        className="cursor-pointer text-xs leading-snug text-[#EFEFEF]"
                       >
                         {language === "es"
                           ? "Acepto recibir mensajes transaccionales y de soporte por WhatsApp/SMS/email."
@@ -438,7 +438,7 @@ export default function ExitIntentPopup() {
                       />
                       <Label
                         htmlFor="exit-consent-marketing"
-                        className="cursor-pointer text-xs leading-snug text-muted-foreground"
+                        className="cursor-pointer text-xs leading-snug text-zinc-400"
                       >
                         {language === "es"
                           ? "Quiero recibir promociones y novedades por WhatsApp/SMS/email."
@@ -471,7 +471,7 @@ export default function ExitIntentPopup() {
                   </Button>
                 </form>
 
-                <p className="text-xs text-center text-muted-foreground mt-4">
+                <p className="text-xs text-center text-zinc-400 mt-4">
                   {language === "es" 
                     ? "Te enviaremos los demos por WhatsApp en minutos. Sin spam." 
                     : "We'll send the demos via WhatsApp in minutes. No spam."}

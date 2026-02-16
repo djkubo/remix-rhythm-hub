@@ -3,17 +3,14 @@ import { CheckCircle2, Headphones, PlayCircle, ShieldCheck, Zap } from "lucide-r
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { useTheme } from "@/contexts/ThemeContext";
 import { useDataLayer } from "@/hooks/useDataLayer";
 import { useAnalytics } from "@/hooks/useAnalytics";
 import { isExperimentEnabled } from "@/lib/croFlags";
 import { getExperimentAssignment } from "@/lib/experiments";
 import logoWhite from "@/assets/logo-white.png";
-import logoDark from "@/assets/logo-dark.png";
 
 const HeroSection = () => {
   const { language } = useLanguage();
-  const { theme } = useTheme();
   const { trackClick } = useDataLayer();
   const { trackEvent } = useAnalytics();
   const isSpanish = language === "es";
@@ -78,7 +75,7 @@ const HeroSection = () => {
   };
 
   return (
-    <section className="relative overflow-hidden border-b border-border/75 bg-background">
+    <section className="relative overflow-hidden border-b border-[#5E5E5E]/75 bg-background">
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(218,10,43,0.08),transparent_62%)]" />
       <div className="container relative z-10 mx-auto max-w-6xl px-4 pb-14 pt-10 md:pb-20 md:pt-16">
         <div className="grid items-center gap-9 md:grid-cols-2">
@@ -88,21 +85,21 @@ const HeroSection = () => {
             transition={{ duration: 0.35 }}
           >
             <img
-              src={theme === "dark" ? logoWhite : logoDark}
+              src={logoWhite}
               alt="VideoRemixesPack"
               className="mb-7 h-11 w-auto object-contain"
             />
 
-            <p className="inline-flex items-center gap-2 rounded-full border border-primary/55 bg-card px-3 py-1.5 text-[11px] font-bold uppercase tracking-[0.14em] text-primary">
+            <p className="inline-flex items-center gap-2 rounded-full border border-primary/55 bg-[#111111] px-3 py-1.5 text-[11px] font-bold uppercase tracking-[0.14em] text-primary">
               <ShieldCheck className="h-3.5 w-3.5" />
               {isSpanish ? "DJs latinos USA · actualización semanal" : "US Latin DJs · weekly updates"}
             </p>
 
-            <h1 className="mt-4 max-w-xl font-display text-5xl font-bold leading-tight text-foreground md:text-6xl">
+            <h1 className="mt-4 max-w-xl font-bebas text-5xl font-bold leading-tight text-[#EFEFEF] md:text-6xl">
               {isSpanish ? "Tu música lista para tocar" : "Your music ready to perform"}
             </h1>
 
-            <p className="mt-4 max-w-xl text-base leading-relaxed text-muted-foreground md:text-lg">
+            <p className="mt-4 max-w-xl text-base leading-relaxed text-zinc-400 md:text-lg">
               {isSpanish
                 ? "Un solo lugar para demos, catálogo y membresía. Menos tiempo buscando, más tiempo facturando."
                 : "One place for demos, catalog, and membership. Less search, more paid gigs."}
@@ -114,7 +111,7 @@ const HeroSection = () => {
                 isSpanish ? "Compatible con Serato, Rekordbox y VirtualDJ" : "Compatible with Serato, Rekordbox, and VirtualDJ",
                 isSpanish ? "Soporte real en español por WhatsApp" : "Real Spanish support on WhatsApp",
               ].map((point) => (
-                <li key={point} className="flex items-center gap-2.5 text-sm text-foreground/92">
+                <li key={point} className="flex items-center gap-2.5 text-sm text-[#EFEFEF]/92">
                   <CheckCircle2 className="h-4.5 w-4.5 text-primary" />
                   <span>{point}</span>
                 </li>
@@ -140,7 +137,7 @@ const HeroSection = () => {
                   asChild
                   size="lg"
                   variant="outline"
-                  className="h-12 gap-2.5 border-border bg-background px-6 text-sm font-bold hover:bg-muted md:text-base"
+                  className="h-12 gap-2.5 border-[#5E5E5E] bg-background px-6 text-sm font-bold hover:bg-muted md:text-base"
                 onClick={() =>
                   handleCTAClick(
                     secondaryCta.label,
@@ -157,7 +154,7 @@ const HeroSection = () => {
               </Button>
             </div>
 
-            <p className="mt-4 text-xs text-muted-foreground">
+            <p className="mt-4 text-xs text-zinc-400">
               {isSpanish
                 ? "Pagos seguros con Stripe. Cancela cuando quieras."
                 : "Secure payments with Stripe. Cancel anytime."}
@@ -168,21 +165,21 @@ const HeroSection = () => {
             initial={{ opacity: 0, y: 18 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.35, delay: 0.08 }}
-            className="rounded-3xl border border-border/90 bg-card p-5 shadow-[0_18px_36px_rgba(15,23,42,0.12)]"
+            className="rounded-2xl border border-[#5E5E5E]/90 bg-[#111111] p-5 shadow-[0_18px_36px_rgba(15,23,42,0.12)]"
           >
-            <div className="rounded-2xl border border-border/85 bg-background p-4">
+            <div className="rounded-2xl border border-[#5E5E5E]/85 bg-background p-4">
               <div className="flex items-center justify-between">
-                <p className="text-xs font-bold uppercase tracking-[0.12em] text-muted-foreground">
+                <p className="text-xs font-bold uppercase tracking-[0.12em] text-zinc-400">
                   {isSpanish ? "Plan recomendado" : "Recommended plan"}
                 </p>
                 <span className="rounded-full bg-primary px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-primary-foreground">
                   {isSpanish ? "Más vendido" : "Best seller"}
                 </span>
               </div>
-              <p className="mt-3 font-display text-3xl font-bold text-foreground">
+              <p className="mt-3 font-bebas text-3xl font-bold text-[#EFEFEF]">
                 {isSpanish ? "Membresía 2TB" : "2TB Membership"}
               </p>
-              <p className="text-sm text-muted-foreground">{isSpanish ? "$195 anual" : "$195 yearly"}</p>
+              <p className="text-sm text-zinc-400">{isSpanish ? "$195 anual" : "$195 yearly"}</p>
 
               <div className="mt-5 space-y-3">
                 {[
@@ -190,8 +187,8 @@ const HeroSection = () => {
                   isSpanish ? "Acceso por carpetas y FTP" : "Folder and FTP access",
                   isSpanish ? "Soporte VIP en español" : "VIP Spanish support",
                 ].map((item) => (
-                  <div key={item} className="flex items-center justify-between rounded-xl border border-border/75 bg-card px-3 py-2.5">
-                    <span className="text-sm text-foreground/90">{item}</span>
+                  <div key={item} className="flex items-center justify-between rounded-xl border border-[#5E5E5E]/75 bg-[#111111] px-3 py-2.5">
+                    <span className="text-sm text-[#EFEFEF]/90">{item}</span>
                     <CheckCircle2 className="h-4 w-4 text-primary" />
                   </div>
                 ))}
@@ -204,9 +201,9 @@ const HeroSection = () => {
                 { value: "50K+", label: isSpanish ? "Tracks" : "Tracks" },
                 { value: "4.9", label: isSpanish ? "Rating" : "Rating" },
               ].map((stat) => (
-                <div key={stat.label} className="rounded-xl border border-border/80 bg-background px-2 py-3 text-center">
-                  <p className="font-display text-xl font-bold text-foreground">{stat.value}</p>
-                  <p className="text-[10px] uppercase tracking-wide text-muted-foreground">{stat.label}</p>
+                <div key={stat.label} className="rounded-xl border border-[#5E5E5E]/80 bg-background px-2 py-3 text-center">
+                  <p className="font-bebas text-xl font-bold text-[#EFEFEF]">{stat.value}</p>
+                  <p className="text-[10px] uppercase tracking-wide text-zinc-400">{stat.label}</p>
                 </div>
               ))}
             </div>

@@ -58,7 +58,7 @@ const TrustSecuritySection = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.35 }}
-          className="rounded-3xl border border-border/88 bg-card p-6 shadow-[0_14px_30px_rgba(15,23,42,0.1)] md:p-10"
+          className="rounded-2xl border border-[#5E5E5E]/88 bg-[#111111] p-6 shadow-[0_14px_30px_rgba(15,23,42,0.1)] md:p-10"
         >
           <div className="grid gap-8 md:grid-cols-[1.2fr_1fr] md:items-center">
             <div>
@@ -66,10 +66,10 @@ const TrustSecuritySection = () => {
                 <ShieldCheck className="h-3.5 w-3.5" />
                 {t("trust.badge")}
               </span>
-              <h2 className="mt-4 max-w-xl font-display text-4xl font-bold leading-tight md:text-5xl">
+              <h2 className="mt-4 max-w-xl font-bebas text-4xl font-bold leading-tight md:text-5xl">
                 {t("trust.title")} <span className="text-primary">{t("trust.titleHighlight")}</span>
               </h2>
-              <p className="mt-4 max-w-xl text-sm leading-relaxed text-muted-foreground md:text-base">
+              <p className="mt-4 max-w-xl text-sm leading-relaxed text-zinc-400 md:text-base">
                 {isSpanish
                   ? "Pagos protegidos, acceso claro y soporte real para que compres con confianza."
                   : "Protected payments, clear access, and real support so you buy with confidence."}
@@ -80,7 +80,7 @@ const TrustSecuritySection = () => {
                 {paymentLogos.map(({ name, Component }) => (
                   <div
                     key={name}
-                    className="flex items-center justify-center rounded-lg border border-border/88 bg-card px-3 py-2"
+                    className="flex items-center justify-center rounded-lg border border-[#5E5E5E]/88 bg-[#111111] px-3 py-2"
                   >
                     <Component />
                   </div>
@@ -98,25 +98,25 @@ const TrustSecuritySection = () => {
               </div>
             </div>
 
-            <div className="rounded-2xl border border-border/88 bg-background-carbon/35 p-5">
+            <div className="rounded-2xl border border-[#5E5E5E]/88 bg-background-carbon/35 p-5">
               <div className="space-y-3 text-sm">
-                <div className="flex items-center gap-2.5 text-foreground/90">
+                <div className="flex items-center gap-2.5 text-[#EFEFEF]/90">
                   <Check className="h-4 w-4 text-success" />
                   <span>{t("trust.cancel")}</span>
                 </div>
-                <div className="flex items-center gap-2.5 text-foreground/90">
+                <div className="flex items-center gap-2.5 text-[#EFEFEF]/90">
                   <Check className="h-4 w-4 text-success" />
                   <span>{t("trust.noContracts")}</span>
                 </div>
-                <div className="flex items-center gap-2.5 text-foreground/90">
+                <div className="flex items-center gap-2.5 text-[#EFEFEF]/90">
                   <Check className="h-4 w-4 text-success" />
                   <span>{isSpanish ? "Checkout seguro en segundos" : "Secure checkout in seconds"}</span>
                 </div>
-                <div className="flex items-center gap-2.5 text-foreground/90">
+                <div className="flex items-center gap-2.5 text-[#EFEFEF]/90">
                   <Check className="h-4 w-4 text-success" />
                   <span>{isSpanish ? "Soporte en español vía WhatsApp" : "Support in Spanish via WhatsApp"}</span>
                 </div>
-                <div className="flex items-center gap-2.5 text-foreground/90">
+                <div className="flex items-center gap-2.5 text-[#EFEFEF]/90">
                   <Check className="h-4 w-4 text-success" />
                   <span>{isSpanish ? "Más de 4,800 DJs activos" : "4,800+ active DJs"}</span>
                 </div>
