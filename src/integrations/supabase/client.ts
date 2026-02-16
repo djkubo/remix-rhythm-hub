@@ -48,10 +48,12 @@ function getFallbackForHostname(
   const direct = HOSTNAME_FALLBACKS[key];
   if (direct) return direct;
 
-  // IMPORTANT:
-  // Do not fallback on other hostnames. This prevents accidental reuse of the
-  // production Supabase project from other domains.
-  if (isLocalhostHostname(key)) return undefined;
+  // NOTE:
+  // Some hosting previews don't inject Vite build-time env vars into the bundle.
+  // In that case, we fall back to the public (anon) Supabase config so the preview
+  // can still load. We intentionally do NOT fallback on localhost to avoid
+  // accidentally pointing local dev environments at the production Supabase project.
+  if (!isLocalhostHostname(key)) return DEFAULT_PUBLIC_SUPABASE;
 
   return undefined;
 }
