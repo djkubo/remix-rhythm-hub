@@ -127,6 +127,47 @@ function renderTemplate(job: QueueJob): RenderedEmail {
     };
   }
 
+  if (job.template_key === "abandoned_cart") {
+    const checkoutUrl = asString(payload.checkout_url, "https://videoremixpack.com/usb500");
+    const productName = asString(payload.product_name, "USB 500GB");
+
+    if (lang === "en") {
+      return {
+        subject: job.subject || `${name}, your ${productName} is waiting for you`,
+        html: [
+          `<div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;">`,
+          `<h2 style="color:#AA0202;">Hey ${escapeHtml(name)}, you're almost there! 🎵</h2>`,
+          `<p>You were just one step away from getting the <strong>ultimate DJ collection</strong> – 50,000+ remixes, edits, and tracks ready to play.</p>`,
+          `<p>Your order is saved and waiting for you:</p>`,
+          `<p style="text-align:center;margin:24px 0;">`,
+          `<a href="${escapeHtml(checkoutUrl)}" style="background:#AA0202;color:#fff;padding:14px 32px;border-radius:8px;text-decoration:none;font-weight:bold;font-size:16px;">COMPLETE YOUR ORDER →</a>`,
+          `</p>`,
+          `<p style="color:#666;font-size:13px;">⚡ Limited stock available. Don't miss out.</p>`,
+          `<p style="color:#666;font-size:13px;">Questions? Reply to this email or message us on WhatsApp.</p>`,
+          `</div>`,
+        ].join(""),
+        text: `Hey ${name}, you were one step away from your USB with 50,000+ remixes. Complete your order: ${checkoutUrl}`,
+      };
+    }
+
+    return {
+      subject: job.subject || `${name}, tu ${productName} te está esperando`,
+      html: [
+        `<div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;">`,
+        `<h2 style="color:#AA0202;">Hey ${escapeHtml(name)}, ¡ya casi es tuya! 🎵</h2>`,
+        `<p>Estabas a un paso de tener la <strong>colección definitiva para DJs</strong> – más de 50,000 remixes, edits y tracks listos para tocar.</p>`,
+        `<p>Tu pedido está guardado y esperándote:</p>`,
+        `<p style="text-align:center;margin:24px 0;">`,
+        `<a href="${escapeHtml(checkoutUrl)}" style="background:#AA0202;color:#fff;padding:14px 32px;border-radius:8px;text-decoration:none;font-weight:bold;font-size:16px;">COMPLETAR MI PEDIDO →</a>`,
+        `</p>`,
+        `<p style="color:#666;font-size:13px;">⚡ Stock limitado. No te quedes sin la tuya.</p>`,
+        `<p style="color:#666;font-size:13px;">¿Dudas? Responde a este email o escríbenos por WhatsApp.</p>`,
+        `</div>`,
+      ].join(""),
+      text: `Hey ${name}, estabas a un paso de tu USB con 50,000+ remixes. Completa tu pedido: ${checkoutUrl}`,
+    };
+  }
+
   throw new Error(`Unsupported template_key: ${job.template_key}`);
 }
 
