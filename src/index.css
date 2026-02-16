@@ -349,4 +349,83 @@
   .transition-smooth {
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   }
+
+  /* === PREMIUM MICRO-ANIMATIONS === */
+
+  /* Subtle entrance for sections scrolling into view */
+  .animate-fade-up {
+    animation: fadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  @keyframes fadeUp {
+    from {
+      opacity: 0;
+      transform: translateY(24px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Card shine effect on hover — subtle premium touch */
+  .card-shine {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .card-shine::after {
+    content: "";
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(
+      45deg,
+      transparent 40%,
+      hsl(0 0% 100% / 0.03) 50%,
+      transparent 60%
+    );
+    transform: translateX(-100%) rotate(0deg);
+    transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: none;
+  }
+
+  .card-shine:hover::after {
+    transform: translateX(30%) rotate(0deg);
+  }
+
+  /* CTA pulse ring — draws attention without being annoying */
+  .pulse-ring {
+    position: relative;
+  }
+
+  .pulse-ring::before {
+    content: "";
+    position: absolute;
+    inset: -4px;
+    border-radius: inherit;
+    border: 2px solid hsl(0 98% 34% / 0.4);
+    animation: pulseRing 2.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    pointer-events: none;
+  }
+
+  @keyframes pulseRing {
+    0%, 100% { opacity: 0; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.04); }
+  }
+
+  /* Smooth number counter feel */
+  .tabular-nums {
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Premium image treatment */
+  .img-premium {
+    border-radius: 1rem;
+    box-shadow:
+      0 20px 60px hsl(0 0% 0% / 0.4),
+      0 0 0 1px hsl(0 0% 100% / 0.05);
+  }
 }
