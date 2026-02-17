@@ -1,15 +1,18 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import { AlertTriangle, ArrowLeft, CheckCircle2, MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { supabase } from "@/integrations/supabase/client";
+import { useDataLayer } from "@/hooks/useDataLayer";
 
 type ShippoInfo = { ok: boolean; labelUrl?: string; trackingNumber?: string } | null;
 
 export default function Usb128ThankYou() {
   const { language } = useLanguage();
+  const { trackPurchase } = useDataLayer();
+  const purchaseTracked = useRef(false);
   const [params] = useSearchParams();
   const stripeSessionId = params.get("session_id");
   const paypalOrderId = params.get("token");
@@ -130,6 +133,14 @@ export default function Usb128ThankYou() {
   const paymentRef = stripeSessionId || paypalOrderId || null;
   const paymentProvider = stripeSessionId ? "Stripe" : paypalOrderId ? "PayPal" : null;
 
+  // Track purchase event for ads attribution
+  useEffect(() => {
+    if (paidConfirmed && !purchaseTracked.current) {
+      purchaseTracked.current = true;
+      trackPurchase(59, "USD", paymentRef || undefined, "usb_128gb", "USB 128GB DJ Collection");
+    }
+  }, [paidConfirmed, trackPurchase, paymentRef]);
+
   return (
     <main className="min-h-screen bg-[#070707] flex items-center justify-center p-4">
       <div className="w-full max-w-lg">
@@ -143,9 +154,8 @@ export default function Usb128ThankYou() {
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
             transition={{ type: "spring", damping: 15, stiffness: 200, delay: 0.15 }}
-            className={`inline-flex items-center justify-center w-24 h-24 rounded-full mb-6 ${
-              shippingBlocked ? "bg-red-500/10" : "bg-[#AA0202]/10"
-            }`}
+            className={`inline-flex items-center justify-center w-24 h-24 rounded-full mb-6 ${shippingBlocked ? "bg-red-500/10" : "bg-[#AA0202]/10"
+              }`}
           >
             {shippingBlocked ? (
               <AlertTriangle className="w-12 h-12 text-red-500" />
@@ -185,25 +195,25 @@ export default function Usb128ThankYou() {
                 ? language === "es"
                   ? "Solo enviamos productos físicos dentro de Estados Unidos. Tu pago con PayPal no se completó. Regresa e intenta de nuevo con una dirección en USA, o escríbenos por WhatsApp."
                   : "We only ship physical products within the United States. Your PayPal payment was not completed. Go back and try again with a US address, or message us on WhatsApp."
-              : hasStripeSession && stripeVerifyState === "processing"
-                ? language === "es"
-                  ? "Estamos confirmando tu pago con Stripe. No cierres esta página."
-                  : "We’re confirming your Stripe payment. Please keep this page open."
-                : hasStripeSession && stripeVerifyState === "error"
+                : hasStripeSession && stripeVerifyState === "processing"
                   ? language === "es"
-                    ? "Tu pago con Stripe está pendiente de confirmación. Revisa tu email o intenta de nuevo."
-                    : "Your Stripe payment is pending confirmation. Check your email or try again."
-              : hasPayPalOrder && paypalCaptureState === "processing"
-                ? language === "es"
-                  ? "Estamos confirmando tu pago con PayPal. No cierres esta página."
-                  : "We’re confirming your PayPal payment. Please keep this page open."
-                : hasPayPalOrder && paypalCaptureState === "error"
-                  ? language === "es"
-                    ? "Tu pago con PayPal está pendiente de confirmación. Revisa tu email de PayPal o intenta de nuevo."
-                    : "Your PayPal payment is pending confirmation. Check your PayPal email or try again."
-              : language === "es"
-                ? "No encontramos un pago confirmado en esta página. Si aún no pagas, regresa e intenta de nuevo. Si ya pagaste, revisa tu email y vuelve a cargar esta pantalla."
-                : "We couldn’t confirm a payment on this page. If you haven’t paid yet, go back and try again. If you already paid, check your email and refresh this screen."}
+                    ? "Estamos confirmando tu pago con Stripe. No cierres esta página."
+                    : "We’re confirming your Stripe payment. Please keep this page open."
+                  : hasStripeSession && stripeVerifyState === "error"
+                    ? language === "es"
+                      ? "Tu pago con Stripe está pendiente de confirmación. Revisa tu email o intenta de nuevo."
+                      : "Your Stripe payment is pending confirmation. Check your email or try again."
+                    : hasPayPalOrder && paypalCaptureState === "processing"
+                      ? language === "es"
+                        ? "Estamos confirmando tu pago con PayPal. No cierres esta página."
+                        : "We’re confirming your PayPal payment. Please keep this page open."
+                      : hasPayPalOrder && paypalCaptureState === "error"
+                        ? language === "es"
+                          ? "Tu pago con PayPal está pendiente de confirmación. Revisa tu email de PayPal o intenta de nuevo."
+                          : "Your PayPal payment is pending confirmation. Check your PayPal email or try again."
+                        : language === "es"
+                          ? "No encontramos un pago confirmado en esta página. Si aún no pagas, regresa e intenta de nuevo. Si ya pagaste, revisa tu email y vuelve a cargar esta pantalla."
+                          : "We couldn’t confirm a payment on this page. If you haven’t paid yet, go back and try again. If you already paid, check your email and refresh this screen."}
           </p>
 
           {paidConfirmed ? (

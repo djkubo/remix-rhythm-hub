@@ -56,6 +56,9 @@ interface UTMParams {
   utm_campaign: string | null;
   utm_term: string | null;
   utm_content: string | null;
+  fbclid: string | null;
+  gclid: string | null;
+  ttclid: string | null;
 }
 
 // Generate a unique visitor ID (persisted in localStorage)
@@ -80,9 +83,10 @@ const getSessionId = (): string => {
   return id;
 };
 
-// Capture and persist UTM parameters
+// Capture and persist UTM parameters + click IDs
 const getUTMParams = (): UTMParams => {
-  const key = "vrp_utm_params";
+  const utmKey = "vrp_utm_params";
+  const clickIdKey = "vrp_click_ids";
 
   // Check if we have UTM params in current URL
   const urlParams = new URLSearchParams(window.location.search);
@@ -92,16 +96,39 @@ const getUTMParams = (): UTMParams => {
     utm_campaign: urlParams.get("utm_campaign"),
     utm_term: urlParams.get("utm_term"),
     utm_content: urlParams.get("utm_content"),
+    fbclid: urlParams.get("fbclid"),
+    gclid: urlParams.get("gclid"),
+    ttclid: urlParams.get("ttclid"),
   };
+
+  // Persist click IDs in localStorage (cross-session attribution)
+  const newClickIds: Record<string, string> = {};
+  if (currentUTM.fbclid) newClickIds.fbclid = currentUTM.fbclid;
+  if (currentUTM.gclid) newClickIds.gclid = currentUTM.gclid;
+  if (currentUTM.ttclid) newClickIds.ttclid = currentUTM.ttclid;
+  if (Object.keys(newClickIds).length > 0) {
+    try { localStorage.setItem(clickIdKey, JSON.stringify(newClickIds)); } catch { /* ignore */ }
+  }
+
+  // Merge stored click IDs into current params
+  try {
+    const storedClickIds = localStorage.getItem(clickIdKey);
+    if (storedClickIds) {
+      const parsed = JSON.parse(storedClickIds) as Record<string, string>;
+      if (!currentUTM.fbclid && parsed.fbclid) currentUTM.fbclid = parsed.fbclid;
+      if (!currentUTM.gclid && parsed.gclid) currentUTM.gclid = parsed.gclid;
+      if (!currentUTM.ttclid && parsed.ttclid) currentUTM.ttclid = parsed.ttclid;
+    }
+  } catch { /* ignore */ }
 
   // If we have new UTM params, save them
   if (currentUTM.utm_source) {
-    sessionStorage.setItem(key, JSON.stringify(currentUTM));
+    sessionStorage.setItem(utmKey, JSON.stringify(currentUTM));
     return currentUTM;
   }
 
   // Otherwise, try to get from session storage (persists during session)
-  const stored = sessionStorage.getItem(key);
+  const stored = sessionStorage.getItem(utmKey);
   if (stored) {
     try {
       return JSON.parse(stored) as UTMParams;
@@ -162,8 +189,11 @@ const getUTMParams = (): UTMParams => {
         utm_campaign: null,
         utm_term: null,
         utm_content: null,
+        fbclid: currentUTM.fbclid,
+        gclid: currentUTM.gclid,
+        ttclid: currentUTM.ttclid,
       };
-      sessionStorage.setItem(key, JSON.stringify(autoUTM));
+      sessionStorage.setItem(utmKey, JSON.stringify(autoUTM));
       return autoUTM;
     }
   }
@@ -175,6 +205,9 @@ const getUTMParams = (): UTMParams => {
     utm_campaign: null,
     utm_term: null,
     utm_content: null,
+    fbclid: currentUTM.fbclid,
+    gclid: currentUTM.gclid,
+    ttclid: currentUTM.ttclid,
   };
 };
 
@@ -278,6 +311,9 @@ export const useAnalytics = () => {
     utm_campaign: null,
     utm_term: null,
     utm_content: null,
+    fbclid: null,
+    gclid: null,
+    ttclid: null,
   });
   const eventQueue = useRef<AnalyticsEvent[]>([]);
   const isProcessing = useRef(false);
@@ -338,6 +374,9 @@ export const useAnalytics = () => {
       utm_campaign: utmParams.current.utm_campaign,
       utm_term: utmParams.current.utm_term,
       utm_content: utmParams.current.utm_content,
+      fbclid: utmParams.current.fbclid,
+      gclid: utmParams.current.gclid,
+      ttclid: utmParams.current.ttclid,
       experiment_assignments: parsedAssignments as unknown as Json,
       funnel_step: typeof eventData.funnel_step === "string" ? eventData.funnel_step : null,
       cta_id: typeof eventData.cta_id === "string" ? eventData.cta_id : null,

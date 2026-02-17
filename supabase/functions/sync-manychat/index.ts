@@ -332,7 +332,7 @@ Deno.serve(async (req) => {
     const { data: dbLead, error: leadError } = await supabaseAdmin
       .from("leads")
       .select(
-        "id, name, email, phone, country_code, country_name, source, tags, manychat_synced, manychat_subscriber_id",
+        "id, name, email, phone, country_code, country_name, source, tags, manychat_synced, manychat_subscriber_id, consent_marketing",
       )
       .eq("id", leadId)
       .single();
@@ -362,13 +362,16 @@ Deno.serve(async (req) => {
     }
 
     const lead = leadValidation.data;
+    const hasMarketingConsent = Boolean(
+      (dbLead as Record<string, unknown>).consent_marketing,
+    );
     console.log("[Lead] Processing lead", lead.id);
 
     // If the lead was already synced previously, re-use the subscriber id so
     // we can keep tags/custom fields up-to-date (payments, shipping, etc).
     let subscriberId =
       typeof (dbLead as Record<string, unknown>).manychat_subscriber_id ===
-          "string" &&
+        "string" &&
         (dbLead as Record<string, unknown>).manychat_subscriber_id
         ? String((dbLead as Record<string, unknown>).manychat_subscriber_id)
         : null;
@@ -403,9 +406,11 @@ Deno.serve(async (req) => {
           phone: e164Phone,
           whatsapp_phone: e164Phone,
           email: lead.email,
-          has_opt_in_sms: true,
-          has_opt_in_email: true,
-          consent_phrase: "Opted in via website",
+          has_opt_in_sms: hasMarketingConsent,
+          has_opt_in_email: hasMarketingConsent,
+          consent_phrase: hasMarketingConsent
+            ? "Opted in via website"
+            : "Lead capture — marketing consent pending",
         },
         "createSubscriber",
       );

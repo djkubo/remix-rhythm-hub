@@ -122,11 +122,10 @@ function SortableFolder({
     <div
       ref={setNodeRef}
       style={style}
-      className={`relative group p-4 rounded-xl border ${
-        folder.is_visible
+      className={`relative group p-4 rounded-xl border ${folder.is_visible
           ? "bg-[#111111] border-[#5E5E5E]"
           : "bg-muted/50 border-dashed border-muted-foreground/30"
-      } hover:border-primary transition-colors`}
+        } hover:border-primary transition-colors`}
     >
       {/* Drag handle */}
       <div
@@ -203,9 +202,8 @@ function SortableTrack({
     <div
       ref={setNodeRef}
       style={style}
-      className={`flex items-center gap-4 px-4 py-3 border-b border-[#5E5E5E]/50 last:border-b-0 hover:bg-muted/50 transition-colors ${
-        !track.is_visible ? "opacity-50" : ""
-      }`}
+      className={`flex items-center gap-4 px-4 py-3 border-b border-[#5E5E5E]/50 last:border-b-0 hover:bg-muted/50 transition-colors ${!track.is_visible ? "opacity-50" : ""
+        }`}
     >
       {/* Drag handle */}
       <div
@@ -554,7 +552,7 @@ export default function AdminMusic() {
       case "wav":
         return "audio/wav";
       case "m4a":
-        return "audio/mp4";
+        return "audio/m4a";
       case "flac":
         return "audio/flac";
       default:
@@ -702,14 +700,14 @@ export default function AdminMusic() {
         });
 
         if (insertError) {
-	          // Try to clean up the uploaded file if DB insert fails
-	          try {
-	            await supabase.storage.from("music").remove([filePath]);
-	          } catch {
-	            // Ignore best-effort cleanup errors.
-	          }
-	          return { success: false, error: `Database error: ${insertError.message}` };
-	        }
+          // Try to clean up the uploaded file if DB insert fails
+          try {
+            await supabase.storage.from("music").remove([filePath]);
+          } catch {
+            // Ignore best-effort cleanup errors.
+          }
+          return { success: false, error: `Database error: ${insertError.message}` };
+        }
 
         return { success: true };
       } catch (err) {
@@ -1139,15 +1137,15 @@ export default function AdminMusic() {
       if (selectedTracks.size > 0) {
         const tracksToDelete = tracks.filter(t => selectedTracks.has(t.id));
         const filePaths = tracksToDelete
-	          .map(t => {
-	            try {
-	              const urlParts = t.file_url.split("/music/");
-	              if (urlParts[1]) return decodeURIComponent(urlParts[1]);
-	            } catch {
-	              // Ignore malformed URLs.
-	            }
-	            return null;
-	          })
+          .map(t => {
+            try {
+              const urlParts = t.file_url.split("/music/");
+              if (urlParts[1]) return decodeURIComponent(urlParts[1]);
+            } catch {
+              // Ignore malformed URLs.
+            }
+            return null;
+          })
           .filter((p): p is string => p !== null && p.length > 0);
 
         await safeRemoveFiles(filePaths);
@@ -1157,7 +1155,7 @@ export default function AdminMusic() {
       // Delete selected folders and their contents
       if (selectedFolders.size > 0) {
         const folderIds = Array.from(selectedFolders);
-        
+
         // Get all tracks in these folders (in batches to handle large sets)
         for (const folderId of folderIds) {
           const { data: folderTracks } = await supabase
@@ -1166,16 +1164,16 @@ export default function AdminMusic() {
             .eq("folder_id", folderId);
 
           if (folderTracks && folderTracks.length > 0) {
-	            const filePaths = folderTracks
-	              .map(t => {
-	                try {
-	                  const urlParts = t.file_url.split("/music/");
-	                  if (urlParts[1]) return decodeURIComponent(urlParts[1]);
-	                } catch {
-	                  // Ignore malformed URLs.
-	                }
-	                return null;
-	              })
+            const filePaths = folderTracks
+              .map(t => {
+                try {
+                  const urlParts = t.file_url.split("/music/");
+                  if (urlParts[1]) return decodeURIComponent(urlParts[1]);
+                } catch {
+                  // Ignore malformed URLs.
+                }
+                return null;
+              })
               .filter((p): p is string => p !== null && p.length > 0);
 
             await safeRemoveFiles(filePaths);
@@ -1213,30 +1211,30 @@ export default function AdminMusic() {
     try {
       // 1. Get all tracks
       const { data: allTracks } = await supabase.from("tracks").select("id, file_url");
-      
+
       if (allTracks && allTracks.length > 0) {
         // Remove all storage files
-	        const filePaths = allTracks
-	          .map(t => {
-	            try {
-	              const urlParts = t.file_url.split("/music/");
-	              if (urlParts[1]) return decodeURIComponent(urlParts[1]);
-	            } catch {
-	              // Ignore malformed URLs.
-	            }
-	            return null;
-	          })
+        const filePaths = allTracks
+          .map(t => {
+            try {
+              const urlParts = t.file_url.split("/music/");
+              if (urlParts[1]) return decodeURIComponent(urlParts[1]);
+            } catch {
+              // Ignore malformed URLs.
+            }
+            return null;
+          })
           .filter((p): p is string => p !== null && p.length > 0);
 
         // Delete storage in batches
-	        for (let i = 0; i < filePaths.length; i += 100) {
-	          const batch = filePaths.slice(i, i + 100);
-	          try {
-	            await supabase.storage.from("music").remove(batch);
-	          } catch {
-	            // Ignore batch failures; continue cleanup.
-	          }
-	        }
+        for (let i = 0; i < filePaths.length; i += 100) {
+          const batch = filePaths.slice(i, i + 100);
+          try {
+            await supabase.storage.from("music").remove(batch);
+          } catch {
+            // Ignore batch failures; continue cleanup.
+          }
+        }
 
         // Delete tracks in batches
         for (let i = 0; i < allTracks.length; i += 50) {
@@ -1337,7 +1335,7 @@ export default function AdminMusic() {
             <FolderUp className="w-4 h-4 mr-2" />
             {t("admin.music.bulkImport")}
           </Button>
-          
+
           <Button
             variant="ghost"
             size="sm"
@@ -1347,7 +1345,7 @@ export default function AdminMusic() {
             <Trash className="w-4 h-4 mr-2" />
             {t("admin.music.cleanAll")}
           </Button>
-          
+
           {hasSelection && (
             <Button
               variant="destructive"
@@ -1639,9 +1637,9 @@ export default function AdminMusic() {
                 <div className="flex flex-wrap gap-1 mt-2">
                   {Array.from(
                     new Set(
-	                      Array.from(bulkUploadFiles)
-	                        .map((f) => (f as FileWithPath).webkitRelativePath?.split("/")[0])
-	                        .filter(Boolean)
+                      Array.from(bulkUploadFiles)
+                        .map((f) => (f as FileWithPath).webkitRelativePath?.split("/")[0])
+                        .filter(Boolean)
                     )
                   ).slice(0, 10).map((folder) => (
                     <span
@@ -1653,21 +1651,21 @@ export default function AdminMusic() {
                   ))}
                   {Array.from(
                     new Set(
-	                      Array.from(bulkUploadFiles)
-	                        .map((f) => (f as FileWithPath).webkitRelativePath?.split("/")[0])
-	                        .filter(Boolean)
+                      Array.from(bulkUploadFiles)
+                        .map((f) => (f as FileWithPath).webkitRelativePath?.split("/")[0])
+                        .filter(Boolean)
                     )
                   ).length > 10 && (
-                    <span className="text-xs text-zinc-400">
-                      +{Array.from(
-                        new Set(
-	                          Array.from(bulkUploadFiles)
-	                            .map((f) => (f as FileWithPath).webkitRelativePath?.split("/")[0])
-	                            .filter(Boolean)
-                        )
-                      ).length - 10} más
-                    </span>
-                  )}
+                      <span className="text-xs text-zinc-400">
+                        +{Array.from(
+                          new Set(
+                            Array.from(bulkUploadFiles)
+                              .map((f) => (f as FileWithPath).webkitRelativePath?.split("/")[0])
+                              .filter(Boolean)
+                          )
+                        ).length - 10} más
+                      </span>
+                    )}
                 </div>
               </div>
             )}

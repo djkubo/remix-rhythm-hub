@@ -85,7 +85,13 @@ export const useDataLayer = () => {
   };
 
   /** GA4 / Meta standard: purchase (maps to Purchase in Meta Pixel) */
-  const trackPurchase = (value: number, currency: string = "USD", transactionId?: string) => {
+  const trackPurchase = (
+    value: number,
+    currency: string = "USD",
+    transactionId?: string,
+    itemId: string = "usb_500gb",
+    itemName: string = "USB 500GB DJ Collection",
+  ) => {
     if (typeof window !== "undefined" && window.dataLayer) {
       window.dataLayer.push({
         event: "purchase",
@@ -95,8 +101,8 @@ export const useDataLayer = () => {
           currency: currency,
           items: [
             {
-              item_id: "usb_500gb",
-              item_name: "USB 500GB DJ Collection",
+              item_id: itemId,
+              item_name: itemName,
               price: value,
               quantity: 1,
             },
@@ -105,6 +111,7 @@ export const useDataLayer = () => {
       });
     }
   };
+
 
   const trackEvent = (eventName: string, data?: Record<string, unknown>) => {
     if (typeof window !== "undefined" && window.dataLayer) {

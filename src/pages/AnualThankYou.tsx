@@ -1,13 +1,16 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ArrowLeft, CheckCircle2, MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { supabase } from "@/integrations/supabase/client";
+import { useDataLayer } from "@/hooks/useDataLayer";
 
 export default function AnualThankYou() {
   const { language } = useLanguage();
+  const { trackPurchase } = useDataLayer();
+  const purchaseTracked = useRef(false);
   const [params] = useSearchParams();
   const stripeSessionId = params.get("session_id");
   const paypalOrderId = params.get("token");
@@ -98,6 +101,16 @@ export default function AnualThankYou() {
     (hasStripeSession && stripeVerifyState === "error") ||
     (hasPayPalOrder && paypalCaptureState === "error");
 
+  const paymentRef = stripeSessionId || paypalOrderId || null;
+
+  // Track purchase event for ads attribution
+  useEffect(() => {
+    if (paidConfirmed && !purchaseTracked.current) {
+      purchaseTracked.current = true;
+      trackPurchase(195, "USD", paymentRef || undefined, "plan_anual_2tb", "Plan Anual 2TB");
+    }
+  }, [paidConfirmed, trackPurchase, paymentRef]);
+
   return (
     <main className="min-h-screen bg-[#070707] flex items-center justify-center p-4">
       <div className="w-full max-w-lg">
@@ -147,17 +160,17 @@ export default function AnualThankYou() {
                   ? language === "es"
                     ? "Tu pago con Stripe está pendiente de confirmación. Revisa tu email o intenta de nuevo."
                     : "Your Stripe payment is pending confirmation. Check your email or try again."
-              : hasPayPalOrder && paypalCaptureState === "processing"
-                ? language === "es"
-                  ? "Estamos confirmando tu pago con PayPal. No cierres esta página."
-                  : "We’re confirming your PayPal payment. Please keep this page open."
-                : hasPayPalOrder && paypalCaptureState === "error"
-                  ? language === "es"
-                    ? "Tu pago con PayPal está pendiente de confirmación. Revisa tu email de PayPal o intenta de nuevo."
-                    : "Your PayPal payment is pending confirmation. Check your PayPal email or try again."
-              : language === "es"
-                ? "No encontramos un pago confirmado en esta página. Si aún no pagas, regresa e intenta de nuevo. Si ya pagaste, revisa tu email y vuelve a cargar esta pantalla."
-                : "We couldn’t confirm a payment on this page. If you haven’t paid yet, go back and try again. If you already paid, check your email and refresh this screen."}
+                  : hasPayPalOrder && paypalCaptureState === "processing"
+                    ? language === "es"
+                      ? "Estamos confirmando tu pago con PayPal. No cierres esta página."
+                      : "We’re confirming your PayPal payment. Please keep this page open."
+                    : hasPayPalOrder && paypalCaptureState === "error"
+                      ? language === "es"
+                        ? "Tu pago con PayPal está pendiente de confirmación. Revisa tu email de PayPal o intenta de nuevo."
+                        : "Your PayPal payment is pending confirmation. Check your PayPal email or try again."
+                      : language === "es"
+                        ? "No encontramos un pago confirmado en esta página. Si aún no pagas, regresa e intenta de nuevo. Si ya pagaste, revisa tu email y vuelve a cargar esta pantalla."
+                        : "We couldn’t confirm a payment on this page. If you haven’t paid yet, go back and try again. If you already paid, check your email and refresh this screen."}
           </p>
 
           {paidConfirmed ? (
