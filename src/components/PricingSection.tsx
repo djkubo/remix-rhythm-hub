@@ -54,7 +54,7 @@ const PricingSection = () => {
     <section id="pricing" className="relative py-24 md:py-32 bg-background overflow-hidden">
       {/* Background */}
       <div className="absolute inset-0 hero-gradient" />
-      
+
       <div className="container relative z-10 mx-auto">
         {/* Header */}
         <motion.div
@@ -85,9 +85,8 @@ const PricingSection = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: index * 0.15 }}
-              className={`group relative ${
-                plan.highlighted ? "md:-my-4 z-10" : ""
-              }`}
+              className={`group relative ${plan.highlighted ? "md:-my-4 z-10" : ""
+                }`}
             >
               {/* Gold glow for highlighted */}
               {plan.highlighted && (
@@ -96,11 +95,10 @@ const PricingSection = () => {
 
               {/* Card */}
               <div
-                className={`relative h-full flex flex-col rounded-2xl p-8 md:p-10 transition-all duration-300 ${
-                  plan.highlighted
+                className={`relative h-full flex flex-col rounded-2xl p-8 md:p-10 transition-all duration-300 ${plan.highlighted
                     ? "bg-[#111111] dark:bg-gradient-to-b dark:from-card-elevated dark:to-card border-2 border-gold/50 shadow-xl dark:shadow-glow-gold"
                     : "glass-card-hover"
-                }`}
+                  }`}
               >
                 {/* Badge */}
                 {plan.badge && (
@@ -116,11 +114,10 @@ const PricingSection = () => {
                   <h3 className="font-bebas text-2xl tracking-wider text-zinc-400">
                     {plan.name}
                   </h3>
-                  
+
                   <div className="mt-4 flex items-baseline justify-center gap-1">
-                    <span className={`font-bebas text-5xl md:text-6xl font-extrabold ${
-                      plan.highlighted ? "text-gradient-gold" : "text-[#EFEFEF]"
-                    }`}>
+                    <span className={`font-bebas text-5xl md:text-6xl font-extrabold ${plan.highlighted ? "text-gradient-gold" : "text-[#EFEFEF]"
+                      }`}>
                       {convertPrice(plan.priceUSD)}
                     </span>
                   </div>
@@ -143,11 +140,10 @@ const PricingSection = () => {
                 <ul className="mb-8 flex-1 space-y-4">
                   {plan.features.map((feature) => (
                     <li key={feature} className="flex items-start gap-3">
-                      <div className={`mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full ${
-                        plan.highlighted
+                      <div className={`mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full ${plan.highlighted
                           ? "bg-gold/20 text-gold"
                           : "bg-primary/20 text-primary"
-                      }`}>
+                        }`}>
                         <Check className="h-3 w-3" strokeWidth={3} />
                       </div>
                       <span className="font-sans text-[#EFEFEF]/90">{feature}</span>
@@ -159,18 +155,17 @@ const PricingSection = () => {
                 <Button
                   asChild
                   size="lg"
-                  className={`w-full h-14 text-base font-bold transition-smooth ${
-                    plan.highlighted
+                  className={`w-full h-14 text-base font-bold transition-smooth ${plan.highlighted
                       ? "btn-gold-glow"
                       : "bg-secondary hover:bg-secondary/80 text-[#EFEFEF]"
-                  }`}
+                    }`}
                   onClick={() => trackClick(plan.cta)}
                 >
-                  <Link to="/membresia">
+                  <a href="https://videoremixespacks.com/plan" rel="noopener noreferrer">
                     {plan.highlighted && <Crown className="mr-2 h-5 w-5" />}
                     {plan.cta}
                     <ArrowRight className="ml-2 h-5 w-5" />
-                  </Link>
+                  </a>
                 </Button>
               </div>
             </motion.div>
@@ -186,7 +181,7 @@ const PricingSection = () => {
             transition={{ delay: 0.5 }}
             className="mt-8 text-center text-sm text-zinc-400"
           >
-            {language === "es" 
+            {language === "es"
               ? `* Precios mostrados en ${currency.name} como referencia. El cobro se realiza en USD.`
               : `* Prices shown in ${currency.name} for reference. Charged in USD.`
             }

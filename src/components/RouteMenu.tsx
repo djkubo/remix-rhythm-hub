@@ -20,10 +20,11 @@ type NavLink = {
   to: string;
   ctaId: string;
   label: { es: string; en: string };
+  external?: boolean;
 };
 
 const NAV_LINKS: NavLink[] = [
-  { to: "/plan", ctaId: "header_planes", label: { es: "Planes", en: "Plans" } },
+  { to: "https://videoremixespacks.com/plan", ctaId: "header_planes", label: { es: "Planes", en: "Plans" }, external: true },
   { to: "/explorer", ctaId: "header_demos", label: { es: "Demos", en: "Demos" } },
   { to: "/help", ctaId: "header_soporte", label: { es: "Soporte", en: "Support" } },
 ];
@@ -66,21 +67,31 @@ export default function RouteMenu() {
 
         <nav className="hidden items-center gap-7 md:flex">
           {NAV_LINKS.map((item) => {
-            const isActive =
-              location.pathname === item.to ||
-              (item.to === "/plan" && location.pathname === "/membresia");
+            const isActive = !item.external && location.pathname === item.to;
+            const label = isSpanish ? item.label.es : item.label.en;
+            const cls = cn(
+              "text-sm font-semibold transition-colors",
+              isActive ? "text-primary" : "text-[#EFEFEF]/72 hover:text-foreground"
+            );
 
-            return (
+            return item.external ? (
+              <a
+                key={item.to}
+                href={item.to}
+                rel="noopener noreferrer"
+                onClick={() => handleNavClick(item.ctaId)}
+                className={cls}
+              >
+                {label}
+              </a>
+            ) : (
               <Link
                 key={item.to}
                 to={item.to}
                 onClick={() => handleNavClick(item.ctaId)}
-                className={cn(
-                  "text-sm font-semibold transition-colors",
-                  isActive ? "text-primary" : "text-[#EFEFEF]/72 hover:text-foreground"
-                )}
+                className={cls}
               >
-                {isSpanish ? item.label.es : item.label.en}
+                {label}
               </Link>
             );
           })}
@@ -96,10 +107,10 @@ export default function RouteMenu() {
             {isSpanish ? "EN" : "ES"}
           </button>
           <Button asChild className="btn-primary-glow h-10 px-4 font-bold">
-            <Link to="/plan" onClick={() => handleNavClick("header_ver_planes")}>
+            <a href="https://videoremixespacks.com/plan" rel="noopener noreferrer" onClick={() => handleNavClick("header_ver_planes")}>
               <Zap className="mr-2 h-4 w-4" />
               {isSpanish ? "Ver Planes" : "View Plans"}
-            </Link>
+            </a>
           </Button>
         </div>
 
@@ -129,23 +140,34 @@ export default function RouteMenu() {
               </SheetHeader>
               <nav className="mt-8 space-y-2">
                 {NAV_LINKS.map((item) => {
-                  const isActive =
-                    location.pathname === item.to ||
-                    (item.to === "/plan" && location.pathname === "/membresia");
+                  const isActive = !item.external && location.pathname === item.to;
+                  const label = isSpanish ? item.label.es : item.label.en;
+                  const cls = cn(
+                    "block rounded-lg border px-4 py-3 text-sm font-semibold",
+                    isActive
+                      ? "border-primary/60 bg-[#111111] text-primary"
+                      : "border-[#5E5E5E]/85 text-[#EFEFEF] hover:bg-background"
+                  );
                   return (
                     <SheetClose key={item.to} asChild>
-                      <Link
-                        to={item.to}
-                        onClick={() => handleNavClick(item.ctaId)}
-                        className={cn(
-                          "block rounded-lg border px-4 py-3 text-sm font-semibold",
-                          isActive
-                            ? "border-primary/60 bg-[#111111] text-primary"
-                            : "border-[#5E5E5E]/85 text-[#EFEFEF] hover:bg-background"
-                        )}
-                      >
-                        {isSpanish ? item.label.es : item.label.en}
-                      </Link>
+                      {item.external ? (
+                        <a
+                          href={item.to}
+                          rel="noopener noreferrer"
+                          onClick={() => handleNavClick(item.ctaId)}
+                          className={cls}
+                        >
+                          {label}
+                        </a>
+                      ) : (
+                        <Link
+                          to={item.to}
+                          onClick={() => handleNavClick(item.ctaId)}
+                          className={cls}
+                        >
+                          {label}
+                        </Link>
+                      )}
                     </SheetClose>
                   );
                 })}
@@ -154,10 +176,10 @@ export default function RouteMenu() {
               <div className="mt-5">
                 <SheetClose asChild>
                   <Button asChild className="btn-primary-glow h-11 w-full font-bold">
-                    <Link to="/plan" onClick={() => handleNavClick("header_mobile_ver_planes")}>
+                    <a href="https://videoremixespacks.com/plan" rel="noopener noreferrer" onClick={() => handleNavClick("header_mobile_ver_planes")}>
                       <Zap className="mr-2 h-4 w-4" />
                       {isSpanish ? "Ver Planes" : "View Plans"}
-                    </Link>
+                    </a>
                   </Button>
                 </SheetClose>
               </div>

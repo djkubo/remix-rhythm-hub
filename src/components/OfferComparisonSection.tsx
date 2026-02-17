@@ -19,15 +19,15 @@ const OfferComparisonSection = () => {
       subtitle: isEs ? "Pago único · 3,000 canciones" : "One-time payment · 3,000 tracks",
       bullets: isEs
         ? [
-            "Ideal para probar antes de escalar",
-            "Descarga digital inmediata",
-            "Escucha demos antes de comprar",
-          ]
+          "Ideal para probar antes de escalar",
+          "Descarga digital inmediata",
+          "Escucha demos antes de comprar",
+        ]
         : [
-            "Best to start and validate quality",
-            "Instant digital download",
-            "Listen to demos before buying",
-          ],
+          "Best to start and validate quality",
+          "Instant digital download",
+          "Listen to demos before buying",
+        ],
       cta: isEs ? "Escuchar demos" : "Listen to demos",
       to: "/explorer",
       variant: "outline" as const,
@@ -42,17 +42,18 @@ const OfferComparisonSection = () => {
       subtitle: isEs ? "Contenido actualizado + comunidad" : "Updated content + community",
       bullets: isEs
         ? [
-            "Catálogo en expansión continua",
-            "Soporte en español por WhatsApp",
-            "Sin permanencia forzosa",
-          ]
+          "Catálogo en expansión continua",
+          "Soporte en español por WhatsApp",
+          "Sin permanencia forzosa",
+        ]
         : [
-            "Continuously updated catalog",
-            "Spanish support on WhatsApp",
-            "No forced commitment",
-          ],
+          "Continuously updated catalog",
+          "Spanish support on WhatsApp",
+          "No forced commitment",
+        ],
       cta: isEs ? "Ver membresía" : "View membership",
-      to: "/membresia",
+      to: "https://videoremixespacks.com/plan",
+      external: true,
       variant: "default" as const,
       highlighted: true,
       ctaId: "offer_membresia",
@@ -66,15 +67,15 @@ const OfferComparisonSection = () => {
       subtitle: isEs ? "10,000 canciones · envío USA" : "10,000 tracks · US shipping",
       bullets: isEs
         ? [
-            "Conecta y mezcla sin complicaciones",
-            "Compatible con Serato / VDJ / Rekordbox",
-            "Pago con tarjeta, PayPal y cuotas",
-          ]
+          "Conecta y mezcla sin complicaciones",
+          "Compatible con Serato / VDJ / Rekordbox",
+          "Pago con tarjeta, PayPal y cuotas",
+        ]
         : [
-            "Plug and mix with no setup friction",
-            "Compatible with Serato / VDJ / Rekordbox",
-            "Card, PayPal, and installments available",
-          ],
+          "Plug and mix with no setup friction",
+          "Compatible with Serato / VDJ / Rekordbox",
+          "Card, PayPal, and installments available",
+        ],
       cta: isEs ? "Ver USB" : "View USB",
       to: "/usb128",
       variant: "outline" as const,
@@ -113,11 +114,10 @@ const OfferComparisonSection = () => {
             {offers.map((offer) => (
               <div
                 key={offer.key}
-                className={`rounded-2xl border bg-[#111111] p-6 shadow-[0_12px_28px_rgba(15,23,42,0.1)] ${
-                  offer.highlighted
-                    ? "border-primary/65 ring-1 ring-primary/28 shadow-[0_16px_32px_rgba(236,9,50,0.16)]"
-                    : "border-[#5E5E5E]/88"
-                }`}
+                className={`rounded-2xl border bg-[#111111] p-6 shadow-[0_12px_28px_rgba(15,23,42,0.1)] ${offer.highlighted
+                  ? "border-primary/65 ring-1 ring-primary/28 shadow-[0_16px_32px_rgba(236,9,50,0.16)]"
+                  : "border-[#5E5E5E]/88"
+                  }`}
               >
                 <div className="flex items-start justify-between gap-3">
                   <div className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-primary/45 bg-[#111111]">
@@ -157,10 +157,17 @@ const OfferComparisonSection = () => {
                       })
                     }
                   >
-                    <Link to={offer.to}>
-                      {offer.cta}
-                      <ArrowRight className="ml-2 h-4 w-4" />
-                    </Link>
+                    {offer.external ? (
+                      <a href={offer.to} rel="noopener noreferrer">
+                        {offer.cta}
+                        <ArrowRight className="ml-2 h-4 w-4" />
+                      </a>
+                    ) : (
+                      <Link to={offer.to}>
+                        {offer.cta}
+                        <ArrowRight className="ml-2 h-4 w-4" />
+                      </Link>
+                    )}
                   </Button>
                 </div>
               </div>
