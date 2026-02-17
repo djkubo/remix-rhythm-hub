@@ -2,7 +2,7 @@ import { useState, useCallback, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Loader2, ShieldCheck, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { supabase } from "@/integrations/supabase/client";
+import { createLead } from "@/lib/leads";
 import { useAnalytics } from "@/hooks/useAnalytics";
 import { useDataLayer } from "@/hooks/useDataLayer";
 
@@ -83,22 +83,16 @@ export default function LeadCaptureModal({
             try {
                 const leadId = crypto.randomUUID();
 
-                const leadRecord = {
-                    id: leadId,
+                await createLead({
+                    leadId,
                     name: trimmedName,
                     email: trimmedEmail,
                     phone: trimmedPhone,
                     source: "usb_500gb_modal",
-                    source_page: window.location.pathname,
-                    intent_plan: product,
-                    funnel_step: "pre_checkout",
+                    product,
+                    funnelStep: "pre_checkout",
                     tags: ["usb_500gb", "pre_checkout_lead"],
-                };
-
-                const { error: insertError } = await supabase
-                    .from("leads")
-                    .insert(leadRecord);
-                if (insertError) throw insertError;
+                });
 
                 /* track lead capture */
                 trackEvent("lead_captured", {
@@ -112,15 +106,6 @@ export default function LeadCaptureModal({
                     value: price,
                     lead_id: leadId,
                 });
-
-                /* try ManyChat sync (best effort) */
-                try {
-                    await supabase.functions.invoke("sync-manychat", {
-                        body: { leadId },
-                    });
-                } catch {
-                    // ignore
-                }
 
                 onLeadCaptured(leadId);
             } catch (err) {

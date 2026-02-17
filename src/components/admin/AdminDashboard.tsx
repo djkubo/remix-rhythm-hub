@@ -13,6 +13,8 @@ import {
   Calendar,
   Filter,
   RefreshCw,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -185,7 +187,7 @@ export default function AdminDashboard() {
   const { t, language } = useLanguage();
   const dateLocale = language === "es" ? es : enUS;
   const { toast } = useToast();
-  
+
   const [dateRange, setDateRange] = useState("7");
   const [activeTab, setActiveTab] = useState<"sales" | "overview" | "sources" | "leads" | "events">("sales");
   const [salesFilter, setSalesFilter] = useState<SalesFilter>("paid");
@@ -193,6 +195,11 @@ export default function AdminDashboard() {
   const [leadSearch, setLeadSearch] = useState("");
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
   const [resyncingLeadId, setResyncingLeadId] = useState<string | null>(null);
+
+  // Pagination
+  const PAGE_SIZE = 50;
+  const [leadsPage, setLeadsPage] = useState(0);
+  const [salesPage, setSalesPage] = useState(0);
 
   const { startDate, endDate } = useMemo(() => {
     const days = Math.max(1, Number.parseInt(dateRange, 10) || 7);
@@ -356,21 +363,44 @@ export default function AdminDashboard() {
     return <Badge variant="outline">{language === "es" ? "PENDIENTE" : "PENDING"}</Badge>;
   };
 
-  // Fetch leads
+  // Reset pages when filters change
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useMemo(() => { setLeadsPage(0); setSalesPage(0); }, [dateRange]);
+
+  // Fetch total leads count (lightweight — head-only request)
+  const { data: leadsCount } = useQuery({
+    queryKey: ["admin-leads-count", dateRange],
+    queryFn: async () => {
+      const { count, error } = await supabase
+        .from("leads")
+        .select("id", { count: "exact", head: true })
+        .gte("created_at", startDate.toISOString())
+        .lte("created_at", endDate.toISOString());
+      if (error) throw error;
+      return count ?? 0;
+    },
+  });
+
+  const totalLeadsPages = Math.max(1, Math.ceil((leadsCount ?? 0) / PAGE_SIZE));
+
+  // Fetch leads — paginated
   const {
     data: leads,
     isLoading: leadsLoading,
     isFetching: leadsFetching,
     refetch: refetchLeads,
   } = useQuery({
-    queryKey: ["admin-leads", dateRange],
+    queryKey: ["admin-leads", dateRange, leadsPage],
     queryFn: async () => {
+      const from = leadsPage * PAGE_SIZE;
+      const to = from + PAGE_SIZE - 1;
       const { data, error } = await supabase
         .from("leads")
         .select("*")
         .gte("created_at", startDate.toISOString())
         .lte("created_at", endDate.toISOString())
-        .order("created_at", { ascending: false });
+        .order("created_at", { ascending: false })
+        .range(from, to);
 
       if (error) throw error;
       return data as Lead[];
@@ -583,7 +613,7 @@ export default function AdminDashboard() {
 
   const exportLeadsCSV = () => {
     if (!filteredLeads?.length) return;
-    
+
     const headers = [
       t("admin.dashboard.name"),
       t("admin.dashboard.email"),
@@ -702,7 +732,7 @@ export default function AdminDashboard() {
           <h1 className="text-2xl font-bold">{t("admin.dashboard.title")}</h1>
           <p className="text-muted-foreground">{t("admin.dashboard.subtitle")}</p>
         </div>
-        
+
         <div className="flex items-center gap-3">
           <Select value={dateRange} onValueChange={setDateRange}>
             <SelectTrigger className="w-40">
@@ -716,7 +746,7 @@ export default function AdminDashboard() {
               <SelectItem value="90">{t("admin.dashboard.last90days")}</SelectItem>
             </SelectContent>
           </Select>
-          
+
           <Button variant="outline" size="icon" onClick={handleRefresh}>
             <RefreshCw className={`w-4 h-4 ${isRefreshing ? "animate-spin" : ""}`} />
           </Button>
@@ -741,11 +771,10 @@ export default function AdminDashboard() {
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id as typeof activeTab)}
-            className={`px-4 py-2 font-medium transition-colors border-b-2 -mb-px whitespace-nowrap ${
-              activeTab === tab.id
+            className={`px-4 py-2 font-medium transition-colors border-b-2 -mb-px whitespace-nowrap ${activeTab === tab.id
                 ? "border-primary text-primary"
                 : "border-transparent text-muted-foreground hover:text-foreground"
-            }`}
+              }`}
           >
             {tab.label}
           </button>
@@ -987,6 +1016,35 @@ export default function AdminDashboard() {
               </TableBody>
             </Table>
           </Card>
+
+          {/* Sales pagination */}
+          <div className="flex items-center justify-between">
+            <p className="text-sm text-muted-foreground">
+              {language === "es"
+                ? `Página ${salesPage + 1} de ${totalLeadsPages}`
+                : `Page ${salesPage + 1} of ${totalLeadsPages}`}
+            </p>
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                disabled={salesPage <= 0}
+                onClick={() => setSalesPage((p) => Math.max(0, p - 1))}
+              >
+                <ChevronLeft className="w-4 h-4 mr-1" />
+                {language === "es" ? "Anterior" : "Prev"}
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                disabled={salesPage >= totalLeadsPages - 1}
+                onClick={() => setSalesPage((p) => Math.min(totalLeadsPages - 1, p + 1))}
+              >
+                {language === "es" ? "Siguiente" : "Next"}
+                <ChevronRight className="w-4 h-4 ml-1" />
+              </Button>
+            </div>
+          </div>
         </div>
       )}
 
@@ -1157,7 +1215,7 @@ export default function AdminDashboard() {
                     />
                   </div>
                 </div>
-                
+
                 <div>
                   <div className="flex justify-between text-sm mb-2">
                     <span className="text-muted-foreground">{t("admin.dashboard.avgTime")}</span>
@@ -1376,10 +1434,10 @@ export default function AdminDashboard() {
                 className="w-full sm:w-72"
               />
               <Button variant="outline" onClick={exportLeadsCSV} disabled={!filteredLeads.length}>
-              <Download className="w-4 h-4 mr-2" />
-              {t("admin.dashboard.exportCSV")}
-            </Button>
-          </div>
+                <Download className="w-4 h-4 mr-2" />
+                {t("admin.dashboard.exportCSV")}
+              </Button>
+            </div>
           </div>
 
           <Card>
@@ -1482,6 +1540,35 @@ export default function AdminDashboard() {
               </TableBody>
             </Table>
           </Card>
+
+          {/* Leads pagination */}
+          <div className="flex items-center justify-between">
+            <p className="text-sm text-muted-foreground">
+              {language === "es"
+                ? `Página ${leadsPage + 1} de ${totalLeadsPages} · ${leadsCount ?? 0} leads total`
+                : `Page ${leadsPage + 1} of ${totalLeadsPages} · ${leadsCount ?? 0} leads total`}
+            </p>
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                disabled={leadsPage <= 0}
+                onClick={() => setLeadsPage((p) => Math.max(0, p - 1))}
+              >
+                <ChevronLeft className="w-4 h-4 mr-1" />
+                {language === "es" ? "Anterior" : "Prev"}
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                disabled={leadsPage >= totalLeadsPages - 1}
+                onClick={() => setLeadsPage((p) => Math.min(totalLeadsPages - 1, p + 1))}
+              >
+                {language === "es" ? "Siguiente" : "Next"}
+                <ChevronRight className="w-4 h-4 ml-1" />
+              </Button>
+            </div>
+          </div>
 
           <Dialog open={Boolean(selectedLead)} onOpenChange={(open) => !open && setSelectedLead(null)}>
             <DialogContent className="max-w-2xl">

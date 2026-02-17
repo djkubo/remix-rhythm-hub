@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { supabase } from "@/integrations/supabase/client";
+import { createLead } from "@/lib/leads";
 import { useToast } from "@/hooks/use-toast";
 import { useDataLayer } from "@/hooks/useDataLayer";
 import { useAnalytics } from "@/hooks/useAnalytics";
@@ -59,7 +59,7 @@ export default function ExitIntentPopup() {
     country_name: "United States",
     dial_code: "+1",
   });
-  
+
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -69,7 +69,7 @@ export default function ExitIntentPopup() {
   const [consentTransactional, setConsentTransactional] = useState(false);
   const [consentMarketing, setConsentMarketing] = useState(false);
   const [consentTouched, setConsentTouched] = useState(false);
-  
+
   const { t, language } = useLanguage();
   const { toast } = useToast();
   const navigate = useNavigate();
@@ -94,7 +94,7 @@ export default function ExitIntentPopup() {
   const handleMouseLeave = useCallback((e: MouseEvent) => {
     if (e.clientY <= 0 && !hasTriggered) {
       const dismissed = sessionStorage.getItem("exit-popup-dismissed");
-      
+
       // REMOVED: hasInteracted check - was too restrictive
       if (!dismissed) {
         debugLog("Exit Intent Popup triggered (mouseleave)");
@@ -112,7 +112,7 @@ export default function ExitIntentPopup() {
     debugLog("Exit Intent Popup timer started (45s)");
     const timer = setTimeout(() => {
       const dismissed = sessionStorage.getItem("exit-popup-dismissed");
-      
+
       if (!dismissed && !hasTriggered) {
         debugLog("Exit Intent Popup triggered (timer_45s)");
         setIsOpen(true);
@@ -144,14 +144,14 @@ export default function ExitIntentPopup() {
     trackEvent("popup", { action: "closed", trigger: "manual_close" });
   };
 
-	  const handleSubmit = async (e: React.FormEvent) => {
-	    e.preventDefault();
-	    
-	    if (!formData.name.trim() || !formData.email.trim() || !formData.phone.trim()) {
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!formData.name.trim() || !formData.email.trim() || !formData.phone.trim()) {
       toast({
         title: language === "es" ? "Campos requeridos" : "Required fields",
-        description: language === "es" 
-          ? "Por favor completa todos los campos" 
+        description: language === "es"
+          ? "Por favor completa todos los campos"
           : "Please fill in all fields",
         variant: "destructive",
       });
@@ -159,107 +159,74 @@ export default function ExitIntentPopup() {
     }
 
     // Basic email validation
-	    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-	    if (!emailRegex.test(formData.email)) {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) {
       toast({
         title: language === "es" ? "Email inválido" : "Invalid email",
-        description: language === "es" 
-          ? "Por favor ingresa un email válido" 
+        description: language === "es"
+          ? "Por favor ingresa un email válido"
           : "Please enter a valid email",
         variant: "destructive",
       });
-	      return;
-	    }
+      return;
+    }
 
-	    // Basic phone validation (digits, reasonable length, not all zeros)
-	    const cleanPhoneInput = formData.phone.trim().replace(/[\s().-]/g, "");
-	    const phoneDigits = cleanPhoneInput.startsWith("+") ? cleanPhoneInput.slice(1) : cleanPhoneInput;
-	    // NOTE: Supabase RLS policy enforces phone length <= 20.
-	    if (
-	      cleanPhoneInput.length > 20 ||
-	      !/^\+?\d{7,20}$/.test(cleanPhoneInput) ||
-	      !/[1-9]/.test(phoneDigits)
-	    ) {
-	      toast({
-	        title: language === "es" ? "WhatsApp inválido" : "Invalid WhatsApp",
-	        description:
-	          language === "es"
-	            ? "Ingresa un número válido (solo dígitos)."
-	            : "Enter a valid number (digits only).",
-	        variant: "destructive",
-	      });
-	      return;
-	    }
+    // Basic phone validation (digits, reasonable length, not all zeros)
+    const cleanPhoneInput = formData.phone.trim().replace(/[\s().-]/g, "");
+    const phoneDigits = cleanPhoneInput.startsWith("+") ? cleanPhoneInput.slice(1) : cleanPhoneInput;
+    // NOTE: Supabase RLS policy enforces phone length <= 20.
+    if (
+      cleanPhoneInput.length > 20 ||
+      !/^\+?\d{7,20}$/.test(cleanPhoneInput) ||
+      !/[1-9]/.test(phoneDigits)
+    ) {
+      toast({
+        title: language === "es" ? "WhatsApp inválido" : "Invalid WhatsApp",
+        description:
+          language === "es"
+            ? "Ingresa un número válido (solo dígitos)."
+            : "Enter a valid number (digits only).",
+        variant: "destructive",
+      });
+      return;
+    }
 
-      setConsentTouched(true);
-      if (!consentTransactional) {
-        toast({
-          title: language === "es" ? "Confirmación requerida" : "Confirmation required",
-          description:
-            language === "es"
-              ? "Debes aceptar recibir mensajes transaccionales y de soporte para continuar."
-              : "You must agree to receive transactional and support messages to continue.",
-          variant: "destructive",
-        });
-        return;
-      }
+    setConsentTouched(true);
+    if (!consentTransactional) {
+      toast({
+        title: language === "es" ? "Confirmación requerida" : "Confirmation required",
+        description:
+          language === "es"
+            ? "Debes aceptar recibir mensajes transaccionales y de soporte para continuar."
+            : "You must agree to receive transactional and support messages to continue.",
+        variant: "destructive",
+      });
+      return;
+    }
 
-	    setIsSubmitting(true);
+    setIsSubmitting(true);
 
-	    try {
-	      const cleanPhone = cleanPhoneInput;
+    try {
+      const cleanPhone = cleanPhoneInput;
       const leadId = crypto.randomUUID();
 
-      // Insert lead into database
-      const leadBase = {
-        id: leadId,
+      // Use centralized lead creation utility
+      await createLead({
+        leadId,
         name: formData.name.trim(),
         email: formData.email.trim().toLowerCase(),
         phone: cleanPhone,
-        country_code: countryData.dial_code,
-        country_name: countryData.country_name,
         source: "exit_intent",
         tags: ["exit_intent", "demo_request"],
-      };
-
-      const leadWithConsent = {
-        ...leadBase,
-        consent_transactional: consentTransactional,
-        consent_transactional_at: consentTransactional ? new Date().toISOString() : null,
-        consent_marketing: consentMarketing,
-        consent_marketing_at: consentMarketing ? new Date().toISOString() : null,
-      };
-
-      let { error: insertError } = await supabase.from("leads").insert(leadWithConsent);
-      // If the DB migration hasn't been applied yet, avoid breaking lead capture.
-      if (insertError && /consent_(transactional|marketing)/i.test(insertError.message)) {
-        if (import.meta.env.DEV) {
-          console.warn("Leads consent columns missing. Retrying insert without consent fields.");
-        }
-        ({ error: insertError } = await supabase.from("leads").insert(leadBase));
-      }
-
-      if (insertError) {
-        console.error("Error inserting lead:", insertError);
-        throw insertError;
-      }
+        countryCode: countryData.dial_code,
+        countryName: countryData.country_name,
+        consentTransactional,
+        consentMarketing,
+      });
 
       // Track form submission
       trackFormSubmit("exit_intent_popup");
       trackFormInternal("exit_intent_popup");
-
-      // Sync with ManyChat via edge function
-      try {
-        const { error: syncError } = await supabase.functions.invoke("sync-manychat", {
-          body: { leadId },
-        });
-
-        if (syncError) {
-          console.error("ManyChat sync error:", syncError);
-        }
-      } catch (syncErr) {
-        console.error("Failed to sync with ManyChat:", syncErr);
-      }
 
       // Close popup and redirect to thank you page
       setIsOpen(false);
@@ -270,8 +237,8 @@ export default function ExitIntentPopup() {
       console.error("Error submitting form:", error);
       toast({
         title: language === "es" ? "Error" : "Error",
-        description: language === "es" 
-          ? "Hubo un problema al enviar tus datos. Intenta de nuevo." 
+        description: language === "es"
+          ? "Hubo un problema al enviar tus datos. Intenta de nuevo."
           : "There was a problem submitting your data. Please try again.",
         variant: "destructive",
       });
@@ -292,7 +259,7 @@ export default function ExitIntentPopup() {
             className="fixed inset-0 bg-black/70 backdrop-blur-sm z-[60]"
             onClick={handleClose}
           />
-          
+
           {/* Modal */}
           <motion.div
             initial={{ opacity: 0, scale: 0.9, y: 20 }}
@@ -304,13 +271,13 @@ export default function ExitIntentPopup() {
             <div className="relative bg-gradient-to-br from-background via-background to-primary/5 border border-[#5E5E5E] rounded-2xl shadow-2xl overflow-hidden">
               {/* Decorative gradient */}
               <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-primary via-accent to-primary" />
-              
+
               {/* Close button */}
-	              <button
-	                onClick={handleClose}
-	                className="absolute top-4 right-4 p-2 rounded-full hover:bg-muted transition-colors"
-	                aria-label={language === "es" ? "Cerrar" : "Close"}
-	              >
+              <button
+                onClick={handleClose}
+                className="absolute top-4 right-4 p-2 rounded-full hover:bg-muted transition-colors"
+                aria-label={language === "es" ? "Cerrar" : "Close"}
+              >
                 <X className="w-5 h-5 text-zinc-400" />
               </button>
 
@@ -320,14 +287,14 @@ export default function ExitIntentPopup() {
                   <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 mb-4">
                     <Disc3 className="w-8 h-8 text-primary animate-spin" style={{ animationDuration: "3s" }} />
                   </div>
-                  
+
                   <h2 className="text-2xl md:text-3xl font-bold mb-2">
                     {language === "es" ? "¡Hey DJ! 🎧" : "Hey DJ! 🎧"}
                   </h2>
-                  
+
                   <p className="text-zinc-400">
-                    {language === "es" 
-                      ? "¿Te gustaría recibir una carpeta con demos gratis directo a tu WhatsApp?" 
+                    {language === "es"
+                      ? "¿Te gustaría recibir una carpeta con demos gratis directo a tu WhatsApp?"
                       : "Want a free demo folder sent straight to your WhatsApp?"}
                   </p>
                 </div>
@@ -346,17 +313,17 @@ export default function ExitIntentPopup() {
                     <Label htmlFor="name" className="text-sm font-medium">
                       {language === "es" ? "Tu nombre" : "Your name"}
                     </Label>
-	                    <Input
-	                      id="name"
-	                      type="text"
-	                      name="name"
-	                      autoComplete="name"
-	                      required
-	                      placeholder={language === "es" ? "DJ Carlos" : "DJ Carlos"}
-	                      value={formData.name}
-	                      onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-	                      className="mt-1"
-	                      disabled={isSubmitting}
+                    <Input
+                      id="name"
+                      type="text"
+                      name="name"
+                      autoComplete="name"
+                      required
+                      placeholder={language === "es" ? "DJ Carlos" : "DJ Carlos"}
+                      value={formData.name}
+                      onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+                      className="mt-1"
+                      disabled={isSubmitting}
                     />
                   </div>
 
@@ -364,17 +331,17 @@ export default function ExitIntentPopup() {
                     <Label htmlFor="email" className="text-sm font-medium">
                       {language === "es" ? "Tu email" : "Your email"}
                     </Label>
-	                    <Input
-	                      id="email"
-	                      type="email"
-	                      name="email"
-	                      autoComplete="email"
-	                      required
-	                      placeholder={language === "es" ? "dj@ejemplo.com" : "dj@example.com"}
-	                      value={formData.email}
-	                      onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
-	                      className="mt-1"
-	                      disabled={isSubmitting}
+                    <Input
+                      id="email"
+                      type="email"
+                      name="email"
+                      autoComplete="email"
+                      required
+                      placeholder={language === "es" ? "dj@ejemplo.com" : "dj@example.com"}
+                      value={formData.email}
+                      onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
+                      className="mt-1"
+                      disabled={isSubmitting}
                     />
                   </div>
 
@@ -386,25 +353,25 @@ export default function ExitIntentPopup() {
                       <div className="flex items-center px-3 bg-muted border border-r-0 border-input rounded-l-md text-sm text-zinc-400">
                         {countryData.dial_code}
                       </div>
-	                      <Input
-	                        id="phone"
-	                        type="tel"
-	                        name="phone"
-	                        autoComplete="tel"
-	                        inputMode="tel"
-	                        required
-	                        placeholder={language === "es" ? "55 1234 5678" : "(555) 123-4567"}
-	                        value={formData.phone}
-	                        onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
-	                        className="rounded-l-none"
-	                        disabled={isSubmitting}
-	                      />
-	                    </div>
-	                    <p className="text-xs text-zinc-400 mt-1">
-	                      {language === "es" 
-	                        ? `Solo números, sin el código de país. Detectamos que estás en ${countryData.country_name}` 
-	                        : `Digits only, without country code. We detected you're in ${countryData.country_name}`}
-	                    </p>
+                      <Input
+                        id="phone"
+                        type="tel"
+                        name="phone"
+                        autoComplete="tel"
+                        inputMode="tel"
+                        required
+                        placeholder={language === "es" ? "55 1234 5678" : "(555) 123-4567"}
+                        value={formData.phone}
+                        onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
+                        className="rounded-l-none"
+                        disabled={isSubmitting}
+                      />
+                    </div>
+                    <p className="text-xs text-zinc-400 mt-1">
+                      {language === "es"
+                        ? `Solo números, sin el código de país. Detectamos que estás en ${countryData.country_name}`
+                        : `Digits only, without country code. We detected you're in ${countryData.country_name}`}
+                    </p>
                   </div>
 
                   <div className="rounded-xl border border-[#5E5E5E]/60 bg-[#111111]/40 p-4">
@@ -455,8 +422,8 @@ export default function ExitIntentPopup() {
                     )}
                   </div>
 
-                  <Button 
-                    type="submit" 
+                  <Button
+                    type="submit"
                     className="w-full h-12 text-base font-semibold"
                     disabled={isSubmitting}
                   >
@@ -472,8 +439,8 @@ export default function ExitIntentPopup() {
                 </form>
 
                 <p className="text-xs text-center text-zinc-400 mt-4">
-                  {language === "es" 
-                    ? "Te enviaremos los demos por WhatsApp en minutos. Sin spam." 
+                  {language === "es"
+                    ? "Te enviaremos los demos por WhatsApp en minutos. Sin spam."
                     : "We'll send the demos via WhatsApp in minutes. No spam."}
                 </p>
               </div>

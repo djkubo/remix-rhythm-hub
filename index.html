@@ -22,7 +22,7 @@
     <meta name="googlebot" content="index, follow" />
     
     <!-- Canonical URL -->
-    <link rel="canonical" href="https://videoremixpack.com" />
+    <link rel="canonical" href="https://videoremixpack.com" id="canonical" />
     
     <!-- Favicon -->
     <link rel="icon" href="/favicon.ico" />
@@ -66,13 +66,15 @@
         "/gratis":{t:"Pack Gratis \u2013 Descarga Remixes de Muestra",d:"Prueba gratis y comprueba la calidad de VideoRemixesPack.",i:b+"/og-image.png"}
       };
       var c=m[p];
+      var u=b+(p||'');
       if(c){
-        var u=b+p;
+        u=b+p;
         var s=function(id,v){document.getElementById(id).setAttribute("content",v)};
         s("og-url",u);s("og-title",c.t);s("og-desc",c.d);s("og-image",c.i);s("og-image-alt",c.t);
         s("tw-url",u);s("tw-title",c.t);s("tw-desc",c.d);s("tw-image",c.i);
         document.title=c.t;
       }
+      if(p){document.getElementById("canonical").setAttribute("href",u);}
     })();
     </script>
     
