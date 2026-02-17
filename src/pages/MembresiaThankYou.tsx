@@ -184,7 +184,7 @@ export default function MembresiaThankYou() {
             <div className="grid gap-3 mb-8">
               {isMonthlyPlan ? (
                 <Button asChild className="btn-primary-glow h-12 w-full text-base font-bold">
-                  <Link to="/anual">Pásate a anual y ahorra</Link>
+                  <a href="https://videoremixespacks.com/plan" rel="noopener noreferrer">Pásate a anual y ahorra</a>
                 </Button>
               ) : null}
               <Button

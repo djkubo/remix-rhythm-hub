@@ -219,12 +219,12 @@ export default function AnualThankYou() {
           ) : null}
 
           <div className="mt-6">
-            <Link to="/anual">
+            <a href="https://videoremixespacks.com/plan" rel="noopener noreferrer">
               <Button variant="outline" className="gap-2">
                 <ArrowLeft className="w-4 h-4" />
                 {language === "es" ? "Volver" : "Back"}
               </Button>
-            </Link>
+            </a>
           </div>
         </motion.div>
       </div>

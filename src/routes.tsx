@@ -8,6 +8,14 @@ function RedirectTo({ path }: { path: string }) {
     return <Navigate to={`${path}${search}${hash}`} replace />;
 }
 
+/** Redirect to external URL (full page navigation) */
+function ExternalRedirect({ url }: { url: string }) {
+    const { search, hash } = useLocation();
+    const fullUrl = `${url}${search}${hash}`;
+    if (typeof window !== "undefined") window.location.replace(fullUrl);
+    return null;
+}
+
 /* ── Lazy page imports ─────────────────────────────────── */
 
 const Index = lazy(() => import("@/pages/Index"));
@@ -52,9 +60,7 @@ const primaryRoutes: RouteObject[] = [
     { path: "/usb128/gracias", element: <Usb128ThankYou /> },
     { path: "/usb500", element: <Usb500gb /> },
     { path: "/usb500/gracias", element: <Usb500gbThankYou /> },
-    { path: "/anual", element: <Anual /> },
     { path: "/anual/gracias", element: <AnualThankYou /> },
-    { path: "/membresia", element: <Membresia /> },
     { path: "/membresia/gracias", element: <MembresiaThankYou /> },
     { path: "/djedits", element: <DjEdits /> },
     { path: "/djedits/gracias", element: <DjEditsThankYou /> },
@@ -69,6 +75,8 @@ const primaryRoutes: RouteObject[] = [
 /* All redirects now preserve query-string & hash so payment
    params (session_id, lead_id, token, etc.) are never lost.  */
 
+const EXTERNAL_PLAN = "https://videoremixespacks.com/plan";
+
 const aliasRoutes: RouteObject[] = [
     // Navigation aliases
     { path: "/trends", element: <Index /> },
@@ -78,16 +86,18 @@ const aliasRoutes: RouteObject[] = [
     { path: "/usb-500gb", element: <RedirectTo path="/usb500" /> },
     { path: "/usb-500gb/gracias", element: <RedirectTo path="/usb500/gracias" /> },
 
+    // Membership → external site
+    { path: "/anual", element: <ExternalRedirect url={EXTERNAL_PLAN} /> },
+    { path: "/membresia", element: <ExternalRedirect url={EXTERNAL_PLAN} /> },
+    { path: "/plan", element: <ExternalRedirect url={EXTERNAL_PLAN} /> },
+    { path: "/ANUAL", element: <ExternalRedirect url={EXTERNAL_PLAN} /> },
+    { path: "/MEMBRESIA", element: <ExternalRedirect url={EXTERNAL_PLAN} /> },
+
     // Uppercase marketing URLs → redirect to canonical
-    { path: "/ANUAL", element: <RedirectTo path="/anual" /> },
     { path: "/ANUAL/gracias", element: <RedirectTo path="/anual/gracias" /> },
-    { path: "/MEMBRESIA", element: <RedirectTo path="/membresia" /> },
     { path: "/MEMBRESIA/gracias", element: <RedirectTo path="/membresia/gracias" /> },
     { path: "/DJEDITS", element: <RedirectTo path="/djedits" /> },
     { path: "/DJEDITS/gracias", element: <RedirectTo path="/djedits/gracias" /> },
-
-    // Short alias
-    { path: "/plan", element: <RedirectTo path="/membresia" /> },
 ];
 
 /* ── Catch-all ─────────────────────────────────────────── */
