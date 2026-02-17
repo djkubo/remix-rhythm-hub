@@ -15,6 +15,8 @@ import {
   RefreshCw,
   ChevronLeft,
   ChevronRight,
+  DollarSign,
+  Package,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -130,6 +132,19 @@ const PRODUCT_LABELS: Record<string, string> = {
   unknown: "Sin definir",
 };
 
+const PRODUCT_PRICES: Record<string, number> = {
+  usb128: 97,
+  usb_500gb: 197,
+  djedits: 47,
+  anual: 197,
+  plan_1tb_mensual: 19.5,
+  plan_1tb_trimestral: 49.5,
+  plan_1tb_semestral: 89,
+  plan_1tb_anual: 149,
+};
+
+const SHIPPING_PRODUCTS_SET = new Set(["usb128", "usb_500gb"]);
+
 const TEST_SOURCE_MARKERS = new Set(["smoke_test", "qa_test"]);
 const TEST_TAG_MARKERS = new Set(["smoke_test", "qa_test"]);
 const TEST_TEXT_MARKERS = ["smoke test", "qa test", "test checkout", "test usb", "codex.test+"];
@@ -189,10 +204,9 @@ export default function AdminDashboard() {
   const { toast } = useToast();
 
   const [dateRange, setDateRange] = useState("7");
-  const [activeTab, setActiveTab] = useState<"sales" | "overview" | "sources" | "leads" | "events">("sales");
-  const [salesFilter, setSalesFilter] = useState<SalesFilter>("paid");
+  const [activeTab, setActiveTab] = useState<"sales" | "overview" | "sources" | "events">("sales");
+  const [salesFilter, setSalesFilter] = useState<SalesFilter>("all");
   const [salesSearch, setSalesSearch] = useState("");
-  const [leadSearch, setLeadSearch] = useState("");
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
   const [resyncingLeadId, setResyncingLeadId] = useState<string | null>(null);
 
@@ -409,7 +423,7 @@ export default function AdminDashboard() {
 
   const filteredLeads = useMemo(() => {
     if (!leads?.length) return [];
-    const q = normalizeText(leadSearch);
+    const q = normalizeText(salesSearch);
     if (!q) return leads;
 
     return leads.filter((lead) => {
@@ -428,7 +442,7 @@ export default function AdminDashboard() {
 
       return hay.includes(q);
     });
-  }, [leadSearch, leads]);
+  }, [salesSearch, leads]);
 
   const enrichedLeads = useMemo<EnrichedLead[]>(() => {
     if (!leads?.length) return [];
@@ -460,8 +474,18 @@ export default function AdminDashboard() {
     const paidWithoutManyChat = enrichedLeads.filter(
       (item) => item.bucket === "paid" && !item.lead.manychat_synced,
     ).length;
+    const revenue = enrichedLeads
+      .filter((item) => item.bucket === "paid")
+      .reduce((sum, item) => sum + (PRODUCT_PRICES[item.productKey] || 0), 0);
+    const needsShipment = enrichedLeads.filter(
+      (item) =>
+        item.bucket === "paid" &&
+        SHIPPING_PRODUCTS_SET.has(item.productKey) &&
+        !item.lead.shipping_tracking_number &&
+        !item.lead.shipping_label_url,
+    ).length;
 
-    return { paid, pending, tests, pendingNoContact, paidWithoutManyChat };
+    return { paid, pending, tests, pendingNoContact, paidWithoutManyChat, revenue, needsShipment };
   }, [enrichedLeads]);
 
   const filteredSalesLeads = useMemo(() => {
@@ -756,24 +780,17 @@ export default function AdminDashboard() {
       {/* Tabs */}
       <div className="flex gap-2 border-b overflow-x-auto">
         {[
-          { id: "sales", label: language === "es" ? "Ventas" : "Sales" },
+          { id: "sales", label: language === "es" ? `Leads & Ventas (${leadsCount ?? 0})` : `Leads & Sales (${leadsCount ?? 0})` },
           { id: "overview", label: t("admin.dashboard.tabOverview") },
           { id: "sources", label: t("admin.dashboard.tabSources") },
-          {
-            id: "leads",
-            label:
-              language === "es"
-                ? `Leads (avanzado) (${leads?.length || 0})`
-                : `Leads (advanced) (${leads?.length || 0})`,
-          },
           { id: "events", label: t("admin.dashboard.tabEvents") },
         ].map((tab) => (
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id as typeof activeTab)}
             className={`px-4 py-2 font-medium transition-colors border-b-2 -mb-px whitespace-nowrap ${activeTab === tab.id
-                ? "border-primary text-primary"
-                : "border-transparent text-muted-foreground hover:text-foreground"
+              ? "border-primary text-primary"
+              : "border-transparent text-muted-foreground hover:text-foreground"
               }`}
           >
             {tab.label}
@@ -784,231 +801,171 @@ export default function AdminDashboard() {
       {/* Sales Tab */}
       {activeTab === "sales" && (
         <div className="space-y-4">
-          <Card className="border-primary/30 bg-card/60">
-            <CardContent className="pt-6 space-y-3">
-              <p className="font-semibold">
-                {language === "es" ? "Vista rápida de órdenes" : "Quick order view"}
-              </p>
-              <p className="text-sm text-muted-foreground">
-                {language === "es"
-                  ? "Aquí separamos ventas reales, pendientes y tests para que no se mezcle todo."
-                  : "This separates real sales, pending checkouts, and tests so data is clearer."}
-              </p>
-              <div className="flex flex-wrap items-center gap-2 text-xs">
-                {renderLeadBucket("paid")}
-                <span className="text-muted-foreground">
-                  {language === "es" ? "Pago confirmado" : "Payment confirmed"}
-                </span>
-                {renderLeadBucket("pending")}
-                <span className="text-muted-foreground">
-                  {language === "es" ? "Checkout iniciado sin pago" : "Checkout started, no payment yet"}
-                </span>
-                {renderLeadBucket("test")}
-                <span className="text-muted-foreground">
-                  {language === "es" ? "Pruebas internas" : "Internal tests"}
-                </span>
+          {/* Compact Stat Strip */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
+            <div className="flex items-center gap-2 rounded-lg border bg-card/60 px-3 py-2">
+              <DollarSign className="w-4 h-4 text-green-500 shrink-0" />
+              <div className="min-w-0">
+                <p className="text-[10px] text-muted-foreground uppercase tracking-wider truncate">
+                  {language === "es" ? "Revenue" : "Revenue"}
+                </p>
+                <p className="text-lg font-bold text-green-500">${salesMetrics.revenue.toLocaleString()}</p>
               </div>
-            </CardContent>
-          </Card>
-
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <CardTitle className="text-sm font-medium text-muted-foreground">
-                  {language === "es" ? "Ventas reales" : "Real sales"}
-                </CardTitle>
-                <TrendingUp className="w-4 h-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold text-green-500">{salesMetrics.paid}</div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <CardTitle className="text-sm font-medium text-muted-foreground">
+            </div>
+            <div className="flex items-center gap-2 rounded-lg border bg-card/60 px-3 py-2">
+              <TrendingUp className="w-4 h-4 text-green-500 shrink-0" />
+              <div className="min-w-0">
+                <p className="text-[10px] text-muted-foreground uppercase tracking-wider truncate">
+                  {language === "es" ? "Ventas" : "Sales"}
+                </p>
+                <p className="text-lg font-bold text-green-500">{salesMetrics.paid}</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2 rounded-lg border bg-card/60 px-3 py-2">
+              <Clock className="w-4 h-4 text-amber-500 shrink-0" />
+              <div className="min-w-0">
+                <p className="text-[10px] text-muted-foreground uppercase tracking-wider truncate">
                   {language === "es" ? "Pendientes" : "Pending"}
-                </CardTitle>
-                <Clock className="w-4 h-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">{salesMetrics.pending}</div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <CardTitle className="text-sm font-medium text-muted-foreground">
-                  {language === "es" ? "Tests detectados" : "Tests detected"}
-                </CardTitle>
-                <Filter className="w-4 h-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">{salesMetrics.tests}</div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <CardTitle className="text-sm font-medium text-muted-foreground">
-                  {language === "es" ? "Sincronizar ManyChat" : "Need ManyChat sync"}
-                </CardTitle>
-                <Users className="w-4 h-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">{salesMetrics.paidWithoutManyChat}</div>
-              </CardContent>
-            </Card>
+                </p>
+                <p className="text-lg font-bold">{salesMetrics.pending}</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2 rounded-lg border bg-card/60 px-3 py-2">
+              <Package className="w-4 h-4 text-orange-500 shrink-0" />
+              <div className="min-w-0">
+                <p className="text-[10px] text-muted-foreground uppercase tracking-wider truncate">
+                  {language === "es" ? "Sin envío" : "Needs ship"}
+                </p>
+                <p className="text-lg font-bold text-orange-500">{salesMetrics.needsShipment}</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2 rounded-lg border bg-card/60 px-3 py-2">
+              <Filter className="w-4 h-4 text-zinc-500 shrink-0" />
+              <div className="min-w-0">
+                <p className="text-[10px] text-muted-foreground uppercase tracking-wider truncate">Tests</p>
+                <p className="text-lg font-bold text-zinc-500">{salesMetrics.tests}</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2 rounded-lg border bg-card/60 px-3 py-2">
+              <Users className="w-4 h-4 text-blue-500 shrink-0" />
+              <div className="min-w-0">
+                <p className="text-[10px] text-muted-foreground uppercase tracking-wider truncate">ManyChat</p>
+                <p className="text-lg font-bold text-blue-500">{salesMetrics.paidWithoutManyChat}</p>
+              </div>
+            </div>
           </div>
 
-          <div className="flex flex-wrap gap-2">
-            {[
-              {
-                id: "paid",
-                label: language === "es" ? "Solo ventas" : "Paid only",
-                count: salesMetrics.paid,
-              },
-              {
-                id: "pending",
-                label: language === "es" ? "Solo pendientes" : "Pending only",
-                count: salesMetrics.pending,
-              },
-              {
-                id: "test",
-                label: language === "es" ? "Solo tests" : "Tests only",
-                count: salesMetrics.tests,
-              },
-              {
-                id: "all",
-                label: language === "es" ? "Todo" : "All",
-                count: enrichedLeads.length,
-              },
-            ].map((option) => (
-              <Button
-                key={option.id}
-                variant={salesFilter === option.id ? "default" : "outline"}
-                size="sm"
-                onClick={() => setSalesFilter(option.id as SalesFilter)}
-              >
-                {option.label} ({option.count})
-              </Button>
-            ))}
-          </div>
-
+          {/* Filters + Search */}
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-            <p className="text-sm text-muted-foreground">
-              {language === "es"
-                ? `Mostrando ${filteredSalesLeads.length} registros`
-                : `Showing ${filteredSalesLeads.length} records`}
-            </p>
-            <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+            <div className="flex flex-wrap gap-1.5">
+              {[
+                { id: "all", label: language === "es" ? "Todo" : "All", count: enrichedLeads.length },
+                { id: "paid", label: language === "es" ? "Pagados" : "Paid", count: salesMetrics.paid },
+                { id: "pending", label: language === "es" ? "Pendientes" : "Pending", count: salesMetrics.pending },
+                { id: "test", label: "Tests", count: salesMetrics.tests },
+              ].map((option) => (
+                <Button
+                  key={option.id}
+                  variant={salesFilter === option.id ? "default" : "outline"}
+                  size="sm"
+                  className="h-7 text-xs"
+                  onClick={() => setSalesFilter(option.id as SalesFilter)}
+                >
+                  {option.label} ({option.count})
+                </Button>
+              ))}
+            </div>
+            <div className="flex gap-2">
               <Input
                 value={salesSearch}
                 onChange={(e) => setSalesSearch(e.target.value)}
-                placeholder={language === "es" ? "Buscar en ventas..." : "Search sales..."}
-                className="w-full sm:w-72"
+                placeholder={language === "es" ? "Buscar..." : "Search..."}
+                className="w-full sm:w-56 h-8 text-sm"
               />
-              <Button variant="outline" onClick={exportSalesCSV} disabled={!filteredSalesLeads.length}>
-                <Download className="w-4 h-4 mr-2" />
-                {language === "es" ? "Exportar ventas" : "Export sales"}
+              <Button variant="outline" size="sm" className="h-8" onClick={exportSalesCSV} disabled={!filteredSalesLeads.length}>
+                <Download className="w-3.5 h-3.5 mr-1" />
+                CSV
               </Button>
             </div>
           </div>
 
+          {/* Simplified Table */}
           <Card>
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>{language === "es" ? "Tipo" : "Type"}</TableHead>
+                  <TableHead className="w-[80px]">{language === "es" ? "Estado" : "Status"}</TableHead>
                   <TableHead>{language === "es" ? "Producto" : "Product"}</TableHead>
                   <TableHead>{t("admin.dashboard.name")}</TableHead>
                   <TableHead>{language === "es" ? "Contacto" : "Contact"}</TableHead>
-                  <TableHead>{language === "es" ? "Pago" : "Payment"}</TableHead>
+                  <TableHead>{language === "es" ? "Envío" : "Shipping"}</TableHead>
                   <TableHead>{t("admin.dashboard.date")}</TableHead>
-                  <TableHead>ManyChat</TableHead>
-                  <TableHead className="text-right">{language === "es" ? "Acciones" : "Actions"}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {leadsLoading ? (
                   <TableRow>
-                    <TableCell colSpan={8} className="text-center py-8">
+                    <TableCell colSpan={6} className="text-center py-8">
                       {t("admin.dashboard.loading")}
                     </TableCell>
                   </TableRow>
                 ) : filteredSalesLeads.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
-                      {language === "es"
-                        ? "No hay resultados para este filtro."
-                        : "No results for this filter."}
+                    <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
+                      {language === "es" ? "No hay resultados." : "No results."}
                     </TableCell>
                   </TableRow>
                 ) : (
                   filteredSalesLeads.map((item) => (
                     <TableRow
                       key={item.lead.id}
-                      className="cursor-pointer"
+                      className="cursor-pointer hover:bg-muted/40"
                       onClick={() => setSelectedLead(item.lead)}
                     >
                       <TableCell>{renderLeadBucket(item.bucket)}</TableCell>
                       <TableCell>
-                        <div className="space-y-1">
-                          <p className="font-medium">{item.productLabel}</p>
-                          <p className="text-xs text-muted-foreground">{item.productKey}</p>
-                        </div>
+                        <p className="font-medium text-sm">{item.productLabel}</p>
                       </TableCell>
-                      <TableCell className="font-medium">{item.lead.name || "—"}</TableCell>
+                      <TableCell className="font-medium text-sm">{item.lead.name || "—"}</TableCell>
                       <TableCell>
-                        <div className="space-y-1 text-xs">
-                          <p className={item.isPlaceholderEmail ? "text-amber-500 font-medium" : ""}>
+                        <div className="space-y-0.5 text-xs">
+                          <p className={item.isPlaceholderEmail ? "text-amber-500" : ""}>
                             {item.isPlaceholderEmail
-                              ? language === "es"
-                                ? "Sin email real aún"
-                                : "No real email yet"
+                              ? "📧 " + (language === "es" ? "Pendiente" : "Pending")
                               : item.lead.email}
                           </p>
-                          <p className="text-muted-foreground">{item.lead.phone || "—"}</p>
+                          {item.lead.phone ? (
+                            <p className="text-muted-foreground">{item.lead.phone}</p>
+                          ) : null}
                         </div>
-                      </TableCell>
-                      <TableCell>{renderPayment(item.lead)}</TableCell>
-                      <TableCell className="text-muted-foreground">
-                        {format(
-                          new Date(item.lead.paid_at || item.lead.created_at),
-                          "dd MMM yyyy HH:mm",
-                          { locale: dateLocale },
-                        )}
                       </TableCell>
                       <TableCell>
-                        {item.lead.manychat_synced ? (
-                          <span className="text-green-500">✓</span>
+                        {SHIPPING_PRODUCTS_SET.has(item.productKey) ? (
+                          item.lead.shipping_tracking_number ? (
+                            <Badge variant="outline" className="text-[10px] border-green-600 text-green-500">
+                              📦 {language === "es" ? "Enviado" : "Shipped"}
+                            </Badge>
+                          ) : item.lead.shipping_label_url ? (
+                            <Badge variant="outline" className="text-[10px] border-blue-600 text-blue-500">
+                              🏷️ Label
+                            </Badge>
+                          ) : item.bucket === "paid" ? (
+                            <Badge variant="outline" className="text-[10px] border-orange-600 text-orange-500">
+                              ⚠️ {language === "es" ? "Sin envío" : "Needs ship"}
+                            </Badge>
+                          ) : (
+                            <span className="text-muted-foreground text-xs">—</span>
+                          )
                         ) : (
-                          <span className="text-muted-foreground">—</span>
+                          <span className="text-muted-foreground text-xs">{language === "es" ? "Digital" : "Digital"}</span>
                         )}
                       </TableCell>
-                      <TableCell className="text-right">
-                        <div className="flex justify-end gap-2">
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setSelectedLead(item.lead);
-                            }}
-                          >
-                            {language === "es" ? "Ver" : "View"}
-                          </Button>
-                          <Button
-                            variant="outline"
-                            size="icon"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              void copyToClipboard(item.lead.id);
-                            }}
-                          >
-                            <Copy className="w-4 h-4" />
-                          </Button>
-                        </div>
+                      <TableCell className="text-muted-foreground text-xs">
+                        {format(
+                          new Date(item.lead.paid_at || item.lead.created_at),
+                          "dd MMM HH:mm",
+                          { locale: dateLocale },
+                        )}
                       </TableCell>
                     </TableRow>
                   ))
@@ -1017,31 +974,21 @@ export default function AdminDashboard() {
             </Table>
           </Card>
 
-          {/* Sales pagination */}
+          {/* Pagination */}
           <div className="flex items-center justify-between">
-            <p className="text-sm text-muted-foreground">
+            <p className="text-xs text-muted-foreground">
               {language === "es"
-                ? `Página ${salesPage + 1} de ${totalLeadsPages}`
-                : `Page ${salesPage + 1} of ${totalLeadsPages}`}
+                ? `Página ${salesPage + 1} de ${totalLeadsPages} · ${leadsCount ?? 0} total`
+                : `Page ${salesPage + 1} of ${totalLeadsPages} · ${leadsCount ?? 0} total`}
             </p>
             <div className="flex gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                disabled={salesPage <= 0}
-                onClick={() => setSalesPage((p) => Math.max(0, p - 1))}
-              >
-                <ChevronLeft className="w-4 h-4 mr-1" />
-                {language === "es" ? "Anterior" : "Prev"}
+              <Button variant="outline" size="sm" className="h-7" disabled={salesPage <= 0} onClick={() => setSalesPage((p) => Math.max(0, p - 1))}>
+                <ChevronLeft className="w-3.5 h-3.5 mr-1" />
+                {language === "es" ? "Ant" : "Prev"}
               </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                disabled={salesPage >= totalLeadsPages - 1}
-                onClick={() => setSalesPage((p) => Math.min(totalLeadsPages - 1, p + 1))}
-              >
-                {language === "es" ? "Siguiente" : "Next"}
-                <ChevronRight className="w-4 h-4 ml-1" />
+              <Button variant="outline" size="sm" className="h-7" disabled={salesPage >= totalLeadsPages - 1} onClick={() => setSalesPage((p) => Math.min(totalLeadsPages - 1, p + 1))}>
+                {language === "es" ? "Sig" : "Next"}
+                <ChevronRight className="w-3.5 h-3.5 ml-1" />
               </Button>
             </div>
           </div>
@@ -1409,281 +1356,119 @@ export default function AdminDashboard() {
         </div>
       )}
 
-      {/* Leads Tab */}
-      {activeTab === "leads" && (
-        <div className="space-y-4">
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <div className="space-y-1">
-              <p className="text-muted-foreground">
-                {filteredLeads.length} {t("admin.dashboard.leadsInPeriod")}
-              </p>
-              {leads?.length ? (
-                <p className="text-xs text-muted-foreground">
-                  {language === "es"
-                    ? `Mostrando ${filteredLeads.length} de ${leads.length}`
-                    : `Showing ${filteredLeads.length} of ${leads.length}`}
-                </p>
-              ) : null}
-            </div>
+      {/* Lead Detail Dialog (shared - works from any tab) */}
+      <Dialog open={Boolean(selectedLead)} onOpenChange={(open) => !open && setSelectedLead(null)}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>
+              {language === "es" ? "Detalle del lead" : "Lead details"}
+            </DialogTitle>
+          </DialogHeader>
 
-            <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
-              <Input
-                value={leadSearch}
-                onChange={(e) => setLeadSearch(e.target.value)}
-                placeholder={language === "es" ? "Buscar lead..." : "Search lead..."}
-                className="w-full sm:w-72"
-              />
-              <Button variant="outline" onClick={exportLeadsCSV} disabled={!filteredLeads.length}>
-                <Download className="w-4 h-4 mr-2" />
-                {t("admin.dashboard.exportCSV")}
-              </Button>
-            </div>
-          </div>
+          {selectedLead ? (
+            <div className="grid gap-6 md:grid-cols-2">
+              <div className="space-y-3">
+                <div>
+                  <p className="text-xs text-muted-foreground">{t("admin.dashboard.name")}</p>
+                  <p className="font-medium">{selectedLead.name}</p>
+                </div>
+                <div>
+                  <p className="text-xs text-muted-foreground">{t("admin.dashboard.email")}</p>
+                  <p className="font-medium break-all">{selectedLead.email}</p>
+                </div>
+                <div>
+                  <p className="text-xs text-muted-foreground">{t("admin.dashboard.phone")}</p>
+                  <p className="font-medium">{selectedLead.phone}</p>
+                </div>
+                <div>
+                  <p className="text-xs text-muted-foreground">{t("admin.dashboard.country")}</p>
+                  <p className="font-medium">{selectedLead.country_name || "—"}</p>
+                </div>
+                <div>
+                  <p className="text-xs text-muted-foreground">{t("admin.dashboard.source")}</p>
+                  <p className="font-medium">{selectedLead.source || "—"}</p>
+                </div>
+                <div>
+                  <p className="text-xs text-muted-foreground">{t("admin.dashboard.date")}</p>
+                  <p className="font-medium">
+                    {format(new Date(selectedLead.created_at), "dd MMM yyyy HH:mm", { locale: dateLocale })}
+                  </p>
+                </div>
+              </div>
 
-          <Card>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>{t("admin.dashboard.name")}</TableHead>
-                  <TableHead>{t("admin.dashboard.email")}</TableHead>
-                  <TableHead>{t("admin.dashboard.phone")}</TableHead>
-                  <TableHead>{t("admin.dashboard.country")}</TableHead>
-                  <TableHead>{t("admin.dashboard.source")}</TableHead>
-                  <TableHead>{language === "es" ? "Pago" : "Payment"}</TableHead>
-                  <TableHead>{language === "es" ? "Envío" : "Shipping"}</TableHead>
-                  <TableHead>Tags</TableHead>
-                  <TableHead>{t("admin.dashboard.date")}</TableHead>
-                  <TableHead>ManyChat</TableHead>
-                  <TableHead className="text-right">{language === "es" ? "Acciones" : "Actions"}</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {leadsLoading ? (
-                  <TableRow>
-                    <TableCell colSpan={11} className="text-center py-8">
-                      {t("admin.dashboard.loading")}
-                    </TableCell>
-                  </TableRow>
-                ) : filteredLeads.length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={11} className="text-center py-8 text-muted-foreground">
-                      {leadSearch
-                        ? language === "es"
-                          ? "No hay resultados para tu búsqueda."
-                          : "No results for your search."
-                        : t("admin.dashboard.noLeads")}
-                    </TableCell>
-                  </TableRow>
-                ) : (
-                  filteredLeads.map((lead) => (
-                    <TableRow
-                      key={lead.id}
-                      className="cursor-pointer"
-                      onClick={() => setSelectedLead(lead)}
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <p className="text-xs text-muted-foreground">
+                    {language === "es" ? "Pago" : "Payment"}
+                  </p>
+                  {renderPayment(selectedLead)}
+                  {selectedLead.payment_id ? (
+                    <div className="text-xs text-muted-foreground break-all">
+                      {language === "es" ? "ID:" : "ID:"} {selectedLead.payment_id}
+                    </div>
+                  ) : null}
+                </div>
+
+                <div className="space-y-2">
+                  <p className="text-xs text-muted-foreground">
+                    {language === "es" ? "Envío" : "Shipping"}
+                  </p>
+                  {renderShipping(selectedLead)}
+                  {selectedLead.shipping_label_url ? (
+                    <a
+                      href={selectedLead.shipping_label_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-xs text-primary underline"
                     >
-                      <TableCell className="font-medium">{lead.name}</TableCell>
-                      <TableCell>{lead.email}</TableCell>
-                      <TableCell>{lead.phone}</TableCell>
-                      <TableCell>{lead.country_name || "-"}</TableCell>
-                      <TableCell>
-                        <span className="inline-flex px-2 py-1 text-xs rounded-full bg-primary/10 text-primary">
-                          {lead.source || "exit_intent"}
-                        </span>
-                      </TableCell>
-                      <TableCell>{renderPayment(lead)}</TableCell>
-                      <TableCell>{renderShipping(lead)}</TableCell>
-                      <TableCell>{renderTags(lead.tags)}</TableCell>
-                      <TableCell className="text-muted-foreground">
-                        {format(new Date(lead.created_at), "dd MMM yyyy HH:mm", { locale: dateLocale })}
-                      </TableCell>
-                      <TableCell>
-                        {lead.manychat_synced ? (
-                          <span className="text-green-500">✓</span>
-                        ) : (
-                          <span className="text-muted-foreground">—</span>
-                        )}
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <div className="flex justify-end gap-2">
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              void resyncManyChat(lead.id);
-                            }}
-                            disabled={Boolean(resyncingLeadId)}
-                          >
-                            {resyncingLeadId === lead.id
-                              ? language === "es"
-                                ? "Sincronizando..."
-                                : "Syncing..."
-                              : language === "es"
-                                ? "Re-sync"
-                                : "Re-sync"}
-                          </Button>
-                          <Button
-                            variant="outline"
-                            size="icon"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              void copyToClipboard(lead.id);
-                            }}
-                          >
-                            <Copy className="w-4 h-4" />
-                          </Button>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ))
-                )}
-              </TableBody>
-            </Table>
-          </Card>
+                      {language === "es" ? "Ver etiqueta" : "View label"}
+                    </a>
+                  ) : null}
+                </div>
 
-          {/* Leads pagination */}
-          <div className="flex items-center justify-between">
-            <p className="text-sm text-muted-foreground">
-              {language === "es"
-                ? `Página ${leadsPage + 1} de ${totalLeadsPages} · ${leadsCount ?? 0} leads total`
-                : `Page ${leadsPage + 1} of ${totalLeadsPages} · ${leadsCount ?? 0} leads total`}
-            </p>
-            <div className="flex gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                disabled={leadsPage <= 0}
-                onClick={() => setLeadsPage((p) => Math.max(0, p - 1))}
-              >
-                <ChevronLeft className="w-4 h-4 mr-1" />
-                {language === "es" ? "Anterior" : "Prev"}
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                disabled={leadsPage >= totalLeadsPages - 1}
-                onClick={() => setLeadsPage((p) => Math.min(totalLeadsPages - 1, p + 1))}
-              >
-                {language === "es" ? "Siguiente" : "Next"}
-                <ChevronRight className="w-4 h-4 ml-1" />
-              </Button>
-            </div>
-          </div>
+                <div className="space-y-2">
+                  <p className="text-xs text-muted-foreground">Tags</p>
+                  {renderTags(selectedLead.tags)}
+                </div>
 
-          <Dialog open={Boolean(selectedLead)} onOpenChange={(open) => !open && setSelectedLead(null)}>
-            <DialogContent className="max-w-2xl">
-              <DialogHeader>
-                <DialogTitle>
-                  {language === "es" ? "Detalle del lead" : "Lead details"}
-                </DialogTitle>
-              </DialogHeader>
-
-              {selectedLead ? (
-                <div className="grid gap-6 md:grid-cols-2">
-                  <div className="space-y-3">
-                    <div>
-                      <p className="text-xs text-muted-foreground">{t("admin.dashboard.name")}</p>
-                      <p className="font-medium">{selectedLead.name}</p>
-                    </div>
-                    <div>
-                      <p className="text-xs text-muted-foreground">{t("admin.dashboard.email")}</p>
-                      <p className="font-medium break-all">{selectedLead.email}</p>
-                    </div>
-                    <div>
-                      <p className="text-xs text-muted-foreground">{t("admin.dashboard.phone")}</p>
-                      <p className="font-medium">{selectedLead.phone}</p>
-                    </div>
-                    <div>
-                      <p className="text-xs text-muted-foreground">{t("admin.dashboard.country")}</p>
-                      <p className="font-medium">{selectedLead.country_name || "—"}</p>
-                    </div>
-                    <div>
-                      <p className="text-xs text-muted-foreground">{t("admin.dashboard.source")}</p>
-                      <p className="font-medium">{selectedLead.source || "—"}</p>
-                    </div>
-                    <div>
-                      <p className="text-xs text-muted-foreground">{t("admin.dashboard.date")}</p>
-                      <p className="font-medium">
-                        {format(new Date(selectedLead.created_at), "dd MMM yyyy HH:mm", { locale: dateLocale })}
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="space-y-4">
-                    <div className="space-y-2">
-                      <p className="text-xs text-muted-foreground">
-                        {language === "es" ? "Pago" : "Payment"}
-                      </p>
-                      {renderPayment(selectedLead)}
-                      {selectedLead.payment_id ? (
-                        <div className="text-xs text-muted-foreground break-all">
-                          {language === "es" ? "ID:" : "ID:"} {selectedLead.payment_id}
-                        </div>
-                      ) : null}
-                    </div>
-
-                    <div className="space-y-2">
-                      <p className="text-xs text-muted-foreground">
-                        {language === "es" ? "Envío" : "Shipping"}
-                      </p>
-                      {renderShipping(selectedLead)}
-                      {selectedLead.shipping_label_url ? (
-                        <a
-                          href={selectedLead.shipping_label_url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-xs text-primary underline"
-                        >
-                          {language === "es" ? "Ver etiqueta" : "View label"}
-                        </a>
-                      ) : null}
-                    </div>
-
-                    <div className="space-y-2">
-                      <p className="text-xs text-muted-foreground">Tags</p>
-                      {renderTags(selectedLead.tags)}
-                    </div>
-
-                    <div className="space-y-2">
-                      <p className="text-xs text-muted-foreground">ManyChat</p>
-                      <div className="flex items-center gap-2">
-                        <Badge variant={selectedLead.manychat_synced ? "default" : "outline"}>
-                          {selectedLead.manychat_synced
-                            ? language === "es" ? "Sincronizado" : "Synced"
-                            : language === "es" ? "No" : "No"}
-                        </Badge>
-                        {selectedLead.manychat_subscriber_id ? (
-                          <span className="text-xs text-muted-foreground break-all">
-                            {selectedLead.manychat_subscriber_id}
-                          </span>
-                        ) : null}
-                      </div>
-                    </div>
-
-                    <div className="flex flex-col gap-2 sm:flex-row sm:justify-end">
-                      <Button
-                        variant="outline"
-                        onClick={() => void copyToClipboard(selectedLead.id)}
-                      >
-                        <Copy className="w-4 h-4 mr-2" />
-                        {language === "es" ? "Copiar Lead ID" : "Copy Lead ID"}
-                      </Button>
-                      <Button
-                        onClick={() => void resyncManyChat(selectedLead.id)}
-                        disabled={Boolean(resyncingLeadId)}
-                      >
-                        {resyncingLeadId === selectedLead.id
-                          ? language === "es" ? "Sincronizando..." : "Syncing..."
-                          : language === "es" ? "Re-sync ManyChat" : "Re-sync ManyChat"}
-                      </Button>
-                    </div>
+                <div className="space-y-2">
+                  <p className="text-xs text-muted-foreground">ManyChat</p>
+                  <div className="flex items-center gap-2">
+                    <Badge variant={selectedLead.manychat_synced ? "default" : "outline"}>
+                      {selectedLead.manychat_synced
+                        ? language === "es" ? "Sincronizado" : "Synced"
+                        : language === "es" ? "No" : "No"}
+                    </Badge>
+                    {selectedLead.manychat_subscriber_id ? (
+                      <span className="text-xs text-muted-foreground break-all">
+                        {selectedLead.manychat_subscriber_id}
+                      </span>
+                    ) : null}
                   </div>
                 </div>
-              ) : null}
-            </DialogContent>
-          </Dialog>
-        </div>
-      )}
+
+                <div className="flex flex-col gap-2 sm:flex-row sm:justify-end">
+                  <Button
+                    variant="outline"
+                    onClick={() => void copyToClipboard(selectedLead.id)}
+                  >
+                    <Copy className="w-4 h-4 mr-2" />
+                    {language === "es" ? "Copiar Lead ID" : "Copy Lead ID"}
+                  </Button>
+                  <Button
+                    onClick={() => void resyncManyChat(selectedLead.id)}
+                    disabled={Boolean(resyncingLeadId)}
+                  >
+                    {resyncingLeadId === selectedLead.id
+                      ? language === "es" ? "Sincronizando..." : "Syncing..."
+                      : language === "es" ? "Re-sync ManyChat" : "Re-sync ManyChat"}
+                  </Button>
+                </div>
+              </div>
+            </div>
+          ) : null}
+        </DialogContent>
+      </Dialog>
 
       {/* Events Tab */}
       {activeTab === "events" && (

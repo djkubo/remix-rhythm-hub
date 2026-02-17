@@ -66,8 +66,8 @@ const primaryRoutes: RouteObject[] = [
 ];
 
 /* ── Aliases & legacy redirects ────────────────────────── */
-/* Centralised here so App.tsx stays clean.
-   Marketing & legacy URLs that must keep working.          */
+/* All redirects now preserve query-string & hash so payment
+   params (session_id, lead_id, token, etc.) are never lost.  */
 
 const aliasRoutes: RouteObject[] = [
     // Navigation aliases
@@ -101,3 +101,4 @@ export const routes: RouteObject[] = [
     ...aliasRoutes,
     catchAll,
 ];
+
